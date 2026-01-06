@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "moduleDetection": "force",
+    "noLib": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "ESNext",
+    "typeRoots": ["node_modules/@rbxts", "node_modules/@flamework"],
+    "rootDir": "src",
+    "outDir": "out",
+    "plugins": [
+        { "transform": "@flamework/core/out/transformer" },
+        { "transform": "@flamework/networking/out/transformer" },
+        { "transform": "@flamework/components/out/transformer" }
+    ]
+  },
+  "include": ["src"]
+}

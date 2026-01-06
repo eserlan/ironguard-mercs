@@ -67,12 +67,12 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 **Prerequisites:** `research.md` complete
 
-1. **Extract entities from feature spec** → `data-model.md`:
+1. **Extract entities from feature spec** (nested under "Proposal / What") → `data-model.md`:
    - Entity name, fields, relationships
    - Validation rules from requirements
    - State transitions if applicable
 
-2. **Generate API contracts** from functional requirements:
+2. **Generate API contracts** from functional requirements (nested under "Proposal / What"):
    - For each user action → endpoint
    - Use standard REST/GraphQL patterns
    - Output OpenAPI/GraphQL schema to `/contracts/`

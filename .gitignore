@@ -1,0 +1,12 @@
+node_modules/
+dist/
+out/
+build/
+*.log
+.env
+.DS_Store
+Thumbs.db
+coverage/
+*.rbxl
+*.rbxlx
+.rojo/

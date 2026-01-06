@@ -1,0 +1,29 @@
+{
+  "name": "ironguard-mercs",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "TS": {
+        "$path": "out/shared"
+      },
+      "rbxts_include": {
+        "$path": "include",
+        "node_modules": {
+          "$path": "node_modules/@rbxts"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "TS": {
+        "$path": "out/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "TS": {
+          "$path": "out/client"
+        }
+      }
+    }
+  }
+}

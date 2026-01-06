@@ -73,31 +73,31 @@ Given that feature description, do this:
 
 3. Load `.specify/templates/spec-template.md` to understand required sections.
 
-4. Follow this execution flow:
+4. Follow this execution flow to content generation:
 
     1. Parse user description from Input
        If empty: ERROR "No feature description provided"
-    2. Extract key concepts from description
+    2. Extract key concepts
        Identify: actors, actions, data, constraints
-    3. For unclear aspects:
-       - Make informed guesses based on context and industry standards
-       - Only mark with [NEEDS CLARIFICATION: specific question] if:
-         - The choice significantly impacts feature scope or user experience
-         - Multiple reasonable interpretations exist with different implications
-         - No reasonable default exists
-       - **LIMIT: Maximum 3 [NEEDS CLARIFICATION] markers total**
-       - Prioritize clarifications by impact: scope > security/privacy > user experience > technical details
-    4. Fill User Scenarios & Testing section
+    3. **Generate Mandatory Sections**:
+       - **Summary**: Concise high-level abstract.
+       - **Problem / Why**: Business case, motivation, "why now".
+       - **Proposal / What**: The core feature description.
+         - *Nest* "User Scenarios" here (P1, P2...).
+         - *Nest* "Requirements" (Functional) here.
+         - *Nest* "Key Entities" here.
+       - **Technical / How**: High-level architectural approach (no deep implementation details).
+       - **Risks**: Potential pitfalls.
+       - **Open Questions**: Unresolved items (if any, otherwise "None").
+       - **Success Criteria**: Measurable, technology-agnostic outcomes.
+    4. Fill User Scenarios & Testing (nested in Proposal)
        If no clear user flow: ERROR "Cannot determine user scenarios"
-    5. Generate Functional Requirements
+    5. Generate Functional Requirements (nested in Proposal)
        Each requirement must be testable
-       Use reasonable defaults for unspecified details (document assumptions in Assumptions section)
+       Use reasonable defaults for unspecified details
     6. Define Success Criteria
        Create measurable, technology-agnostic outcomes
-       Include both quantitative metrics (time, performance, volume) and qualitative measures (user satisfaction, task completion)
-       Each criterion must be verifiable without implementation details
-    7. Identify Key Entities (if data involved)
-    8. Return: SUCCESS (spec ready for planning)
+    7. Return: SUCCESS (spec ready for planning)
 
 5. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
 
@@ -117,7 +117,7 @@ Given that feature description, do this:
       - [ ] No implementation details (languages, frameworks, APIs)
       - [ ] Focused on user value and business needs
       - [ ] Written for non-technical stakeholders
-      - [ ] All mandatory sections completed
+      - [ ] All mandatory sections present: Summary, Problem, Proposal, Technical, Risks, Questions, Success Criteria
       
       ## Requirement Completeness
       
