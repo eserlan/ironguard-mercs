@@ -1,8 +1,5 @@
 import { Service, OnStart } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
 import { calculateTeamLevelProgress } from "../../shared/algorithms/progression/xp-math";
-import { PerkRegistry } from "../../shared/domain/progression/config";
-import { resolvePerkChoices } from "../../shared/algorithms/progression/perk-resolver";
 import { Log } from "../../shared/utils/log";
 
 @Service({})

@@ -2,7 +2,7 @@ import { Component, BaseComponent } from "@flamework/components";
 import { HealthLogic } from "../../shared/algorithms/health";
 
 @Component({ tag: "Health" })
-export class HealthComponent extends BaseComponent<{}, BasePart> {
+export class HealthComponent extends BaseComponent<object, BasePart> {
     private logic = new HealthLogic(100, 100);
     
     public takeDamage(amount: number) {

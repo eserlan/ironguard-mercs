@@ -4,7 +4,7 @@ import { resolvePerkChoices } from './perk-resolver';
 describe('perk-resolver', () => {
 	const mockPerks = [
 		{ id: 'p1' }, { id: 'p2' }, { id: 'p3' }, { id: 'p4' }
-	] as any[];
+	] as unknown as RunPerk[];
 
 	it('is deterministic for same seed/user', () => {
 		const c1 = resolvePerkChoices(12345, 1, 2, mockPerks);

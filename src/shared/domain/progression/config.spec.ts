@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PerkRegistry } from './config';
-import { PerkType, PerkRarity } from './types';
+import { PerkType, PerkRarity, RunPerk } from './types';
 
 describe('PerkRegistry', () => {
     it('validates correct perk', () => {
@@ -16,19 +16,19 @@ describe('PerkRegistry', () => {
     });
 
     it('rejects invalid perk', () => {
-        const perk = { id: 'test', name: '' } as any;
+        const perk = { id: 'test', name: '' } as unknown as RunPerk;
         expect(PerkRegistry.validate(perk)).toBe(false);
     });
 
     it('registers and gets perk', () => {
-        const perk = { id: 'reg', name: 'Reg', effects: [1] } as any;
+        const perk = { id: 'reg', name: 'Reg', effects: [1] } as unknown as RunPerk;
         PerkRegistry.register(perk);
         expect(PerkRegistry.get('reg')).toBe(perk);
         expect(PerkRegistry.getAll()).toContain(perk);
     });
 
     it('throws on duplicate register', () => {
-        const perk = { id: 'dup', name: 'Dup', effects: [1] } as any;
+        const perk = { id: 'dup', name: 'Dup', effects: [1] } as unknown as RunPerk;
         PerkRegistry.register(perk);
         expect(() => PerkRegistry.register(perk)).toThrow('Duplicate Perk ID: dup');
     });

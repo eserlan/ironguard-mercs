@@ -6,8 +6,7 @@ import { Log } from "../../shared/utils/log";
 export class PlayerSpawnService implements OnStart {
     onStart() {}
 
-    public spawn(plan: WorldPlan, players: Player[]) {
-        Log.info(`Spawning players...`);
+    	public spawn(_plan: WorldPlan, _players: Player[]) {        Log.info(`Spawning players...`);
         // Real impl: Loop players, Character:MoveTo(plan.playerSpawns[i])
     }
 }

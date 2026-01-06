@@ -18,4 +18,4 @@ interface ServerToClientEvents {
 }
 
 export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();
-export const GlobalFunctions = Networking.createFunction<{}, {}>();
+export const GlobalFunctions = Networking.createFunction<object, object>();

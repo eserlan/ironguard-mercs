@@ -16,18 +16,18 @@ export const ROLE_FLOORS: Record<EnemyRole, RoleFloor> = {
 		isMet: (c) => c.distance < 15,
 	},
 	[EnemyRole.Tank]: {
-		isMet: (c) => true, // Tanks are less picky
+		isMet: (_c) => true, // Tanks are less picky
 	},
 	[EnemyRole.Controller]: {
 		isMet: (c) => !c.isIsolated, // Prefers hitting groups
 	},
 	[EnemyRole.Support]: {
-		isMet: (c) => true,
+		isMet: (_c) => true,
 	},
 	[EnemyRole.Swarm]: {
-		isMet: (c) => true,
+		isMet: (_c) => true,
 	},
 	[EnemyRole.Hazard]: {
-		isMet: (c) => true,
+		isMet: (_c) => true,
 	},
 };

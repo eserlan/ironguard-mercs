@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateGraph } from './dungeon-gen';
-import { TileAsset, ConnectorDirection } from '../domain/TileDefs';
+import { TileAsset } from '../domain/TileDefs';
 
 const MOCK_TILESET: TileAsset[] = [
     {
