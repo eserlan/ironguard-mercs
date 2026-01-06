@@ -165,21 +165,11 @@ If it stops doing that, we change it.
 
 To support the delivery of these specs, we adhere to these technical standards:
 
-### I. Modular Architecture
-Code MUST be organized into loosely coupled, highly cohesive modules. Dependencies between modules should be explicit and minimized.
-
-### II. Test-Driven Quality
-Testing is non-negotiable. Changes MUST include accompanying tests (unit, integration, or contract). We prefer a "red-green-refactor" approach.
-
-### III. Documentation First
-Architecture, decisions, and public interfaces MUST be documented. Knowledge sharing is proactive, not reactive.
-
-### IV. Iterative Delivery
-Deliver value in small, functional increments. Prioritize a working MVP.
-
-### V. Clean Code & Conventions
-Follow established project conventions for naming, formatting, and structure.
+*   **Version Control**: Git-based workflow with clear, semantic commit messages.
+    *   **No Direct Commits to Main**: Direct pushes to the `main` branch are strictly prohibited.
+    *   **Pull Request Required**: All changes must be submitted via a Pull Request from a feature branch and pass CI checks (linting + tests) before merging.
+*   **Security**: Zero tolerance for secrets in code. Mandatory input validation at system boundaries. Secure defaults over custom implementations.
 
 ---
 
-**Version**: 0.2.0 | **Ratified**: 2026-01-06 | **Last Amended**: 2026-01-06
+**Version**: 0.2.1 | **Ratified**: 2026-01-06 | **Last Amended**: 2026-01-06

@@ -32,4 +32,7 @@ Luau (Roblox): Follow standard conventions
 
 
 <!-- MANUAL ADDITIONS START -->
+- **PR Only Policy**: Direct commits to `main` are prohibited. Use feature branches and PRs.
+- **TDD Priority**: Always write Vitest specs for `src/shared` logic before implementation.
+- **Flamework Standards**: Follow Service/Controller/Component patterns.
 <!-- MANUAL ADDITIONS END -->
