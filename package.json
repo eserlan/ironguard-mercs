@@ -8,6 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
+    "lint": "eslint src",
     "rojo:serve": "rojo serve"
   },
   "keywords": [],
@@ -21,6 +22,8 @@
     "@rbxts/compiler-types": "^3.0.0-types.0",
     "@rbxts/services": "^1.6.0",
     "@rbxts/types": "^1.0.896",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^9.39.2",
     "prettier": "^3.7.4",
