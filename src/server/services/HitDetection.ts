@@ -4,6 +4,6 @@ import { Service } from "@flamework/core";
 export class HitDetectionService {
 	// Real impl: Workspace:Raycast(...)
 	public raycast(_origin: Vector3, _dir: Vector3) {
-        return undefined; 
-    }
+		return undefined; 
+	}
 }
