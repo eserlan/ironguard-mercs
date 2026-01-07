@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { canEquip } from './compatibility';
-import { EquipmentSlot, GearType, GearRarity } from '../../domain/gear/types';
+import { EquipmentSlot, GearRarity } from '../../domain/gear/types';
 
 describe('canEquip', () => {
 	const exoticItem = { id: 'e1', rarity: GearRarity.Exotic } as any;
