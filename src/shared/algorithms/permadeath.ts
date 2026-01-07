@@ -1,4 +1,4 @@
-import { Roster, Mercenary } from "../domain/roster";
+import { Roster } from "../domain/roster";
 import { MissionMode } from "../domain/run";
 
 export function resolveMissionDeath(roster: Roster, mercId: string, mode: MissionMode): Roster {
