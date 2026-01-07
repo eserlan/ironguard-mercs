@@ -69,9 +69,9 @@ src/
 - Extend `RunService` to pause combat outside "Playing" state.
 
 ### Phase 1: Pure Logic (The "Brain")
-- Implement `DamagePipeline` (Base -> Crit -> Mitigation -> **Fatal Check**).
+- Implement `DamagePipeline` (Weapon + BaseStats -> Synergy -> Crit -> Mitigation -> **Fatal Check**).
 - Implement `StatusSystem` (Duration, Stacks).
-- **Test**: Vitest specs for math correctness, edge cases, and fatal damage detection.
+- **Test**: Vitest specs for synergy multipliers and fatal damage detection.
 
 ### Phase 2: Server Architecture
 - Implement `CombatService` (Validation Layer + **Death Orchestration**).

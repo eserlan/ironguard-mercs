@@ -1,12 +1,10 @@
-export interface CombatStats {
-	baseDamage: number;
-	synergyMultiplier: number;
-	critChance: number;
-	critMultiplier: number;
-}
+import { CombatStats } from "../domain/combat/types";
 
 /**
  * Computes the outgoing damage for an attack using the provided combat stats.
+ * 
+ * @deprecated Use {@link resolveDamage} in `shared/algorithms/combat/damage.ts` for weapon-based resolution.
+ * This is kept for generic spell/effect damage that doesn't use a weapon.
  *
  * Synergy is a multiplicative bonus that scales {@link CombatStats.baseDamage}
  * when a specific condition is met (for example, when the attacker is comboing,
@@ -38,11 +36,11 @@ export interface CombatStats {
  */
 export function calculateDamage(stats: CombatStats, isSynergyActive: boolean): number {
 	let damage = stats.baseDamage;
-	
+
 	if (isSynergyActive) {
 		damage *= (1 + stats.synergyMultiplier);
 	}
-	
+
 	// Simple crit check (RNG would be handled by caller)
 	return damage;
 }

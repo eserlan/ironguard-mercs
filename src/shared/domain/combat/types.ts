@@ -7,6 +7,13 @@ export interface CombatIntent {
     timestamp: number;
 }
 
+export interface CombatStats {
+	baseDamage: number;
+	synergyMultiplier: number;
+	critChance: number;
+	critMultiplier: number;
+}
+
 export interface DamageResult {
     amount: number;
     isCrit: boolean;
