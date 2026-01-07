@@ -11,7 +11,7 @@ import { Log } from "../../shared/utils/log";
 export class CombatService {
 	private rng = new CombatRNG(os.time());
 
-	public processIntent(player: Player, intent: any) {
+	public processIntent(player: Player, intent: unknown) {
 		if (!validateIntent(intent, os.clock())) {
 			Log.warn(`Invalid intent from ${player.Name}`);
 			return;

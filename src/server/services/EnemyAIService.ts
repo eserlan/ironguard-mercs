@@ -7,7 +7,7 @@ export class EnemyAIService implements OnStart {
 
 	onStart() {}
 
-	public selectTarget(enemy: any, players: Player[]): Player {
+	public selectTarget(_enemy: unknown, players: Player[]): Player {
 		// Mock logic: prefer player with highest bias
 		let bestTarget = players[0];
 		let highestBias = -1;

@@ -3,7 +3,6 @@ import { GlobalEvents } from "../../shared/net";
 import { validateLoadout } from "../../shared/algorithms/classes/loadout-val";
 import { ClassRegistry } from "../../shared/domain/classes/config";
 import { PlayerLoadout } from "../../shared/domain/classes/types";
-import { Log } from "../../shared/utils/log";
 
 @Service({})
 export class LoadoutService implements OnStart {
