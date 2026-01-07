@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import path from 'path';
 
 export default defineConfig({
   test: {
@@ -19,8 +20,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@flamework/core': '/home/espen/proj/ironguard-mercs/test/mocks/flamework.ts',
-      '@flamework/components': '/home/espen/proj/ironguard-mercs/test/mocks/flamework.ts',
+      '@flamework/core': path.resolve(__dirname, './test/mocks/flamework.ts'),
+      '@flamework/components': path.resolve(__dirname, './test/mocks/flamework.ts'),
     }
   }
 })
