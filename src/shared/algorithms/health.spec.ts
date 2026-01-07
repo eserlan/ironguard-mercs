@@ -19,4 +19,16 @@ describe('HealthLogic', () => {
 		hp.damage(999);
 		expect(hp.current).toBe(0);
 	});
+
+	it('heals damage', () => {
+		const hp = new HealthLogic(50, 100);
+		hp.heal(10);
+		expect(hp.current).toBe(60);
+	});
+
+	it('clamps healing at max', () => {
+		const hp = new HealthLogic(90, 100);
+		hp.heal(20);
+		expect(hp.current).toBe(100);
+	});
 });

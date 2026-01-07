@@ -10,11 +10,11 @@ export const DASH: AbilityConfig = {
 	variants: {
 		top: {
 			cooldown: 3,
-			effectBlocks: [{ type: EffectType.Status, value: 50 }] // Placeholder for Dash logic
+			effectBlocks: [{ type: EffectType.Dash, value: 50 }] // Placeholder for Dash logic
 		},
 		bottom: {
 			cooldown: 3,
-			effectBlocks: [{ type: EffectType.Status, value: 50 }]
+			effectBlocks: [{ type: EffectType.Dash, value: 50 }]
 		}
 	}
 };
@@ -48,11 +48,11 @@ export const SHIELD: AbilityConfig = {
 	variants: {
 		top: {
 			cooldown: 10,
-			effectBlocks: [{ type: EffectType.Status, value: 100 }] // Shield amount
+			effectBlocks: [{ type: EffectType.Shield, value: 100 }] // Shield amount
 		},
 		bottom: {
 			cooldown: 10,
-			effectBlocks: [{ type: EffectType.Status, value: 100 }]
+			effectBlocks: [{ type: EffectType.Shield, value: 100 }]
 		}
 	}
 };

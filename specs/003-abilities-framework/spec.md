@@ -42,7 +42,7 @@ We will implement a data-driven framework where abilities are defined by strict 
 
 #### Key Entities
 - **AbilityConfig**: Static definition containing `top` and `bottom` variants.
-- **EffectBlock**: Atomic logic units (Damage, Heal, Dash).
+- **EffectBlock**: Atomic logic units typed via `EffectType` (Damage, Heal, Dash, Shield, Projectile, Status).
 - **AbilityIntent**: Network payload containing `slotIndex`, `action` (Top/Bottom), and targeting data.
 
 ### Edge Cases

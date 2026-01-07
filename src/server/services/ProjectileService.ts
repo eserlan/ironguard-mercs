@@ -1,4 +1,5 @@
 import { Log } from "../../shared/utils/log";
+import { Service } from "@flamework/core";
 
 @Service({})
 export class ProjectileService {
