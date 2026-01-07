@@ -15,5 +15,5 @@ export function aggregateModifiers(modifiers: Modifier[]): number {
 		}
 	}
 
-	return totalMult + totalAdd;
+	return (totalMult - 1) + totalAdd;
 }
