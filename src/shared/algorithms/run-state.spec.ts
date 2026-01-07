@@ -1,12 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { RunStateMachine } from './run-state';
-import { MatchPhase } from '../domain/types';
+import { MatchPhase } from '../domain/run';
 
 describe('RunStateMachine', () => {
     let fsm: RunStateMachine;
 
     beforeEach(() => {
-        fsm = new RunStateMachine();
+        fsm = new RunStateMachine({
+            seed: 123,
+            mode: "ArenaClear",
+            missionMode: "Standard",
+            difficulty: 1,
+        });
     });
 
     it('starts in Lobby', () => {

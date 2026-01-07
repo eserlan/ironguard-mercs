@@ -1,120 +1,127 @@
----
-description: "Task list for IronGuard Mercs: Core Gameplay Vertical Slice"
----
+# Tasks: Core Gameplay & Vision (Real-Time)
 
-# Tasks: Core Gameplay Vertical Slice
+**Input**: Design documents from `specs/001-core-gameplay/`
+**Prerequisites**: plan.md, spec.md, data-model.md
 
-**Input**: User-provided Epics (A-H) & Plan `001-core-gameplay`
-**Prerequisites**: `plan.md` (Architecture)
+**Tests**: TDD approach requested by constitution. Tests must be written before implementation.
 
-## Phase 1: Setup & Tooling (Epic A)
+## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Initialize Repo, Tooling, and CI Foundation
+**Purpose**: Project initialization and basic structure.
 
-- [x] T001 Initialize repo with `roblox-ts` + `Rojo` skeleton
-- [x] T002 Add Flamework bootstrap (server + client)
-- [x] T003 Configure Vitest + coverage (CI-ready)
-- [x] T004 Shared utilities: logging + assertions in `src/shared/utils/log.ts`
+- [x] T001 Create project structure per implementation plan
+- [x] T002 Initialize roblox-ts project with Flamework dependencies
+- [x] T003 [P] Configure linting and formatting tools
 
 ---
 
-## Phase 2: Domain & Contracts (Epic B)
+## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Shared types and network definitions.
+**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented.
 
-- [x] T005 Define shared domain types (RunConfig, RunState) in `src/shared/domain/types.ts`
-- [x] T006 Define networking contracts in `src/shared/net.ts`
-- [x] T007 [P] Implement Seeded RNG utility in `src/shared/algorithms/rng.ts`
-- [x] T008 [P] Test Seeded RNG determinism in `src/shared/algorithms/rng.spec.ts`
-
----
-
-## Phase 3: Game Loop (Epic C)
-
-**Purpose**: Core state machine and lifecycle.
-
-- [x] T009 Implement `RunStateMachine` (Pure Logic) in `src/shared/algorithms/run-state.ts`
-- [x] T010 [P] Test `RunStateMachine` transitions in `src/shared/algorithms/run-state.spec.ts`
-- [x] T011 Implement `RunService` (Server Authoritative) in `src/server/services/RunService.ts`
-- [x] T012 Implement Client RunController + basic HUD in `src/client/controllers/RunController.ts`
-- [ ] T012b Configure standard FPV/TPV camera settings in `src/client/controllers/CameraController.ts`
+- [x] T004 Setup RunConfig and MatchState schemas in `src/shared/domain/run.ts`
+- [x] T005 [P] Setup Telemetry framework in `src/shared/telemetry.ts`
+- [x] T006 [P] Implement `RunStateMachine` logic
+- [x] T007 Implement server-authoritative `RunService` in `src/server/services/RunService.ts`
+- [x] T008 [P] Implement `Net` contract for Run state synchronization
+- [x] T009 Setup `WorldSpawner` foundation in `src/server/services/WorldSpawner.ts`
+- [x] T010 [P] Implement `DeterministicSeedService` for procgen stability
 
 ---
 
-## Phase 4: Minimal World (Epic D)
+## Phase 3: User Story 1 - Mission Participation (Priority: P1) 🎯 MVP
 
-**Purpose**: Spawn the arena.
+**Goal**: Complete end-to-end mission lifecycle with player movement and basic HUD.
 
-- [x] T013 Define WorldPlan types + schema in `src/shared/domain/world.ts`
-- [x] T014 [P] Implement Procgen `createWorldPlan` (Minimal) in `src/shared/algorithms/world-plan.ts`
-- [x] T015 [P] Test Procgen Determinism in `src/shared/algorithms/world-plan.spec.ts`
-- [x] T016 Implement Tile metadata loader (Spawn Nodes) in `src/server/services/TileService.ts`
-- [x] T017 Implement `WorldSpawner` (Instantiate Tiles) in `src/server/services/WorldSpawner.ts`
+**Independent Test**: Join a server -> Spawn as mercenary -> Move to objective -> Mission ends successfully.
 
----
+### Tests for User Story 1
 
-## Phase 5: Spawning & Waves (Epic E)
+- [x] T011 [P] [US1] Test `RunStateMachine` transitions in `src/shared/algorithms/run-state.spec.ts`
+- [x] T012 [P] [US1] Integration test for Mission FSM lifecycle in `test/integration/mission_flow.spec.ts`
 
-**Purpose**: Populate the world.
+### Implementation for User Story 1
 
-- [x] T018 Implement `PlayerSpawnService` (Spawn at Nodes) in `src/server/services/PlayerSpawnService.ts`
-- [x] T019 Define Enemy archetype config in `src/shared/domain/enemies.ts`
-- [x] T020 [P] Implement `WavePlan` generator (Pure Logic) in `src/shared/algorithms/wave-plan.ts`
-- [x] T021 [P] Test `WavePlan` generation in `src/shared/algorithms/wave-plan.spec.ts`
-- [x] T022 Implement `EnemySpawnService` + WaveRunner in `src/server/services/EnemySpawnService.ts`
+- [x] T013 [US1] Implement Client `RunController` + basic HUD in `src/client/controllers/RunController.ts`
+- [x] T014 [P] [US1] Configure standard FPV/TPV camera settings in `src/client/controllers/CameraController.ts`
+- [x] T015 [US1] Implement `SpawnService` for player placement in `src/server/services/SpawnService.ts`
+- [x] T016 [US1] Implement server-side validation to prevent multi-unit control in `src/server/services/RunService.ts`
 
 ---
 
-## Phase 6: Minimal Combat (Epic F)
+## Phase 4: User Story 2 - Squad Coordination (Priority: P1)
 
-**Purpose**: Damage and Death.
+**Goal**: Real-time combat coordination between multiple players.
 
-- [x] T023 [P] Implement `HealthComponent` (Server Auth) in `src/server/cmpts/HealthComponent.ts`
-- [x] T024 [P] Test Health Logic (Pure) in `src/server/cmpts/HealthComponent.spec.ts`
-- [x] T025 Implement MVP Damage Source (Touch/Tool) in `src/server/services/CombatService.ts`
-- [x] T026 Implement Win/Lose Evaluation Logic in `src/server/services/MatchEvaluator.ts`
+**Independent Test**: Two players using abilities on a shared target; verify damage and synergy triggers.
 
----
+### Tests for User Story 2
 
-## Phase 7: Results & Rewards (Epic G)
+- [x] T017 [P] [US2] Unit test for combat synergy math in `src/shared/algorithms/combat.spec.ts`
 
-**Purpose**: Close the loop.
+### Implementation for User Story 2
 
-- [x] T027 [P] Implement Rewards Calculator (Pure) in `src/shared/algorithms/rewards.ts`
-- [x] T028 [P] Test Rewards Calculation in `src/shared/algorithms/rewards.spec.ts`
-- [x] T029 Implement Results Aggregation & Broadcast in `src/server/services/RewardsService.ts`
-- [x] T030 Implement Return to Lobby + Cleanup logic in `src/server/services/RunService.ts`
-
----
-
-## Phase 8: Quality Gates (Epic H)
-
-**Purpose**: CI and Telemetry.
-
-- [x] T031 Implement Telemetry + Debug Overlay in `src/client/controllers/DebugController.ts`
-- [x] T032 Implement Fail-fast diagnostics in `src/shared/utils/diagnostics.ts`
-- [x] T033 Configure CI Gate (Build + Test + Coverage)
+- [x] T018 [US2] Implement `CombatService` (Real-time HP/Damage/Cooldown hooks) in `src/server/services/CombatService.ts`
+- [x] T019 [US2] Implement ability execution validation (Server-side)
+- [x] T020 [US2] Implement reactive health sync via Flamework controllers
 
 ---
 
 ## Phase 9: Roster & Permadeath Meta (Epic I)
 
-**Purpose**: Persistent squad management.
+**Purpose**: Persistent squad management and high-stakes mission modes.
 
-- [ ] T034 Define Roster domain schema in `src/shared/domain/roster.ts`
-- [ ] T035 Implement Roster selection logic (Lobby integration)
-- [ ] T036 Implement Permadeath logic (Remove from roster on fatal mission end)
-- [ ] T037 Implement Upkeep/Recovery calculations in `src/shared/algorithms/upkeep.ts`
-- [ ] T038 Implement Mode Selection (Standard vs. Ironman) in Lobby
-- [ ] T039 Implement Mode-based Reward Scaling in `src/shared/algorithms/rewards.ts`
+**Independent Test**: Create an Ironman mercenary -> Die in mission -> Verify removal from roster.
+
+### Tests for Phase 9
+
+- [x] T021 [P] Unit test for Roster persistence and serialization in `src/shared/domain/roster.spec.ts`
+- [x] T022 [P] Unit test for Permadeath logic in `src/shared/algorithms/permadeath.spec.ts`
+- [x] T023 [P] Unit test for Upkeep/Recovery calculations in `src/shared/algorithms/upkeep.spec.ts`
+- [x] T024 [P] Unit test for Ironman reward scaling in `src/shared/algorithms/rewards.spec.ts`
+
+### Implementation for Phase 9
+
+- [x] T025 [P] Define Roster/Mercenary domain schema in `src/shared/domain/roster.ts`
+- [x] T026 Implement `RosterService` (Server) to manage player data in `src/server/services/RosterService.ts`
+- [x] T027 Implement `MatchmakingService` with mode separation (Standard vs Ironman) in `src/server/services/MatchmakingService.ts`
+- [x] T028 Implement server-side mission mode filtering for lobby sessions
+- [x] T029 Implement Permadeath removal logic upon fatal mission resolution
+- [x] T030 Implement Upkeep/Gold deduction in `src/shared/algorithms/upkeep.ts`
+- [x] T031 Implement Mode Selection UI in `src/client/ui/LoadoutSelect.tsx`
+- [x] T032 Implement Ironman-based reward multipliers in `src/shared/algorithms/rewards.ts`
 
 ---
 
+## Phase N: Polish & Cross-Cutting Concerns
+
+- [x] T033 [P] Update `GEMINI.md` with final gameplay standards
+- [x] T034 [P] Documentation of `RunConfig` protocol in `specs/001-core-gameplay/contracts/Net.ts`
+- [x] T035 Code cleanup: Remove legacy turn-based grid logic from `src/shared/algorithms/`
+- [x] T036 Run `quickstart.md` validation on the full loop
+
+---
+
+## Dependencies & Execution Order
+
+1. **Foundational (Phase 2)** must be completed before any User Story.
+2. **User Story 1** is the MVP and can be worked on in parallel with foundational setup of other systems.
+3. **Phase 9 (Roster)** depends on User Story 1 being able to resolve a mission.
+
+## Parallel Execution Examples
+
+```bash
+# Data Modeling
+Task: "Define Roster/Mercenary domain schema" (T025)
+Task: "Implement RosterService" (T026)
+
+# UI/UX
+Task: "Implement Mode Selection UI" (T031)
+Task: "Configure camera settings" (T014)
+```
+
 ## Implementation Strategy
 
-1.  **Foundation**: T001-T008 builds the repo and core types.
-2.  **Game Loop**: T009-T012 gets the state machine running.
-3.  **World**: T013-T017 renders the map.
-4.  **Action**: T018-T026 adds players, enemies, and combat.
-5.  **Loop Closure**: T027-T030 finishes the run.
-6.  **Polish**: T031-T033 ensures quality.
+1. **Phase 1-2**: (Already partially complete).
+2. **Phase 3 (MVP)**: Focus on the "Movement + State Machine" loop.
+3. **Phase 9**: Add the meta-layer (Roster/Permadeath) once the mission loop is stable.

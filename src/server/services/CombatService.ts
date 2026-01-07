@@ -10,9 +10,22 @@ import { Log } from "../../shared/utils/log";
 @Service({})
 export class CombatService {
 	private rng = new CombatRNG(os.time());
+	private cooldowns = new Map<number, Map<string, number>>(); // UserId -> (AbilityId -> LastUsed)
 
-	public processIntent(player: Player, intent: unknown) {
-		if (!validateIntent(intent, os.clock())) {
+	public processIntent(player: Player, intent: any) {
+		const now = os.clock();
+		const playerCooldowns = this.cooldowns.get(player.UserId) ?? new Map<string, number>();
+		
+		const lastUsed = playerCooldowns.get(intent.abilityId) ?? 0;
+		if (now - lastUsed < (intent.cooldown ?? 1)) {
+			Log.warn(`Ability ${intent.abilityId} on cooldown for ${player.Name}`);
+			return;
+		}
+
+		playerCooldowns.set(intent.abilityId, now);
+		this.cooldowns.set(player.UserId, playerCooldowns);
+
+		if (!validateIntent(intent, now)) {
 			Log.warn(`Invalid intent from ${player.Name}`);
 			return;
 		}
