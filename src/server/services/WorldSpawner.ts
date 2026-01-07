@@ -1,10 +1,10 @@
 import { Service } from "@flamework/core";
-import { WorldPlan, Vec3 } from "../../shared/domain/world";
+import { WorldPlan } from "../../shared/domain/world";
 import { Log } from "../../shared/utils/log";
 
 @Service({})
 export class WorldSpawner {
-    public spawn(plan: WorldPlan) {
+    public spawn(_plan: WorldPlan) {
         Log.info("Spawning world based on plan...");
         
         // Mock Implementation for Vertical Slice Phase 4

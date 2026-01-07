@@ -7,7 +7,7 @@ export class ProgressionController implements OnStart {
 		Log.info("ProgressionController started");
 	}
 
-	public handleChoiceEvent(choices: any[], timeout: number) {
+	public handleChoiceEvent(_choices: unknown[], _timeout: number) {
 		Log.info("Level up choices received!");
 		// Trigger UI
 	}

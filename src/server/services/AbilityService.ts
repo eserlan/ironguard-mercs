@@ -39,7 +39,7 @@ export class AbilityService implements OnStart {
 		this.cdMgr.setCooldown(tostring(player.UserId), intent.slotIndex, now, variant.cooldown);
 
 		// Execute effects
-		variant.effectBlocks.forEach((block) => {
+		variant.effectBlocks.forEach((_block) => {
 			// Real impl would pass target from intent.payload
 			Log.info(`Executing variant ${intent.action} for ${player.Name}`);
 		});

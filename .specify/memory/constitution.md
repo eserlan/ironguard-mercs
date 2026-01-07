@@ -42,7 +42,7 @@ Specs are how we **think clearly together**.
 2. **Readable > Perfect**
    - Specs should be understandable before they are impressive.
 
-3. **Iterate, don’t procrastinate**
+3. **Iterate, don't procrastinate**
    - It is better to write a small imperfect spec than wait for a grand perfect one.
 
 4. **Truth lives in one place**
@@ -126,7 +126,7 @@ When a decision is made:
 - reversals MUST be documented
 - alternatives MAY be recorded
 
-We capture **why** decisions were made so future-you doesn’t hate past-you.
+We capture **why** decisions were made so future-you doesn't hate past-you.
 
 ## 8. Versioning & Evolution
 
@@ -136,7 +136,7 @@ Rules:
 - Major changes → new spec that supersedes old
 - Historic specs are never deleted
 
-Specs are part of the project’s memory.
+Specs are part of the project's memory.
 
 ## 9. Culture & Values
 
@@ -180,6 +180,14 @@ Deliver value in small, functional increments. Prioritize a working MVP.
 ### V. Clean Code & Conventions
 Follow established project conventions for naming, formatting, and structure.
 
+### VI. Version Control
+Git-based workflow with clear, semantic commit messages.
+*   **No Direct Commits to Main**: Direct pushes to the `main` branch are strictly prohibited.
+*   **Pull Request Required**: All changes must be submitted via a Pull Request from a feature branch and pass CI checks (linting + tests) before merging.
+
+### VII. Security
+Zero tolerance for secrets in code. Mandatory input validation at system boundaries. Secure defaults over custom implementations.
+
 ---
 
-**Version**: 0.2.0 | **Ratified**: 2026-01-06 | **Last Amended**: 2026-01-06
+**Version**: 0.2.1 | **Ratified**: 2026-01-06 | **Last Amended**: 2026-01-07

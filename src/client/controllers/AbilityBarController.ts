@@ -1,6 +1,5 @@
 import { Controller, OnStart } from "@flamework/core";
 import { UserInputService } from "@rbxts/services";
-import { GlobalEvents } from "../../shared/net";
 import { Log } from "../../shared/utils/log";
 
 @Controller({})

@@ -4,7 +4,7 @@ import { Controller, OnStart } from "@flamework/core";
 export class EnemyVFXController implements OnStart {
 	onStart() {}
 
-	public playMotif(enemyId: string, motif: string) {
+	public playMotif(_enemyId: string, _motif: string) {
 		// Real impl: lookup motif VFX, apply to enemy silhouette
 	}
 }

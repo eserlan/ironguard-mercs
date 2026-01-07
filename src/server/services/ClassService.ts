@@ -12,7 +12,7 @@ export class ClassService implements OnStart {
 		return ClassRegistry.get(id);
 	}
 
-	public isClassUnlocked(userId: number, classId: string): boolean {
+	public isClassUnlocked(_userId: number, _classId: string): boolean {
 		// Real impl: check PlayerProfile
 		return true;
 	}
