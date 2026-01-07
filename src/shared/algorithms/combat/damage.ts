@@ -2,7 +2,7 @@ import { WeaponConfig } from "../../domain/combat/config";
 import { calculateMitigation } from "./mitigation";
 import { rollCrit } from "./crit";
 import { CombatRNG } from "./rng";
-import { DamageResult, CombatStats } from "../../shared/domain/combat/types";
+import { DamageResult, CombatStats } from "../../domain/combat/types";
 
 export function resolveDamage(
 	attackerId: string,
