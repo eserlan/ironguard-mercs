@@ -16,7 +16,7 @@ export class AbilityRegistry {
 
 	public static validate(config: AbilityConfig): boolean {
 		if (!config.id || !config.name) return false;
-		if (config.cooldown < 0) return false;
+		if (config.variants.top.cooldown < 0 || config.variants.bottom.cooldown < 0) return false;
 		return true;
 	}
 }

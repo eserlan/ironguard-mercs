@@ -1,4 +1,4 @@
-import { AbilityConfig, AbilityCategory, ActivationType, TargetingType } from "../../domain/abilities/types";
+import { AbilityConfig, AbilityCategory, ActivationType, TargetingType, EffectType } from "../../domain/abilities/types";
 
 export const SHIELD_WALL: AbilityConfig = {
 	id: "shield-wall",
@@ -8,8 +8,18 @@ export const SHIELD_WALL: AbilityConfig = {
 	targeting: TargetingType.Self,
 	range: 0,
 	variants: {
-		top: { cooldown: 15, effectBlocks: [{ type: "Shield", params: { amount: 200, duration: 5 } }] },
-		bottom: { cooldown: 5, effectBlocks: [{ type: "DamageReduction", params: { percent: 0.2, duration: 3 } }] },
+		top: {
+			cooldown: 15,
+			effectBlocks: [
+				{ type: EffectType.Shield, value: 200 }
+			]
+		},
+		bottom: {
+			cooldown: 5,
+			effectBlocks: [
+				{ type: EffectType.Status, value: 3 } // Damage Reduction duration
+			]
+		},
 	},
 };
 
@@ -21,7 +31,18 @@ export const RESCUE_LEAP: AbilityConfig = {
 	targeting: TargetingType.Entity,
 	range: 30,
 	variants: {
-		top: { cooldown: 12, effectBlocks: [{ type: "Dash", params: { distance: 30 } }, { type: "Shield", params: { amount: 50 } }] },
-		bottom: { cooldown: 6, effectBlocks: [{ type: "Dash", params: { distance: 15 } }] },
+		top: {
+			cooldown: 12,
+			effectBlocks: [
+				{ type: EffectType.Dash, value: 30 },
+				{ type: EffectType.Shield, value: 50 }
+			]
+		},
+		bottom: {
+			cooldown: 6,
+			effectBlocks: [
+				{ type: EffectType.Dash, value: 15 }
+			]
+		},
 	},
 };

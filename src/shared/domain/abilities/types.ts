@@ -21,9 +21,19 @@ export enum TargetingType {
 	Area = "Area",
 }
 
+export enum EffectType {
+	Damage = "Damage",
+	Heal = "Heal",
+	Status = "Status",
+	Dash = "Dash",
+	Shield = "Shield",
+	Projectile = "Projectile",
+}
+
 export interface EffectBlock {
-	type: string;
-	params: Record<string, unknown>;
+	type: EffectType;
+	value: number; // Simplified for MVP (was params: Record...)
+	// params: Record<string, unknown>;
 }
 
 export interface AbilityVariantConfig {

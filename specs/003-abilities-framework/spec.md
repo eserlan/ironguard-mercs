@@ -16,43 +16,34 @@ Without a strict framework, abilities risk becoming "one-off snowflakes"—custo
 
 ## Proposal / What
 
-We will implement a data-driven framework where abilities are defined by strict schemas. The execution model follows a **Top/Bottom** approach:
-*   **Top (Server)**: Authoritative state, validation, cooldowns, damage application.
-*   **Bottom (Client)**: Input capture, visual prediction, feedback display.
+We will implement a data-driven framework where abilities are defined by strict schemas. The execution model follows a **Top/Bottom Variant** approach:
+*   **Top (Server)**: Authoritative state, validation, cooldowns, damage application. Uses the `top` variant configuration.
+*   **Bottom (Client)**: Input capture, visual prediction, feedback display. Uses the `bottom` variant configuration for local simulation.
 
 ### User Scenarios & Testing
 
-#### User Story 1 - Define Standard Ability (Priority: P1)
-**Description**: A developer creates an ability using the standard data schema (e.g., `Fireball` with `Damage=50`, `Cooldown=5`).
-**Value**: Enforces consistency.
-**Independent Test**: Create a new data module. Run a validator script to confirm it adheres to the schema (no missing fields).
-
 #### User Story 2 - Top/Bottom Execution (Priority: P1)
-**Description**: Player activates an ability. Client predicts the visual (Bottom); Server validates and applies damage (Top).
-**Value**: Ensures responsiveness (prediction) while maintaining security (server authority).
-**Independent Test**: Simulate 200ms lag. Trigger ability. Verify visual starts immediately. Verify damage applies ~200ms later.
+**Description**: Player activates an ability. Client triggers the **Bottom** action for immediate visual prediction; Server validates and triggers the **Top** action for authoritative resolution.
+**Value**: Enables asymmetric behavior where clients can predict visuals/movement while the server enforces actual state changes.
 
-#### User Story 3 - Cooldown Sync (Priority: P2)
-**Description**: Cooldowns are tracked on the server and replicated to the client.
-**Value**: Prevents cheating and desync.
-**Independent Test**: Fire ability. Verify server timestamp. Try to fire again immediately from client (should be rejected).
+#### User Story 4 - Slot-Based Loadouts (Priority: P1)
+**Description**: Abilities are executed via assigned slots (1-4) on a character's loadout.
+**Value**: Integrates combat mechanics with class progression.
 
 ### Requirements
 
 #### Functional
 - **FR-001**: System MUST strictly separate Ability Data (Properties) from Execution Logic (Scripts).
 - **FR-002**: System MUST implement **Server Authority** for all state changes (Damage, Cooldowns).
-- **FR-003**: System MUST support **Client Prediction** for visuals and movement.
-- **FR-004**: System MUST use a standardized networking protocol for ability events (e.g., `FireAbility(id, target)`).
+- **FR-003**: System MUST support **Top/Bottom Variant** configuration allowing asymmetric parameters for client and server.
+- **FR-004**: System MUST use a standardized networking protocol for ability intents including `slotIndex` and `action` type.
 - **FR-005**: All abilities MUST adhere to a strict Data Model (Schema).
-- **FR-006**: Logic MUST be composed of reusable **Components** (Damage, Dash, Shield) for >90% of abilities.
-- **FR-007**: VFX MUST follow an **Optimistic** pattern: Cast visuals are immediate/predicted, Impact visuals are authoritative.
-- **FR-008**: System MUST focus strictly on **Active Abilities**; Passives/Stats are handled externally.
+- **FR-006**: Logic MUST be composed of reusable **Components** (EffectBlocks) for >90% of abilities.
 
 #### Key Entities
-- **AbilityData**: The static definition (ModuleScript).
-- **AbilityState**: Runtime data (Cooldowns, Active Effects).
-- **Executor**: The logic handler (Top/Bottom pair).
+- **AbilityConfig**: Static definition containing `top` and `bottom` variants.
+- **EffectBlock**: Atomic logic units (Damage, Heal, Dash).
+- **AbilityIntent**: Network payload containing `slotIndex`, `action` (Top/Bottom), and targeting data.
 
 ### Edge Cases
 - Client fires ability, but packet is lost (Server never receives).

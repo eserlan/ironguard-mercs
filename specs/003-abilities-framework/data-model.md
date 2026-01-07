@@ -7,25 +7,24 @@
 ### 1. AbilityConfig
 Static definition of a skill.
 - `Id`: string
-- `Category`: Enum (Mobility, Offense, Defense)
+- `Name`: string
+- `Category`: Enum (Mobility, Offense, Defense, Utility)
+- `ActivationType`: Enum (Instant, Targeted, Channel)
 - `Targeting`: Enum (Self, Point, Entity, Direction, Area)
-- `Cooldown`: number
 - `Range`: number
-- `EffectBlocks`: List<EffectBlock>
-- `Tags`: List<string> (e.g., "Interruptible")
+- `Variants`: { Top: AbilityVariantConfig, Bottom: AbilityVariantConfig }
+- `Tags`: List<string>
 
-### 2. EffectBlock (Polymorphic)
-Reusable logic unit.
-- `Damage`: { Amount, Type, Scaling }
-- `Heal`: { Amount, Scaling }
-- `Dash`: { Distance, Speed }
-- `ApplyStatus`: { Id, Duration, Stacks }
-- `SpawnProjectile`: { Id, Speed, OnHit: List<EffectBlock> }
-- `AoE`: { Radius, Effects: List<EffectBlock> }
+### 2. AbilityVariantConfig
+Parameters for a specific execution context.
+- `Cooldown`: number
+- `EffectBlocks`: List<EffectBlock>
+- `Cost`: number (optional)
 
 ### 3. AbilityIntent (Network C->S)
-Client request.
-- `AbilityId`: string
+Client request to execute an action.
+- `SlotIndex`: number (assigned in loadout)
+- `Action`: "Top" | "Bottom"
 - `Timestamp`: number
 - `Seq`: number
 - `Payload`: { TargetId? | Point? | Direction? }

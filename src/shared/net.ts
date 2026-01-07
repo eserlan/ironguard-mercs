@@ -20,6 +20,7 @@ interface ServerToClientEvents {
 	LoadoutRejected(reason: string): void;
 	SlotCooldownState(slotIndex: number, remaining: number, total: number): void;
 	GearEffectTriggered(gearId: string, effectType: string): void;
+	AbilityActivated(sourceId: string, abilityId: string, slotIndex: number): void;
 }
 
 export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();

@@ -1,4 +1,4 @@
-import { AbilityConfig, AbilityCategory, ActivationType, TargetingType } from "../../domain/abilities/types";
+import { AbilityConfig, AbilityCategory, ActivationType, TargetingType, EffectType } from "../../domain/abilities/types";
 
 export const LUNGE: AbilityConfig = {
 	id: "lunge",
@@ -8,8 +8,19 @@ export const LUNGE: AbilityConfig = {
 	targeting: TargetingType.Direction,
 	range: 20,
 	variants: {
-		top: { cooldown: 8, effectBlocks: [{ type: "Dash", params: { distance: 20 } }, { type: "Damage", params: { amount: 100 } }] },
-		bottom: { cooldown: 3, effectBlocks: [{ type: "Dash", params: { distance: 10 } }] },
+		top: {
+			cooldown: 8,
+			effectBlocks: [
+				{ type: EffectType.Dash, value: 20 },
+				{ type: EffectType.Damage, value: 100 }
+			]
+		},
+		bottom: {
+			cooldown: 3,
+			effectBlocks: [
+				{ type: EffectType.Dash, value: 10 }
+			]
+		},
 	},
 };
 
@@ -21,7 +32,18 @@ export const EXECUTE: AbilityConfig = {
 	targeting: TargetingType.Entity,
 	range: 5,
 	variants: {
-		top: { cooldown: 20, effectBlocks: [{ type: "Damage", params: { amount: 300 } }] },
-		bottom: { cooldown: 10, effectBlocks: [{ type: "Damage", params: { amount: 50 } }, { type: "ApplyStatus", params: { statusId: "vulnerable", duration: 2 } }] },
+		top: {
+			cooldown: 20,
+			effectBlocks: [
+				{ type: EffectType.Damage, value: 300 }
+			]
+		},
+		bottom: {
+			cooldown: 10,
+			effectBlocks: [
+				{ type: EffectType.Damage, value: 50 },
+				{ type: EffectType.Status, value: 2 } // Vulnerable duration
+			]
+		},
 	},
 };
