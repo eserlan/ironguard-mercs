@@ -41,11 +41,13 @@ export class CombatController implements OnStart {
 		const root = char?.FindFirstChild("HumanoidRootPart") as BasePart;
 		if (root) {
 			root.AssemblyLinearVelocity = root.CFrame.LookVector.Mul(100);
-		}
 
-		GlobalEvents.client.CombatIntent.fire({
-			type: "Dash",
-			timestamp: now
-		});
+			GlobalEvents.client.CombatIntent.fire({
+				weaponId: "Dash",
+				origin: root.Position,
+				direction: root.CFrame.LookVector,
+				timestamp: now,
+			});
+		}
 	}
 }
