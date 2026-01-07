@@ -42,7 +42,7 @@ export const StandardEffects = {
 		);
 
 		if (result.amount > 0) {
-			combatService.applyDamage(target, result.amount, result.isCrit, result.isFatal, sourceId);
+			combatService.applyDamage(target, result.amount, result.isCrit, result.isFatal, sourceId, "ability");
 		}
 	},
 

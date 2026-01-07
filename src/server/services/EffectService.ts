@@ -30,6 +30,13 @@ export class EffectService {
 			case EffectType.Projectile:
 				this.projectileService.spawnProjectile(block.value, target.GetPivot(), sourceId);
 				break;
+			case EffectType.Dash:
+			case EffectType.Shield:
+				warn(`EffectService.resolveEffect: Effect type '${block.type}' is not implemented for source '${sourceId}'.`);
+				break;
+			default:
+				warn(`EffectService.resolveEffect: Unsupported effect type '${tostring(block.type)}' for source '${sourceId}'.`);
+				break;
 		}
 	}
 }

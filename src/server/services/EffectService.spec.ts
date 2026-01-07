@@ -16,12 +16,16 @@ const mockComponents = {
     getComponent: vi.fn(),
 } as any;
 
+const mockProjectileService = {
+    spawnProjectile: vi.fn(),
+} as any;
+
 describe('EffectService', () => {
     let service: EffectService;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        service = new EffectService(mockCombatService, mockComponents);
+        service = new EffectService(mockCombatService, mockComponents, mockProjectileService);
 
         // Spy on StandardEffects static methods
         vi.spyOn(StandardEffects, 'applyDamage').mockImplementation(() => { });
