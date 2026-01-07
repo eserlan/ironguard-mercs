@@ -1,14 +1,11 @@
 import { Controller, OnStart } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
-import { Log } from "../../shared/utils/log";
+import { Events } from "../events";
 
 @Controller({})
 export class GearController implements OnStart {
-	onStart() {
-		Log.info("GearController started");
-	}
+	onStart() {}
 
-	public requestEquip(slot: string, gearId: string) {
-		GlobalEvents.client.EquipItem.fire(slot, gearId);
+	public equipGear(slot: string, gearId: string) {
+		Events.EquipItem.fire(slot, gearId);
 	}
 }

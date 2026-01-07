@@ -20,6 +20,6 @@ describe('generateGraph', () => {
 
     it('generates nodes', () => {
         const g = generateGraph(123, MOCK_TILESET);
-        expect(g.length).toBeGreaterThan(1);
+        expect(g.size()).toBeGreaterThan(1);
     });
 });

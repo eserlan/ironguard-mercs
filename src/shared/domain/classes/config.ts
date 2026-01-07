@@ -22,7 +22,7 @@ export class ClassRegistry {
 
 	public static validate(config: ClassConfig): boolean {
 		if (!config.id || !config.name) return false;
-		if (config.abilityLibrary.length === 0) return false;
+		if (config.abilityLibrary.size() === 0) return false;
 		return true;
 	}
 }

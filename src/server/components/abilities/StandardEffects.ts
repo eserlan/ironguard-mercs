@@ -50,6 +50,6 @@ export const StandardEffects = {
 		const health = components.getComponent<HealthComponent>(target);
 		if (!health) return;
 
-		health.heal(block.value);
+		health.heal(block.value ?? 0);
 	},
 };

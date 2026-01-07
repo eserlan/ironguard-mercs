@@ -1,20 +1,19 @@
 import { Service, OnStart } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
-import { EquipmentSlot, PlayerEquipment } from "../../shared/domain/gear/types";
+import { Events } from "../events";
 import { Log } from "../../shared/utils/log";
 
 @Service({})
 export class GearService implements OnStart {
-	private playerEquipment = new Map<number, PlayerEquipment>();
+	private playerEquipment = new Map<number, any>();
 
 	onStart() {
 		Log.info("GearService started");
-		GlobalEvents.server.EquipItem.connect((player, slot, gearId) => {
-			this.handleEquip(player, slot as EquipmentSlot, gearId);
+		Events.EquipItem.connect((player, slot, gearId) => {
+			this.equipItem(player, slot, gearId);
 		});
 	}
 
-	private handleEquip(player: Player, slot: EquipmentSlot, gearId: string) {
+	private equipItem(player: Player, slot: any, gearId: string) {
 		// Real impl: const isSafe = this.runService.isSafeRoom();
 		const isSafe = true; // Mock for MVP
 		if (!isSafe) {
@@ -28,7 +27,7 @@ export class GearService implements OnStart {
 		return this.playerEquipment.get(userId);
 	}
 
-	public syncCooldown(player: Player, slot: EquipmentSlot, remaining: number) {
+	public syncCooldown(player: Player, slot: any, remaining: number) {
 		// Real impl: broadcast SlotCooldownState from 005 logic
 	}
 

@@ -7,9 +7,16 @@
         "$path": "out/shared"
       },
       "rbxts_include": {
+        "$className": "Folder",
         "$path": "include",
         "node_modules": {
-          "$path": "node_modules/@rbxts"
+          "$className": "Folder",
+          "@rbxts": {
+            "$path": "node_modules/@rbxts"
+          },
+          "@flamework": {
+            "$path": "node_modules/@flamework"
+          }
         }
       }
     },

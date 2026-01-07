@@ -12,7 +12,7 @@ export function generateGraph(seed: number, tileset: TileAsset[]): GraphNode[] {
     const rng = new RNG(seed);
     const nodes: GraphNode[] = [];
     
-    if (tileset.length === 0) return [];
+    if (tileset.size() === 0) return [];
 
     // 1. Place Start
     nodes.push({ id: "Root", tileId: tileset[0].id, position: {x:0, y:0, z:0} });
@@ -22,7 +22,7 @@ export function generateGraph(seed: number, tileset: TileAsset[]): GraphNode[] {
     
     for (let i=0; i<3; i++) {
         // Use RNG to prove determinism
-        const nextTile = tileset[rng.range(0, tileset.length - 1)];
+        const nextTile = tileset[rng.range(0, tileset.size() - 1)];
         nodes.push({
             id: `Node_${i}`,
             tileId: nextTile.id,

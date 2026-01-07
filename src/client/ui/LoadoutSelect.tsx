@@ -1,4 +1,4 @@
-import Roact from "@rbxts/roact";
+import React from "@rbxts/react";
 import { MissionMode } from "../../shared/domain/run";
 
 interface LoadoutSelectProps {
@@ -6,7 +6,7 @@ interface LoadoutSelectProps {
 	onModeChanged: (mode: MissionMode) => void;
 }
 
-export const LoadoutSelect = (props: LoadoutSelectProps) => {
+export function LoadoutSelect(props: LoadoutSelectProps) {
 	return (
 		<frame Size={new UDim2(0, 300, 0, 100)} Position={new UDim2(0.5, -150, 0.5, -50)}>
 			<textlabel 
@@ -25,4 +25,4 @@ export const LoadoutSelect = (props: LoadoutSelectProps) => {
 			/>
 		</frame>
 	);
-};
+}

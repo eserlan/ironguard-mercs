@@ -28,12 +28,16 @@ export enum EffectType {
 	Dash = "Dash",
 	Shield = "Shield",
 	Projectile = "Projectile",
+	MitigationMod = "MitigationMod",
+	DamageMod = "DamageMod",
+	StatMod = "StatMod",
+	Augment = "Augment",
 }
 
 export interface EffectBlock {
 	type: EffectType;
-	value: number; // Simplified for MVP (was params: Record...)
-	// params: Record<string, unknown>;
+	value?: number;
+	params?: Record<string, unknown>;
 }
 
 export interface AbilityVariantConfig {

@@ -4,11 +4,14 @@ import { isIsolated, isLowHp } from './targeting-helpers';
 // Mock Vector3 for Vitest
 class Vector3 {
     constructor(public X: number, public Y: number, public Z: number) { }
-    Sub(other: Vector3) {
+    get Magnitude() {
+        return math.sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
+    }
+    sub(other: Vector3) {
         return new Vector3(this.X - other.X, this.Y - other.Y, this.Z - other.Z);
     }
-    get Magnitude() {
-        return Math.sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
+    IsClose(other: Vector3, epsilon: number) {
+        return this.sub(other).Magnitude < epsilon;
     }
 }
 

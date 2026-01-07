@@ -20,7 +20,7 @@ describe('Roster Domain', () => {
             currency: new Map([["Gold", 100]])
         };
 
-        expect(roster.mercenaries.length).toBe(1);
+        expect(roster.mercenaries.size()).toBe(1);
         expect(roster.currency.get("Gold")).toBe(100);
     });
 });

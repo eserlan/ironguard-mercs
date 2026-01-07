@@ -8,7 +8,7 @@ import { TargetCandidate } from "./target-scoring";
  */
 export function isIsolated(candidatePos: Vector3, allyPositions: Vector3[]): boolean {
     for (const pos of allyPositions) {
-        if (candidatePos.Sub(pos).Magnitude < 30) {
+        if (candidatePos.sub(pos).Magnitude < 30) {
             return false;
         }
     }

@@ -8,8 +8,8 @@ export class TelegraphController implements OnStart {
 		// Listen to GlobalEvents.TelegraphStarted
 	}
 
-	public renderTelegraph(origin: Vector3, type: string, duration: number) {
+	public renderTelegraph(origin: Vector3, telegraphType: string, duration: number) {
 		// Mock: Spawn a decal/part at origin
-		Log.info(`Rendering ${type} telegraph for ${duration}s`);
+		Log.info(`Rendering ${telegraphType} telegraph for ${duration}s`);
 	}
 }

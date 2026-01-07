@@ -28,7 +28,7 @@ export class EffectService {
 				// StandardEffects.applyStatus...
 				break;
 			case EffectType.Projectile:
-				this.projectileService.spawnProjectile(block.value, target.GetPivot(), sourceId);
+				this.projectileService.spawnProjectile(block.value, (target as PVInstance).GetPivot(), sourceId);
 				break;
 			case EffectType.Dash:
 			case EffectType.Shield:

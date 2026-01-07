@@ -26,7 +26,7 @@ export class EnemyRegistry {
 
 	public static validate(config: EnemyArchetype): boolean {
 		if (!config.id || !config.name) return false;
-		if (config.moves.length === 0) return false;
+		if (config.moves.size() === 0) return false;
 		if (config.breakThreshold <= 0) return false;
 		return true;
 	}

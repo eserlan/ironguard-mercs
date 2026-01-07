@@ -6,12 +6,12 @@ export class HitDetectionService {
 	/**
 	 * Performs a raycast from origin in a direction.
 	 */
-	public raycast(origin: Vector3, direction: Vector3, range: number, ignore: Instance[]): RaycastResult | undefined {
+	public raycast(origin: Vector3, direction: Vector3, range: number, ignore: Instance[] = []) {
 		const params = new RaycastParams();
 		params.FilterDescendantsInstances = ignore;
 		params.FilterType = Enum.RaycastFilterType.Exclude;
 
-		return Workspace.Raycast(origin, direction.Unit.Mul(range), params);
+		return Workspace.Raycast(origin, direction.Unit.mul(range), params);
 	}
 
 	/**

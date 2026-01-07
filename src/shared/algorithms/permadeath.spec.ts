@@ -22,11 +22,11 @@ describe('Permadeath Algorithms', () => {
 
     it('should NOT remove mercenary in Standard mode', () => {
         const result = resolveMissionDeath(mockRoster, "m1", "Standard");
-        expect(result.mercenaries.length).toBe(1);
+        expect(result.mercenaries.size()).toBe(1);
     });
 
     it('should remove mercenary in Ironman mode', () => {
         const result = resolveMissionDeath(mockRoster, "m1", "Ironman");
-        expect(result.mercenaries.length).toBe(0);
+        expect(result.mercenaries.size()).toBe(0);
     });
 });

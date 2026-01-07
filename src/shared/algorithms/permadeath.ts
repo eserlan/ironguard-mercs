@@ -8,8 +8,7 @@ export function resolveMissionDeath(roster: Roster, mercId: string, mode: Missio
 
 	const index = roster.mercenaries.findIndex(m => m.id === mercId);
 	if (index !== -1) {
-		const newMercs = [...roster.mercenaries];
-		newMercs.splice(index, 1);
+		const newMercs = roster.mercenaries.filter(m => m.id !== mercId);
 		return {
 			...roster,
 			mercenaries: newMercs
