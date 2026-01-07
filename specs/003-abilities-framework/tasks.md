@@ -24,9 +24,9 @@ description: "Task list for IronGuard Mercs: Abilities Framework (003)"
 
 - [x] T005 [P] Implement CooldownManager (Pure) in `src/shared/algorithms/abilities/cooldowns.ts`
 - [x] T006 [P] Test Cooldown Logic (Time/Charges) in `src/shared/algorithms/abilities/cooldowns.spec.ts`
-- [x] T007 [P] Implement Targeting Payload Validators (Range, Type) in `src/shared/algorithms/abilities/validation.ts`
-- [x] T008 [P] Test Targeting Validation Rules in `src/shared/algorithms/abilities/validation.spec.ts`
-- [x] T009 Implement Line-of-Sight Helper (Server Wrapper) in `src/server/services/LOSService.ts`
+- [x] T007 [P] Implement Slot-based Cooldown Manager in `src/shared/algorithms/classes/slot-cooldowns.ts`
+- [x] T008 [P] Implement Targeting Payload Validators (Range, Type) in `src/shared/algorithms/abilities/validation.ts`
+- [x] T009 [P] Test Targeting Validation Rules in `src/shared/algorithms/abilities/validation.spec.ts`
 
 ---
 
@@ -34,10 +34,10 @@ description: "Task list for IronGuard Mercs: Abilities Framework (003)"
 
 **Purpose**: The "Top" of the Top/Bottom model.
 
-- [x] T010 Implement AbilityService (Orchestrator) in `src/server/services/AbilityService.ts`
+- [x] T010 Implement AbilityService (Orchestrator with Variant Dispatching) in `src/server/services/AbilityService.ts`
 - [x] T011 Implement EffectBlock Resolver (Dispatcher) in `src/server/services/EffectService.ts`
-- [x] T012 Implement Standard Effect Blocks (Damage, Heal) in `src/server/components/abilities/StandardEffects.ts`
-- [x] T013 Implement ProjectileService (Server Sim) in `src/server/services/ProjectileService.ts`
+- [x] T012 Implement standard Effect Blocks (Damage, Heal, Dash)
+- [x] T013 Integrate with LoadoutService for slot-to-ability mapping
 - [x] T014 Wire up Ability Events (Activated, Rejected, EffectApplied) in `src/server/services/AbilityService.ts`
 
 ---

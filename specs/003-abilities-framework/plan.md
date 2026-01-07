@@ -55,26 +55,22 @@ src/
 
 ## Execution Pipeline (Authoritative)
 
-1.  **Intent**: Client sends `AbilityIntent` (ID, Seq, TargetPayload).
-2.  **Validation**: Server checks State, Cooldowns, Cost, Targeting (Range/LOS).
-3.  **Commit**: Server consumes resources, starts cooldown, emits `AbilityActivated`.
-4.  **Resolution**: Server resolves `EffectBlocks`.
-    -   Instant: Apply immediately.
-    -   Projectile: Spawn entity.
-    -   AoE: Query targets.
-5.  **Output**: Server emits `AbilityEvents` (EffectApplied, ProjectileSpawned).
+1.  **Intent**: Client sends `AbilityIntent` (SlotIndex, Action, Seq, TargetPayload).
+2.  **Dispatch**: `AbilityService` retrieves loadout, identifies AbilityID, and selects the requested variant (Top/Bottom).
+3.  **Validation**: Server checks Player State, Cooldowns (via `SlotCooldownManager`), and Targeting.
+4.  **Resolution**: Server resolves `EffectBlocks` defined in the selected variant.
+5.  **Output**: Server emits `AbilityActivated` and effect results.
 
 ## Phases
 
 ### Phase 0: Domain & Schema
-- Define `AbilityConfig` and `EffectBlock` types.
-- Define `TargetingPayload` types (Self, Point, Direction, Entity).
+- Define `AbilityConfig` with `top`/`bottom` variants.
+- Define `AbilityIntent` with `slotIndex` and `action`.
 
 ### Phase 1: Pure Logic (The "Brain")
-- Implement `CooldownManager` (Pure).
+- Implement `SlotCooldownManager` (Pure).
 - Implement `IntentValidator` (Pure).
-- Implement `EffectResolver` (Pure).
-- **Test**: Vitest specs for all validation and math.
+- **Test**: Vitest specs for slot-based cooldowns and variant-specific validation.
 
 ### Phase 2: Server Runtime
 - Implement `AbilityService` (Pipeline).

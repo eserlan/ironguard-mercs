@@ -1,8 +1,8 @@
-import { Service } from "@flamework/core";
+import { Log } from "../../shared/utils/log";
 
 @Service({})
 export class ProjectileService {
-	public spawnProjectile(_config: unknown) {
-		// Real impl: Create BasePart, use LinearVelocity or manual CFrame updates
+	public spawnProjectile(config: unknown, origin: CFrame, sourceId: string) {
+		Log.info(`Spawning projectile from ${sourceId} at ${origin}`);
 	}
 }

@@ -1,4 +1,4 @@
-import { AbilityConfig, AbilityCategory, ActivationType, TargetingType } from "../../domain/abilities/types";
+import { AbilityConfig, AbilityCategory, ActivationType, TargetingType, EffectType } from "../../domain/abilities/types";
 
 export const DASH: AbilityConfig = {
 	id: "dash",
@@ -6,9 +6,17 @@ export const DASH: AbilityConfig = {
 	category: AbilityCategory.Mobility,
 	activationType: ActivationType.Instant,
 	targeting: TargetingType.Self,
-	cooldown: 3,
 	range: 15,
-	effectBlocks: [{ type: "Dash", params: { distance: 15, speed: 50 } }],
+	variants: {
+		top: {
+			cooldown: 3,
+			effectBlocks: [{ type: EffectType.Status, value: 50 }] // Placeholder for Dash logic
+		},
+		bottom: {
+			cooldown: 3,
+			effectBlocks: [{ type: EffectType.Status, value: 50 }]
+		}
+	}
 };
 
 export const FIREBALL: AbilityConfig = {
@@ -17,9 +25,17 @@ export const FIREBALL: AbilityConfig = {
 	category: AbilityCategory.Offense,
 	activationType: ActivationType.Targeted,
 	targeting: TargetingType.Direction,
-	cooldown: 5,
 	range: 50,
-	effectBlocks: [{ type: "SpawnProjectile", params: { speed: 100, damage: 50 } }],
+	variants: {
+		top: {
+			cooldown: 5,
+			effectBlocks: [{ type: EffectType.Damage, value: 50 }]
+		},
+		bottom: {
+			cooldown: 5,
+			effectBlocks: [{ type: EffectType.Damage, value: 50 }]
+		}
+	}
 };
 
 export const SHIELD: AbilityConfig = {
@@ -28,7 +44,15 @@ export const SHIELD: AbilityConfig = {
 	category: AbilityCategory.Defense,
 	activationType: ActivationType.Instant,
 	targeting: TargetingType.Self,
-	cooldown: 10,
 	range: 0,
-	effectBlocks: [{ type: "ApplyStatus", params: { statusId: "shield", duration: 5, amount: 100 } }],
+	variants: {
+		top: {
+			cooldown: 10,
+			effectBlocks: [{ type: EffectType.Status, value: 100 }] // Shield amount
+		},
+		bottom: {
+			cooldown: 10,
+			effectBlocks: [{ type: EffectType.Status, value: 100 }]
+		}
+	}
 };

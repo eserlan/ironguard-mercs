@@ -5,6 +5,7 @@ import { EffectService } from "./EffectService";
 import { LoadoutService } from "./LoadoutService";
 import { AbilityIntent } from "../../shared/domain/abilities/types";
 import { Log } from "../../shared/utils/log";
+import { GlobalEvents } from "../../shared/net";
 
 @Service({})
 export class AbilityService implements OnStart {
@@ -13,7 +14,7 @@ export class AbilityService implements OnStart {
 	constructor(
 		private effectService: EffectService,
 		private loadoutService: LoadoutService,
-	) {}
+	) { }
 
 	onStart() {
 		Log.info("AbilityService (Player Classes) started");
@@ -37,11 +38,17 @@ export class AbilityService implements OnStart {
 		}
 
 		this.cdMgr.setCooldown(tostring(player.UserId), intent.slotIndex, now, variant.cooldown);
+		GlobalEvents.server.AbilityActivated.broadcast(tostring(player.UserId), slot.abilityId, intent.slotIndex);
 
 		// Execute effects
-		variant.effectBlocks.forEach((_block) => {
-			// Real impl would pass target from intent.payload
-			Log.info(`Executing variant ${intent.action} for ${player.Name}`);
+		const character = player.Character;
+		const targetInstance = character; // For self-cast or placeholder. Real impl would parse intent.payload to find target
+
+		if (!targetInstance) return;
+
+		variant.effectBlocks.forEach((block) => {
+			Log.info(`Executing effect ${block.type} for ${player.Name} on ${targetInstance.Name}`);
+			this.effectService.resolveEffect(targetInstance, block, tostring(player.UserId));
 		});
 	}
 }

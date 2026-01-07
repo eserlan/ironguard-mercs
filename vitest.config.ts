@@ -17,4 +17,10 @@ export default defineConfig({
     },
     setupFiles: ['test/setup.ts']
   },
+  resolve: {
+    alias: {
+      '@flamework/core': '/home/espen/proj/ironguard-mercs/test/mocks/flamework.ts',
+      '@flamework/components': '/home/espen/proj/ironguard-mercs/test/mocks/flamework.ts',
+    }
+  }
 })

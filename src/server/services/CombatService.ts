@@ -29,6 +29,10 @@ export class CombatService implements OnStart {
 		});
 	}
 
+	public getRng(): CombatRNG | undefined {
+		return this.rng;
+	}
+
 	public setMasterSeed(seed: number) {
 		this.rng = new CombatRNG(seed);
 	}
@@ -92,15 +96,29 @@ export class CombatService implements OnStart {
 
 		if (result.amount > 0) {
 			health.takeDamage(result.amount);
-			GlobalEvents.server.CombatOccurred.broadcast({
-				attackerId: tostring(player.UserId),
-				targetId: result.targetId ?? "unknown",
-				weaponId: intent.weaponId,
-				damage: result.amount,
-				isCrit: result.isCrit,
-				isFatal: result.isFatal,
-				timestamp: os.time(),
-			});
+			this.broadcastCombatEvent(player.UserId, result.targetId ?? "unknown", intent.weaponId, result.amount, result.isCrit, result.isFatal);
 		}
+	}
+
+	public applyDamage(target: Instance, amount: number, isCrit: boolean, isFatal: boolean, attackerId: string, weaponId: string) {
+		const health = this.components.getComponent<HealthComponent>(target)
+			?? (target.Parent ? this.components.getComponent<HealthComponent>(target.Parent) : undefined);
+
+		if (!health) return;
+
+		health.takeDamage(amount);
+		this.broadcastCombatEvent(tonumber(attackerId) ?? 0, target.Name, weaponId, amount, isCrit, isFatal);
+	}
+
+	private broadcastCombatEvent(attackerId: number, targetId: string, weaponId: string, damage: number, isCrit: boolean, isFatal: boolean) {
+		GlobalEvents.server.CombatOccurred.broadcast({
+			attackerId: tostring(attackerId),
+			targetId: targetId,
+			weaponId: weaponId,
+			damage: damage,
+			isCrit: isCrit,
+			isFatal: isFatal,
+			timestamp: os.time(),
+		});
 	}
 }
