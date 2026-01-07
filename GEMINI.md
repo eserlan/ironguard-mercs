@@ -9,6 +9,7 @@ Auto-generated from all feature plans. Last updated: 2026-01-06
 - TypeScript (roblox-ts) (005-player-classes)
 - TypeScript (roblox-ts) + Combat (002) for trigger hooks, Abilities (003) for cooldown integration, Progression (007) for meta unlocks. (008-gear-equipment)
 - **Real-Time Combat (001)**: Flamework, React-based UI, Authoritative Server Logic.
+- **Git Hooks**: Husky (pre-push) for Linting and TDD.
 
 - Luau (Roblox) + Roblox Engine API (`Workspace`, `ServerStorage`, `CFrame`), TestEZ (for unit testing). (004-dungeon-generation)
 
@@ -48,6 +49,7 @@ Luau (Roblox): Follow standard conventions
   - Write tests before or alongside new logic, especially in `src/shared/algorithms`.  
   - Every new shared logic module must have a corresponding `*.spec.ts` test file.  
   - Maintain at least 80% line and function coverage; add or update tests when changing behavior.
+  - **Pre-push Hook**: Husky is configured to run `npm run lint` and `npm test` before any push. Do not bypass this check.
 
 - **Flamework Standards**  
   - Use `@Service` for services and `@Controller` for controllers; wire dependencies via constructor injection.  
