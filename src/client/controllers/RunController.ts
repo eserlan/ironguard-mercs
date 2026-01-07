@@ -1,6 +1,6 @@
 import { Controller, OnStart } from "@flamework/core";
 import { GlobalEvents } from "../../shared/net";
-import { MatchState, MatchPhase } from "../../shared/domain/run";
+import { MatchState } from "../../shared/domain/run";
 import { Log } from "../../shared/utils/log";
 
 @Controller({})
