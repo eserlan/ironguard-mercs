@@ -3,7 +3,7 @@
  * @description Defines how the server synchronizes the mission lifecycle with clients.
  */
 
-import { MatchState, RunConfig } from "../../../shared/domain/run";
+import { MatchState } from "../../../shared/domain/run";
 
 interface ServerToClientEvents {
     /**
