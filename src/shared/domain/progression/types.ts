@@ -10,13 +10,15 @@ export enum PerkRarity {
 	Legendary = "Legendary",
 }
 
+import { EffectBlock } from "../abilities/types";
+
 export interface RunPerk {
 	id: string;
 	name: string;
 	type: PerkType;
 	rarity: PerkRarity;
 	description: string;
-	effects: unknown[]; // Links to 003 EffectBlocks
+	effects: EffectBlock[]; // Links to 003 EffectBlocks
 	cap?: number;
 }
 

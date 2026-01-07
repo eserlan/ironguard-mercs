@@ -23,5 +23,13 @@ interface ServerToClientEvents {
 	AbilityActivated(sourceId: string, abilityId: string, slotIndex: number): void;
 }
 
-export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();
-export const GlobalFunctions = Networking.createFunction<object, object>();
+type FakeEvent = {
+	fire: (...args: any[]) => void;
+	connect: (cb: (...args: any[]) => void) => void;
+	broadcast: (...args: any[]) => void;
+	predict: (...args: any[]) => void;
+};
+type FakeNetworking = Record<string, FakeEvent>;
+
+export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>() as unknown as { client: FakeNetworking, server: FakeNetworking };
+export const GlobalFunctions = Networking.createFunction<object, object>() as any;
