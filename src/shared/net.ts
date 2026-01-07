@@ -1,10 +1,11 @@
 import { Networking } from "@flamework/networking";
 import { MatchState } from "./domain/run";
 import { AbilityIntent } from "./domain/abilities/types";
+import { CombatIntent } from "./domain/combat/types";
 
 interface ClientToServerEvents {
 	RequestStartRun(seed?: number): void;
-	CombatIntent(intent: any): void;
+	CombatIntent(intent: CombatIntent): void;
 	SelectClass(classId: string): void;
 	SetLoadout(loadout: { slotIndex: number; abilityId: string }[]): void;
 	AbilityIntent(intent: AbilityIntent): void;
