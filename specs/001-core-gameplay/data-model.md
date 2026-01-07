@@ -8,6 +8,7 @@
 Inputs to start a run.
 - `Seed`: number
 - `Mode`: "ArenaClear"
+- `MissionMode`: "Standard" | "Ironman"
 - `Difficulty`: number
 
 ### 2. MatchState
@@ -32,3 +33,22 @@ Output of a finished run.
 - **RunService** manages **MatchState**.
 - **ProcgenService** creates **WorldPlan** from **RunConfig**.
 - **WorldSpawner** consumes **WorldPlan** to create physical instances.
+
+## Persistent Entities
+
+### 5. Mercenary (Persistent)
+A unit owned by a player.
+- `Id`: string
+- `Name`: string
+- `Class`: string
+- `Level`: number
+- `XP`: number
+- `CurHealth`: number (for wounded state)
+- `EquippedGear`: List<GearId>
+
+### 6. Roster (Persistent)
+Collection of mercenaries for a single player.
+- `PlayerId`: string
+- `Capacity`: number
+- `Mercenaries`: List<Mercenary>
+- `Currency`: Map<Currency, Amount> (Gold, etc.)

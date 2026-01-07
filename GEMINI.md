@@ -27,6 +27,7 @@ tests/
 Luau (Roblox): Follow standard conventions
 
 ## Recent Changes
+- 001-core-gameplay: Refined vision to Real-Time Tactical Co-op; added Roster Management and Ironman Mode (Permadeath).
 - 008-gear-equipment: Added TypeScript (roblox-ts) + Combat (002) for trigger hooks, Abilities (003) for cooldown integration, Progression (007) for meta unlocks.
 - 008-gear-equipment: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 008-gear-equipment: Added TypeScript (roblox-ts)

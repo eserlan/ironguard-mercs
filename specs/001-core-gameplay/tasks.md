@@ -37,6 +37,7 @@ description: "Task list for IronGuard Mercs: Core Gameplay Vertical Slice"
 - [x] T010 [P] Test `RunStateMachine` transitions in `src/shared/algorithms/run-state.spec.ts`
 - [x] T011 Implement `RunService` (Server Authoritative) in `src/server/services/RunService.ts`
 - [x] T012 Implement Client RunController + basic HUD in `src/client/controllers/RunController.ts`
+- [ ] T012b Configure standard FPV/TPV camera settings in `src/client/controllers/CameraController.ts`
 
 ---
 
@@ -93,6 +94,19 @@ description: "Task list for IronGuard Mercs: Core Gameplay Vertical Slice"
 - [x] T031 Implement Telemetry + Debug Overlay in `src/client/controllers/DebugController.ts`
 - [x] T032 Implement Fail-fast diagnostics in `src/shared/utils/diagnostics.ts`
 - [x] T033 Configure CI Gate (Build + Test + Coverage)
+
+---
+
+## Phase 9: Roster & Permadeath Meta (Epic I)
+
+**Purpose**: Persistent squad management.
+
+- [ ] T034 Define Roster domain schema in `src/shared/domain/roster.ts`
+- [ ] T035 Implement Roster selection logic (Lobby integration)
+- [ ] T036 Implement Permadeath logic (Remove from roster on fatal mission end)
+- [ ] T037 Implement Upkeep/Recovery calculations in `src/shared/algorithms/upkeep.ts`
+- [ ] T038 Implement Mode Selection (Standard vs. Ironman) in Lobby
+- [ ] T039 Implement Mode-based Reward Scaling in `src/shared/algorithms/rewards.ts`
 
 ---
 
