@@ -8,6 +8,7 @@ import { HealthComponent } from "../cmpts/HealthComponent";
 import { Log } from "../../shared/utils/log";
 import { CombatValidation } from "./CombatValidation";
 import { HitDetectionService } from "./HitDetectionService";
+import { CombatEvent } from "../../shared/domain/combat/types";
 
 @Service({})
 export class CombatService implements OnStart {
@@ -35,6 +36,9 @@ export class CombatService implements OnStart {
 	public processIntent(player: Player, intent: any) {
 		if (!this.rng) return;
 
+		const character = player.Character;
+		if (!character) return;
+
 		const now = os.clock();
 		if (!this.validator.validateTimestamp(intent.timestamp, now)) return;
 
@@ -49,7 +53,12 @@ export class CombatService implements OnStart {
 		// Hit Detection
 		let targetInstance: Instance | undefined;
 		if (weapon.type === "Hitscan") {
-			const hit = this.hitDetection.raycast(intent.origin, intent.direction, weapon.range, [player.Character!]);
+			const hit = this.hitDetection.raycast(
+				new Vector3(intent.origin.x, intent.origin.y, intent.origin.z),
+				new Vector3(intent.direction.x, intent.direction.y, intent.direction.z),
+				weapon.range,
+				[character],
+			);
 			targetInstance = hit?.Instance;
 		}
 
@@ -57,7 +66,7 @@ export class CombatService implements OnStart {
 
 		// Resolution
 		const health = this.components.getComponent<HealthComponent>(targetInstance)
-			?? this.components.getComponent<HealthComponent>(targetInstance.Parent!);
+			?? (targetInstance.Parent ? this.components.getComponent<HealthComponent>(targetInstance.Parent) : undefined);
 
 		if (!health) return;
 
@@ -83,9 +92,15 @@ export class CombatService implements OnStart {
 
 		if (result.amount > 0) {
 			health.takeDamage(result.amount);
-			GlobalEvents.server.RunStateChanged.broadcast({
-				// This is a placeholder, in real app we emit CombatEvent
-			} as any);
+			GlobalEvents.server.CombatOccurred.broadcast({
+				attackerId: tostring(player.UserId),
+				targetId: result.targetId ?? "unknown",
+				weaponId: intent.weaponId,
+				damage: result.amount,
+				isCrit: result.isCrit,
+				isFatal: result.isFatal,
+				timestamp: os.time(),
+			});
 		}
 	}
 }

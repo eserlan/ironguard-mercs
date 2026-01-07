@@ -8,10 +8,10 @@ export interface CombatIntent {
 }
 
 export interface CombatStats {
-	baseDamage: number;
-	synergyMultiplier: number;
-	critChance: number;
-	critMultiplier: number;
+    baseDamage: number;
+    synergyMultiplier: number;
+    critChance: number;
+    critMultiplier: number;
 }
 
 export interface DamageResult {
@@ -19,4 +19,14 @@ export interface DamageResult {
     isCrit: boolean;
     targetId: string | undefined;
     isFatal: boolean;
+}
+
+export interface CombatEvent {
+    attackerId: string;
+    targetId: string;
+    weaponId: string;
+    damage: number;
+    isCrit: boolean;
+    isFatal: boolean;
+    timestamp: number;
 }
