@@ -1,4 +1,4 @@
-import { GearItem, GearRarity, PlayerEquipment } from "../../domain/gear/types";
+import { GearItem, GearRarity } from "../../domain/gear/types";
 
 export function canEquip(item: GearItem, currentEquipment: Record<string, GearItem>): { allowed: boolean; reason?: string } {
 	// 1. Check Class Filter
