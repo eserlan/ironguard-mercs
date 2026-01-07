@@ -1,57 +1,91 @@
-import { Service } from "@flamework/core";
-import { validateIntent } from "../../shared/algorithms/combat/validation";
-import { resolveDamage } from "../../shared/algorithms/combat/damage";
+import { Service, OnStart } from "@flamework/core";
+import { Components } from "@flamework/components";
+import { GlobalEvents } from "../../shared/net";
 import { CombatRNG } from "../../shared/algorithms/combat/rng";
+import { resolveDamage } from "../../shared/algorithms/combat/damage";
 import { Weapons } from "../../shared/domain/combat/config";
 import { HealthComponent } from "../cmpts/HealthComponent";
-import { Components } from "@flamework/components";
 import { Log } from "../../shared/utils/log";
+import { CombatValidation } from "./CombatValidation";
+import { HitDetectionService } from "./HitDetectionService";
 
 @Service({})
-export class CombatService {
-	private rng = new CombatRNG(os.time());
-	private cooldowns = new Map<number, Map<string, number>>(); // UserId -> (AbilityId -> LastUsed)
+export class CombatService implements OnStart {
+	private rng: CombatRNG | undefined;
+	private cooldowns = new Map<number, Map<string, number>>();
+
+	constructor(
+		private validator: CombatValidation,
+		private hitDetection: HitDetectionService,
+		private components: Components
+	) { }
+
+	onStart() {
+		Log.info("CombatService initialized");
+
+		GlobalEvents.server.CombatIntent.connect((player, intent) => {
+			this.processIntent(player, intent);
+		});
+	}
+
+	public setMasterSeed(seed: number) {
+		this.rng = new CombatRNG(seed);
+	}
 
 	public processIntent(player: Player, intent: any) {
+		if (!this.rng) return;
+
 		const now = os.clock();
-		const playerCooldowns = this.cooldowns.get(player.UserId) ?? new Map<string, number>();
-		
-		const lastUsed = playerCooldowns.get(intent.abilityId) ?? 0;
-		if (now - lastUsed < (intent.cooldown ?? 1)) {
-			Log.warn(`Ability ${intent.abilityId} on cooldown for ${player.Name}`);
-			return;
-		}
-
-		playerCooldowns.set(intent.abilityId, now);
-		this.cooldowns.set(player.UserId, playerCooldowns);
-
-		if (!validateIntent(intent, now)) {
-			Log.warn(`Invalid intent from ${player.Name}`);
-			return;
-		}
+		if (!this.validator.validateTimestamp(intent.timestamp, now)) return;
 
 		const weapon = Weapons[intent.weaponId];
 		if (!weapon) return;
 
-		// Real impl: use HitDetectionService to find target
-		const target: Instance | undefined = undefined; 
-		if (!target) return;
+		// Cooldown check
+		const playerCooldowns = this.cooldowns.get(player.UserId) ?? new Map<string, number>();
+		const lastUsed = playerCooldowns.get(intent.weaponId) ?? 0;
+		if (now - lastUsed < weapon.cooldown) return;
 
-		const health = Components.getComponent<HealthComponent>(target);
+		// Hit Detection
+		let targetInstance: Instance | undefined;
+		if (weapon.type === "Hitscan") {
+			const hit = this.hitDetection.raycast(intent.origin, intent.direction, weapon.range, [player.Character!]);
+			targetInstance = hit?.Instance;
+		}
+
+		if (!targetInstance) return;
+
+		// Resolution
+		const health = this.components.getComponent<HealthComponent>(targetInstance)
+			?? this.components.getComponent<HealthComponent>(targetInstance.Parent!);
+
 		if (!health) return;
+
+		// Update cooldown
+		playerCooldowns.set(intent.weaponId, now);
+		this.cooldowns.set(player.UserId, playerCooldowns);
 
 		const result = resolveDamage(
 			tostring(player.UserId),
-			tostring(target.Name),
+			tostring(targetInstance.Name),
 			weapon,
-			0, // TODO: Get target armor
+			{
+				baseDamage: 0, // In real app, look up from player stats
+				synergyMultiplier: 0.2, // Placeholder
+				critChance: 0.1,
+				critMultiplier: 2.0,
+			},
+			false, // isSynergyActive placeholder
+			0, // Armor placeholder
 			this.rng,
-			100, // TODO: Get target current HP
+			targetInstance.GetAttribute("Health") as number ?? 100
 		);
 
 		if (result.amount > 0) {
 			health.takeDamage(result.amount);
-			// Emit GlobalEvents.server.CombatEvent...
+			GlobalEvents.server.RunStateChanged.broadcast({
+				// This is a placeholder, in real app we emit CombatEvent
+			} as any);
 		}
 	}
 }

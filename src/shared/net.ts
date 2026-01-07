@@ -4,6 +4,7 @@ import { AbilityIntent } from "./domain/abilities/types";
 
 interface ClientToServerEvents {
 	RequestStartRun(seed?: number): void;
+	CombatIntent(intent: any): void;
 	SelectClass(classId: string): void;
 	SetLoadout(loadout: { slotIndex: number; abilityId: string }[]): void;
 	AbilityIntent(intent: AbilityIntent): void;

@@ -2,17 +2,24 @@ import { WeaponConfig } from "../../domain/combat/config";
 import { calculateMitigation } from "./mitigation";
 import { rollCrit } from "./crit";
 import { CombatRNG } from "./rng";
-import { DamageResult } from "../../domain/combat/types";
+import { DamageResult, CombatStats } from "../../shared/domain/combat/types";
 
 export function resolveDamage(
 	attackerId: string,
 	targetId: string,
 	weapon: WeaponConfig,
+	stats: CombatStats,
+	isSynergyActive: boolean,
 	armor: number,
 	rng: CombatRNG,
 	targetCurrentHp: number,
 ): DamageResult {
-	const { amount: critAmount, isCrit } = rollCrit(weapon.damage, 0.1, 2.0, rng);
+	let baseDamage = weapon.damage + stats.baseDamage;
+	if (isSynergyActive) {
+		baseDamage *= (1 + stats.synergyMultiplier);
+	}
+
+	const { amount: critAmount, isCrit } = rollCrit(baseDamage, stats.critChance, stats.critMultiplier, rng);
 	const finalAmount = calculateMitigation(critAmount, armor);
 	const amount = math.max(0, finalAmount);
 

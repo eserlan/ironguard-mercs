@@ -21,38 +21,28 @@ Combat is **Real-Time**. Players control a single unit directly. Pacing is manag
 ### User Scenarios & Testing
 
 #### User Story 1 - Ability Usage (Priority: P1)
-**Description**: Player activates an ability. It fires immediately if off cooldown. Targeting uses a **Hybrid/Soft-Lock** system (attacks hit what is in front, but can lock-on for focus).
-**Value**: Core interaction for combat. "Souls-like" targeting ensures combat feels weighty and intentional.
+**Description**: Player activates an ability. It fires immediately if off cooldown. Targeting uses **Real-Time Physics** (Raycasts for hitscan, OverlapParams for melee/AOE).
+**Value**: Core interaction for combat. Precise physics-based targeting ensures skill matters.
 **Independent Test**: Press Key -> Verify Ability Effect -> Verify Cooldown Start -> Press Key again (Fail).
 
-#### User Story 2 - Movement & Evasion (Priority: P1)
-**Description**: Player moves freely while attacking. Some abilities may lock movement.
-**Value**: "Kiting" and dodging are essential survivability tools in real-time combat.
-**Independent Test**: Move while firing basic attack. Move while casting "heavy" ability (verify slow/lock).
-
-#### User Story 3 - Deal Damage to Enemy (Priority: P0)
-**Description**: Player attacks an enemy. Damage is calculated, applied, and enemy dies at 0 HP.
-**Value**: Core combat loop — without this, nothing else matters.
-**Independent Test**: 
-  1. Spawn enemy with 100 HP
-  2. Player deals 100 damage attack
-  3. Verify enemy HP = 0
-  4. Verify enemy model destroyed
-  5. Verify CombatEvent emitted with `isFatal: true`
+#### User Story 2 - Combat Synergy (Priority: P1)
+**Description**: Certain conditions (flanking, comboing, team-up) trigger **Synergy**. This applies a multiplicative bonus to the base damage.
+**Value**: Encourages team-play and tactical positioning.
+**Independent Test**: Attack target with Synergy active -> Verify damage matches `(Base + Weapon) * (1 + SynergyMultiplier)`.
 
 ### Requirements
 
 #### Functional
-- **FR-001**: System MUST process combat inputs in real-time (no turns).
+- **FR-001**: System MUST process combat inputs in real-time.
 - **FR-002**: Abilities MUST have individual Cooldown timers.
-- **FR-003**: System MUST NOT use Mana/Energy; Cooldowns are the sole limiting factor.
-- **FR-004**: System MUST implement **Hybrid/Soft-Lock** targeting:
-  - Default: Hits targets in a cone/box in front of the unit.
-  - Optional: Can "lock-on" to a single target to maintain focus.
+- **FR-003**: System MUST NOT use Mana/Energy; Cooldowns are the primary limiting factor.
+- **FR-004**: System MUST implement **Physics-Based Targeting**.
+- **FR-005**: Combat MUST support **Synergy Multipliers** for cooperative or tactical advantages.
 
 #### Key Entities
-- **Ability**: Properties: `Damage`, `Cooldown`, `CastTime`.
-- **UnitState**: `IsCasting`, `CanMove`, `Health`, `LockOnTarget`.
+- **CombatStats**: `baseDamage`, `synergyMultiplier`, `critChance`, `critMultiplier`.
+- **DamageResult**: `amount`, `isCrit`, `targetId`, `isFatal`.
+- **Ability**: Properties: `Damage`, `Cooldown`, `CastTime`, `TargetType`.
 
 ### Edge Cases
 - Casting an ability right as the unit dies.
