@@ -1,11 +1,16 @@
-import { MatchPhase, MatchState } from "../domain/types";
+import { MatchPhase, MatchState, RunConfig } from "../domain/run";
+import { getTime } from "../utils/time";
 
 export class RunStateMachine {
 	private state: MatchState;
 
-	constructor() {
+	constructor(config: RunConfig) {
 		this.state = {
 			phase: MatchPhase.Lobby,
+			config: config,
+			startTime: 0,
+			elapsed: 0,
+			result: "None",
 			wave: 0,
 			enemiesAlive: 0,
 		};
@@ -19,6 +24,11 @@ export class RunStateMachine {
 		const from = this.state.phase;
 		if (this.canTransition(from, to)) {
 			this.state.phase = to;
+			
+			if (to === MatchPhase.Playing && this.state.startTime === 0) {
+				this.state.startTime = getTime();
+			}
+			
 			return true;
 		}
 		return false;

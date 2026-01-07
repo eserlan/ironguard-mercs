@@ -1,5 +1,5 @@
 import { Networking } from "@flamework/networking";
-import { MatchState } from "./domain/types";
+import { MatchState } from "./domain/run";
 import { AbilityIntent } from "./domain/abilities/types";
 
 interface ClientToServerEvents {

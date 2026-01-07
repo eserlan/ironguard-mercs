@@ -12,10 +12,13 @@ Inputs to start a run.
 - `Difficulty`: number
 
 ### 2. MatchState
-Mutable runtime state.
-- `Phase`: Lobby | Generating | Spawning | Playing | Ending | Results
-- `Wave`: number (Current wave)
-- `EnemiesAlive`: number
+Reactive state of the current mission.
+- `Phase`: "Generating" | "Spawning" | "Active" | "Ending" | "Results"
+- `Config`: RunConfig
+- `WorldPlan`: WorldPlan (referencing logic layout)
+- `StartTime`: number
+- `Elapsed`: number
+- `Result`: "None" | "Victory" | "Defeat"
 
 ### 3. WorldPlan (Pure Logic)
 Output of Procgen algorithm.
