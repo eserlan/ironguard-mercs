@@ -199,15 +199,6 @@ Authoring Template (per gear item)
 
 ---
 
-Out of Scope (v1)
-- Full inventory management
-- Gear crafting or upgrading mid-run
-- Gear durability or breakage
-- Permanent stat scaling via gear
-
-- Provides loot incentives and discovery rewards during dungeon runs
-- Avoids inventory bloat and micromanagement that slows co-op pacing
-
 ## Proposal / What
 
 We will implement a **Bounded Gear System** where equipment provides *contextual power* (conditional, triggered, or cooldown-based effects) rather than raw stat scaling.
