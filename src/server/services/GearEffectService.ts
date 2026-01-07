@@ -1,5 +1,4 @@
 import { Service, OnStart } from "@flamework/core";
-import { evaluateTrigger } from "../../shared/algorithms/gear/trigger-eval";
 import { Log } from "../../shared/utils/log";
 
 @Service({})
