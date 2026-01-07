@@ -1,0 +1,5 @@
+# Project Rules
+
+- **Always introduce tests before introducing new features**: Before introducing new features, you MUST introduce tests for the new features. If tests fail, report the errors to the user and do not commit.
+- **Always run linter before committing**: Before performing any `git commit` or `git push`, you MUST run `npm run lint` and ensure all linter errors are fixed. If linter errors remain, report the errors to the user and do not commit.
+- **Always run tests before committing**: Before performing any `git commit` or `git push`, you MUST run `npm test` and ensure all tests pass. If tests fail, report the errors to the user and do not commit.

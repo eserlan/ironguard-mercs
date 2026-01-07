@@ -6,7 +6,7 @@
 
 ## Summary
 
-This plan defines the first playable "vertical slice" of IronGuard Mercs. The goal is to ship a complete end-to-end game loop: Lobby -> Generated Run (Arena Clear) -> Combat -> Rewards -> Lobby. It establishes the authoritative server architecture, deterministic procedural generation foundation, and testing pipeline.
+This plan defines the first playable "vertical slice" of IronGuard Mercs. The goal is to ship a complete end-to-end real-time co-op game loop: Lobby -> Deployment -> Active Engagement -> Extraction -> Rewards -> Lobby. It establishes the authoritative server architecture, deterministic procedural generation foundation, and testing pipeline.
 
 ## Technical Context
 
@@ -58,7 +58,7 @@ src/
 1.  **Lobby**: Players wait, select mode (Default: Arena Clear).
 2.  **Generating**: Server creates `RunConfig` (Seed) and `WorldPlan`.
 3.  **Spawning**: Map instantiated, Players teleported.
-4.  **Playing**: Enemies spawn, Combat active. Win condition: Clear Waves.
+4.  **Playing**: Enemies spawn, Combat active. Includes real-time HP/Damage/Cooldowns.
 5.  **Ending**: Win/Lose determined.
 6.  **Results**: Rewards calculated, summary shown. Return to Lobby.
 
@@ -79,7 +79,7 @@ src/
 - Implement `SpawnService` (Player placement).
 
 ### Phase 3: Gameplay Loop
-- Implement `CombatService` (Minimal HP/Damage).
+- Implement `CombatService` (Real-time HP/Damage/Cooldown hooks).
 - Implement `RewardsService` (Placeholder coins).
 - Wire up Win/Lose triggers.
 
