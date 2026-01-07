@@ -30,39 +30,50 @@ export class AIController implements OnStart {
 		const players = game.GetService("Players").GetPlayers();
 		if (players.size() === 0) return;
 
-		const playerCharacters = players
-			.map((p) => p.Character)
-			.filter((c): c is Model => c !== undefined);
+		const playerCharacters: Model[] = [];
+		for (const p of players) {
+			if (p.Character) playerCharacters.push(p.Character);
+		}
 
-		const characterPositions = playerCharacters.map((c) => c.GetPivot().Position);
+		if (playerCharacters.size() === 0) return;
 
-		this.enemies.forEach((enemy) => {
+		const characterPositions: Vector3[] = [];
+		for (const c of playerCharacters) {
+			characterPositions.push(c.GetPivot().Position);
+		}
+
+		for (const enemy of this.enemies) {
 			let bestTarget: Model | undefined;
-			let bestScore = -math.huge;
+			let bestScore = -1e308;
 
-			playerCharacters.forEach((char) => {
+			for (const char of playerCharacters) {
 				const pos = char.GetPivot().Position;
-				const distance = enemy.GetPivot().Position.Sub(pos).Magnitude;
+				const distance = enemy.GetPivot().Position.sub(pos).Magnitude;
+
+				const neighbors: Vector3[] = [];
+				for (const p of characterPositions) {
+					if (p.sub(pos).Magnitude > 0.01) neighbors.push(p);
+				}
 
 				const candidate: TargetCandidate = {
 					id: tostring(char.Name),
 					distance,
 					threatBias: this.biasService.getBias(tostring(char.Name)),
-					isIsolated: isIsolated(pos, characterPositions.filter(p => !p.IsClose(pos, 0.01))),
+					isIsolated: isIsolated(pos, neighbors),
 					isLowHp: isLowHp(
-						char.FindFirstChildOfClass("Humanoid")?.Health ?? 100,
-						char.FindFirstChildOfClass("Humanoid")?.MaxHealth ?? 100
+						(char.FindFirstChildOfClass("Humanoid")?.Health) ?? 100,
+						(char.FindFirstChildOfClass("Humanoid")?.MaxHealth) ?? 100
 					),
 				};
 
-				const role = enemy.GetAttribute("Role") as EnemyRole ?? EnemyRole.Bruiser;
+				const role = (enemy.GetAttribute("Role") as EnemyRole) ?? EnemyRole.Bruiser;
 				const score = calculateTargetScore(role, candidate);
 
 				if (score > bestScore) {
 					bestScore = score;
 					bestTarget = char;
 				}
-			});
+			}
 
 			if (bestTarget) {
 				const humanoid = enemy.FindFirstChildOfClass("Humanoid");
@@ -70,6 +81,6 @@ export class AIController implements OnStart {
 					humanoid.MoveTo(bestTarget.GetPivot().Position);
 				}
 			}
-		});
+		}
 	}
 }

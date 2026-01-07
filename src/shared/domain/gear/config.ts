@@ -22,7 +22,7 @@ export class GearRegistry {
 
 	public static validate(item: GearItem): boolean {
 		if (!item.id || !item.name) return false;
-		if (item.effects.length === 0) return false;
+		if (item.effects.size() === 0) return false;
 		return true;
 	}
 }

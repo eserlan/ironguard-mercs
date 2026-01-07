@@ -1,6 +1,6 @@
 import { Controller, OnStart } from "@flamework/core";
 import { ContextActionService, Workspace } from "@rbxts/services";
-import { GlobalEvents } from "../../shared/net";
+import { Events } from "../events";
 
 @Controller({})
 export class CombatController implements OnStart {
@@ -21,7 +21,7 @@ export class CombatController implements OnStart {
 		const mousePos = game.GetService("UserInputService").GetMouseLocation();
 		const ray = camera.ViewportPointToRay(mousePos.X, mousePos.Y);
 
-		GlobalEvents.client.CombatIntent.fire({
+		Events.CombatIntent.fire({
 			weaponId: "AssaultRifle",
 			origin: { x: ray.Origin.X, y: ray.Origin.Y, z: ray.Origin.Z },
 			direction: { x: ray.Direction.X, y: ray.Direction.Y, z: ray.Direction.Z },
@@ -40,12 +40,12 @@ export class CombatController implements OnStart {
 		const char = game.GetService("Players").LocalPlayer.Character;
 		const root = char?.FindFirstChild("HumanoidRootPart") as BasePart;
 		if (root) {
-			root.AssemblyLinearVelocity = root.CFrame.LookVector.Mul(100);
+			root.AssemblyLinearVelocity = root.CFrame.LookVector.mul(100);
 
-			GlobalEvents.client.CombatIntent.fire({
+			Events.CombatIntent.fire({
 				weaponId: "Dash",
-				origin: root.Position,
-				direction: root.CFrame.LookVector,
+				origin: { x: root.Position.X, y: root.Position.Y, z: root.Position.Z },
+				direction: { x: root.CFrame.LookVector.X, y: root.CFrame.LookVector.Y, z: root.CFrame.LookVector.Z },
 				timestamp: now,
 			});
 		}

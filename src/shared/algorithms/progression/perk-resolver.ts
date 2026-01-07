@@ -9,14 +9,20 @@ export function resolvePerkChoices(
 ): RunPerk[] {
 	// Create sub-seed: seed + userId + level
 	const rng = new RNG(globalSeed + userId + level);
-	const pool = [...availablePerks];
+	let pool = [...availablePerks];
 	const choices: RunPerk[] = [];
 
 	for (let i = 0; i < 3; i++) {
-		if (pool.length === 0) break;
-		const idx = rng.range(0, pool.length - 1);
+		if (pool.size() === 0) break;
+		const idx = rng.range(0, pool.size() - 1);
 		choices.push(pool[idx]);
-		pool.splice(idx, 1); // Remove to avoid duplicate choices
+		
+		// Manual remove (splice is missing in some environments)
+		const nextPool: RunPerk[] = [];
+		for (let j = 0; j < pool.size(); j++) {
+			if (j !== idx) nextPool.push(pool[j]);
+		}
+		pool = nextPool;
 	}
 
 	return choices;

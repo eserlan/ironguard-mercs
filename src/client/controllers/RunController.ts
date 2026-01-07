@@ -1,25 +1,15 @@
 import { Controller, OnStart } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
-import { MatchState } from "../../shared/domain/run";
-import { Log } from "../../shared/utils/log";
+import { Events } from "../events";
 
 @Controller({})
 export class RunController implements OnStart {
-	private state: MatchState | undefined;
-
 	onStart() {
-		Log.info("RunController started");
-		GlobalEvents.client.RunStateChanged.connect((newState) => {
-			this.state = newState;
-			Log.info("New State:", newState.phase);
+		Events.RunStateChanged.connect((newState: unknown) => {
+			print("Match state changed:", newState);
 		});
 	}
 
-	public requestStart() {
-		GlobalEvents.client.RequestStartRun.fire(12345);
-	}
-
-	public getState(): MatchState | undefined {
-		return this.state;
+	public startRun() {
+		Events.RequestStartRun.fire(12345);
 	}
 }

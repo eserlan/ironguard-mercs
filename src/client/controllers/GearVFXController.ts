@@ -1,16 +1,11 @@
 import { Controller, OnStart } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
-import { Log } from "../../shared/utils/log";
+import { Events } from "../events";
 
 @Controller({})
 export class GearVFXController implements OnStart {
 	onStart() {
-		GlobalEvents.client.GearEffectTriggered.connect((gearId, effectType) => {
-			this.playEffect(gearId, effectType);
+		Events.GearEffectTriggered.connect((gearId: string, effectType: string) => {
+			print(`VFX: Gear ${gearId} triggered ${effectType}`);
 		});
-	}
-
-	private playEffect(gearId: string, effectType: string) {
-		Log.info(`Playing visual for ${gearId} (${effectType})`);
 	}
 }

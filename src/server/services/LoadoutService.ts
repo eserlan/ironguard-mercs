@@ -1,15 +1,17 @@
 import { Service, OnStart } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
-import { validateLoadout } from "../../shared/algorithms/classes/loadout-val";
+import { Events } from "../events";
+import { Log } from "../../shared/utils/log";
 import { ClassRegistry } from "../../shared/domain/classes/config";
 import { PlayerLoadout } from "../../shared/domain/classes/types";
+import { validateLoadout } from "../../shared/algorithms/classes/loadout-val";
 
 @Service({})
 export class LoadoutService implements OnStart {
 	private playerLoadouts = new Map<number, PlayerLoadout>();
 
 	onStart() {
-		GlobalEvents.server.SetLoadout.connect((player, slots) => {
+		Log.info("LoadoutService started");
+		Events.SetLoadout.connect((player, slots) => {
 			this.handleSetLoadout(player, slots);
 		});
 	}
@@ -20,7 +22,7 @@ export class LoadoutService implements OnStart {
 		const config = ClassRegistry.get(classId);
 		
 		if (!config) {
-			GlobalEvents.server.LoadoutRejected.fire(player, "InvalidClass");
+			Events.LoadoutRejected.fire(player, "InvalidClass");
 			return;
 		}
 
@@ -29,9 +31,9 @@ export class LoadoutService implements OnStart {
 
 		if (result.valid) {
 			this.playerLoadouts.set(player.UserId, loadout);
-			GlobalEvents.server.LoadoutConfirmed.fire(player, classId, slots);
+			Events.LoadoutConfirmed.fire(player, classId, slots);
 		} else {
-			GlobalEvents.server.LoadoutRejected.fire(player, result.reason || "Unknown");
+			Events.LoadoutRejected.fire(player, result.reason || "Unknown");
 		}
 	}
 

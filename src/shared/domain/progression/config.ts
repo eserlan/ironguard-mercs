@@ -22,7 +22,7 @@ export class PerkRegistry {
 
 	public static validate(perk: RunPerk): boolean {
 		if (!perk.id || !perk.name) return false;
-		if (perk.effects.length === 0) return false;
+		if (perk.effects.size() === 0) return false;
 		return true;
 	}
 }

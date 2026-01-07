@@ -4,7 +4,7 @@ export const Log = {
 	error: (msg: string, ctx?: unknown) => warn(`[ERROR] ${msg}`, ctx ?? ""),
 };
 
-export function assert(condition: unknown, msg: string): asserts condition {
+export function check(condition: unknown, msg: string): asserts condition {
 	if (!condition) {
 		throw `[ASSERT FAILED] ${msg}`;
 	}

@@ -1,3 +1,5 @@
+import { EffectBlock } from "../abilities/types";
+
 export enum EquipmentSlot {
 	Weapon = "Weapon",
 	Offhand = "Offhand",
@@ -26,7 +28,7 @@ export interface GearItem {
 	type: GearType;
 	rarity: GearRarity;
 	trigger?: string;
-	effects: any[]; // Links to EffectBlocks
+	effects: EffectBlock[];
 	classFilter?: string[];
 	cooldown?: number;
 	maxCharges?: number;

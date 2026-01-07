@@ -1,4 +1,5 @@
 import { GearItem, EquipmentSlot, GearType, GearRarity } from "../../domain/gear/types";
+import { EffectType } from "../../domain/abilities/types";
 
 export const STARTER_GEAR: GearItem[] = [
 	{
@@ -7,7 +8,7 @@ export const STARTER_GEAR: GearItem[] = [
 		slot: EquipmentSlot.Weapon,
 		type: GearType.Passive,
 		rarity: GearRarity.Common,
-		effects: [{ type: "DamageMod", params: { multiplier: 1.05 } }],
+		effects: [{ type: EffectType.DamageMod, params: { multiplier: 1.05 } }],
 	},
 	{
 		id: "buckler",
@@ -16,7 +17,7 @@ export const STARTER_GEAR: GearItem[] = [
 		type: GearType.Reactive,
 		rarity: GearRarity.Common,
 		trigger: "on_block",
-		effects: [{ type: "Shield", params: { amount: 20, duration: 1 } }],
+		effects: [{ type: EffectType.Shield, params: { amount: 20, duration: 1 } }],
 		cooldown: 5,
 	},
 	{
@@ -25,7 +26,7 @@ export const STARTER_GEAR: GearItem[] = [
 		slot: EquipmentSlot.Armour,
 		type: GearType.Passive,
 		rarity: GearRarity.Common,
-		effects: [{ type: "MitigationMod", params: { flat: 5 } }],
+		effects: [{ type: EffectType.MitigationMod, params: { flat: 5 } }],
 	},
 	{
 		id: "healing-salve",
@@ -33,7 +34,7 @@ export const STARTER_GEAR: GearItem[] = [
 		slot: EquipmentSlot.Utility,
 		type: GearType.Consumable,
 		rarity: GearRarity.Common,
-		effects: [{ type: "Heal", params: { percent: 0.25 } }],
+		effects: [{ type: EffectType.Heal, params: { percent: 0.25 } }],
 		maxCharges: 3,
 	},
 ];

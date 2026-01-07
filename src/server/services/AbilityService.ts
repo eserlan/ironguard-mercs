@@ -5,7 +5,7 @@ import { EffectService } from "./EffectService";
 import { LoadoutService } from "./LoadoutService";
 import { AbilityIntent } from "../../shared/domain/abilities/types";
 import { Log } from "../../shared/utils/log";
-import { GlobalEvents } from "../../shared/net";
+import { Events } from "../events";
 
 @Service({})
 export class AbilityService implements OnStart {
@@ -38,7 +38,7 @@ export class AbilityService implements OnStart {
 		}
 
 		this.cdMgr.setCooldown(tostring(player.UserId), intent.slotIndex, now, variant.cooldown);
-		GlobalEvents.server.AbilityActivated.broadcast(tostring(player.UserId), slot.abilityId, intent.slotIndex);
+		Events.AbilityActivated.broadcast(tostring(player.UserId), slot.abilityId, intent.slotIndex);
 
 		// Execute effects
 		const character = player.Character;

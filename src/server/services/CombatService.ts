@@ -1,6 +1,6 @@
 import { Service, OnStart } from "@flamework/core";
 import { Components } from "@flamework/components";
-import { GlobalEvents } from "../../shared/net";
+import { Events } from "../events";
 import { CombatRNG } from "../../shared/algorithms/combat/rng";
 import { resolveDamage } from "../../shared/algorithms/combat/damage";
 import { Weapons } from "../../shared/domain/combat/config";
@@ -8,7 +8,7 @@ import { HealthComponent } from "../cmpts/HealthComponent";
 import { Log } from "../../shared/utils/log";
 import { CombatValidation } from "./CombatValidation";
 import { HitDetectionService } from "./HitDetectionService";
-import { CombatEvent } from "../../shared/domain/combat/types";
+import { CombatIntent } from "../../shared/domain/combat/types";
 
 @Service({})
 export class CombatService implements OnStart {
@@ -22,9 +22,8 @@ export class CombatService implements OnStart {
 	) { }
 
 	onStart() {
-		Log.info("CombatService initialized");
-
-		GlobalEvents.server.CombatIntent.connect((player, intent) => {
+		Log.info("CombatService started");
+		Events.CombatIntent.connect((player: Player, intent: CombatIntent) => {
 			this.processIntent(player, intent);
 		});
 	}
@@ -37,7 +36,7 @@ export class CombatService implements OnStart {
 		this.rng = new CombatRNG(seed);
 	}
 
-	public processIntent(player: Player, intent: any) {
+	public processIntent(player: Player, intent: CombatIntent) {
 		if (!this.rng) return;
 
 		const character = player.Character;
@@ -111,7 +110,7 @@ export class CombatService implements OnStart {
 	}
 
 	private broadcastCombatEvent(attackerId: number, targetId: string, weaponId: string, damage: number, isCrit: boolean, isFatal: boolean) {
-		GlobalEvents.server.CombatOccurred.broadcast({
+		Events.CombatOccurred.broadcast({
 			attackerId: tostring(attackerId),
 			targetId: targetId,
 			weaponId: weaponId,

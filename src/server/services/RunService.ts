@@ -1,5 +1,5 @@
 import { Service, OnStart, OnInit } from "@flamework/core";
-import { GlobalEvents } from "../../shared/net";
+import { Events } from "../events";
 import { RunStateMachine } from "../../shared/algorithms/run-state";
 import { MatchPhase, RunConfig } from "../../shared/domain/run";
 import { Log } from "../../shared/utils/log";
@@ -18,7 +18,7 @@ export class RunService implements OnStart, OnInit {
 	onStart() {
 		Log.info("RunService started");
 		
-		GlobalEvents.server.RequestStartRun.connect((player, seed) => {
+		Events.RequestStartRun.connect((player, seed) => {
 			this.requestStart(player, seed);
 		});
 	}
@@ -93,6 +93,6 @@ export class RunService implements OnStart, OnInit {
 
 	private broadcastState() {
 		if (!this.fsm) return;
-		GlobalEvents.server.RunStateChanged.broadcast(this.fsm.getState());
+		Events.RunStateChanged.broadcast(this.fsm.getState());
 	}
 }

@@ -11,8 +11,8 @@ export class HealthComponent extends BaseComponent<object, BasePart> {
     }
 
     onStart() {
-        this.instance.SetAttribute("Health", this.logic.getHealth());
-        this.instance.SetAttribute("MaxHealth", this.logic.getMaxHealth());
+        this.instance.SetAttribute("Health", this.logic.current);
+        this.instance.SetAttribute("MaxHealth", this.logic.max);
     }
 
     public takeDamage(amount: number) {
@@ -26,12 +26,12 @@ export class HealthComponent extends BaseComponent<object, BasePart> {
 
             this.instance.Destroy();
         } else {
-            this.instance.SetAttribute("Health", this.logic.getHealth());
+            this.instance.SetAttribute("Health", this.logic.current);
         }
     }
 
     public heal(amount: number) {
         this.logic.heal(amount);
-        this.instance.SetAttribute("Health", this.logic.getHealth());
+        this.instance.SetAttribute("Health", this.logic.current);
     }
 }

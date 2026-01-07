@@ -11,6 +11,6 @@ describe('createWavePlan', () => {
 	it('scales with difficulty', () => {
 		const w1 = createWavePlan(123, 1); // count = 4
 		const w2 = createWavePlan(123, 2); // count = 7
-		expect(w2[0].enemies.length).toBeGreaterThan(w1[0].enemies.length);
+		expect(w2[0].enemies.size()).toBeGreaterThan(w1[0].enemies.size());
 	});
 });

@@ -5,7 +5,7 @@ export function validateLoadout(
 	config: ClassConfig,
 ): { valid: boolean; reason?: string } {
 	if (loadout.classId !== config.id) return { valid: false, reason: "ClassMismatch" };
-	if (loadout.equippedSlots.length > 4) return { valid: false, reason: "TooManySlots" };
+	if (loadout.equippedSlots.size() > 4) return { valid: false, reason: "TooManySlots" };
 
 	const library = new Set(config.abilityLibrary);
 	for (const slot of loadout.equippedSlots) {
