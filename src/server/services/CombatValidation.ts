@@ -1,5 +1,4 @@
 import { Service } from "@flamework/core";
-import { CombatIntent } from "../../shared/domain/combat/types";
 
 @Service({})
 export class CombatValidation {
