@@ -16,7 +16,7 @@ export interface RunPerk {
 	type: PerkType;
 	rarity: PerkRarity;
 	description: string;
-	effects: any[]; // Links to 003 EffectBlocks
+	effects: unknown[]; // Links to 003 EffectBlocks
 	cap?: number;
 }
 

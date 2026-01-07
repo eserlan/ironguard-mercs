@@ -58,22 +58,23 @@ src/
 1.  **Intent**: Client sends `CombatIntent` (WeaponID, Direction, Timestamp).
 2.  **Validation**: Server checks Cooldown, Distance, Ownership.
 3.  **Resolution**: Server performs Hit Detection (Raycast/Overlap) -> Runs Damage Pipeline.
-4.  **State**: Apply Damage/Status -> Emit `CombatEvent` (Hit/Crit/Kill).
-5.  **Feedback**: Clients play SFX/VFX based on events.
+4.  **State**: Apply Damage/Status -> **Death Resolution** (If fatal: Destroy instance).
+5.  **Output**: Emit `CombatEvent` (Hit/Crit/Fatal).
+6.  **Feedback**: Clients play SFX/VFX based on events.
 
 ## Phases
 
 ### Phase 0: Foundation Upgrade
-- Define `CombatIntent` and `CombatEvent` types.
+- Define `CombatIntent` and `CombatEvent` types (including `isFatal` flag).
 - Extend `RunService` to pause combat outside "Playing" state.
 
 ### Phase 1: Pure Logic (The "Brain")
-- Implement `DamagePipeline` (Base -> Crit -> Mitigation).
+- Implement `DamagePipeline` (Base -> Crit -> Mitigation -> **Fatal Check**).
 - Implement `StatusSystem` (Duration, Stacks).
-- **Test**: Vitest specs for math correctness and edge cases (0 armor, negative damage).
+- **Test**: Vitest specs for math correctness, edge cases, and fatal damage detection.
 
 ### Phase 2: Server Architecture
-- Implement `CombatService` (Validation Layer).
+- Implement `CombatService` (Validation Layer + **Death Orchestration**).
 - Implement `WeaponService` (Data-driven configs).
 - Implement Server-side Hit Detection (Raycast/Overlap).
 

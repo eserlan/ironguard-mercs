@@ -50,7 +50,8 @@ description: "Task list for IronGuard Mercs: Combat System (002)"
 - [x] T016 Test Combat Validator Logic (Pure) in `src/server/services/CombatValidation.spec.ts`
 - [x] T017 Implement Server Hit Detection (Hitscan Raycast) in `src/server/services/HitDetection.ts`
 - [x] T018 Implement Server Hit Detection (Melee Overlap) in `src/server/services/HitDetection.ts`
-- [x] T019 Wire up Damage Application & Event Emission in `src/server/services/CombatService.ts`
+- [x] T019 [US3] Wire up Damage Application, Death (Destroy), and isFatal Event in `src/server/services/CombatService.ts`
+- [x] T020 [P] [US3] Test Damage-to-Death loop (isFatal: true) in `src/shared/algorithms/combat/damage.spec.ts`
 
 ---
 
@@ -58,9 +59,9 @@ description: "Task list for IronGuard Mercs: Combat System (002)"
 
 **Purpose**: Feel and Feedback.
 
-- [x] T020 Implement Client Input to CombatIntent in `src/client/controllers/CombatController.ts`
+- [x] T021 Implement Client Input to CombatIntent in `src/client/controllers/CombatController.ts`
 - [x] T021 Implement Client Feedback (Crosshair, Hit Marker) in `src/client/controllers/FeedbackController.ts`
-- [x] T022 Implement Billboard Health Bars in `src/client/ui/HealthBar.tsx`
+- [x] T023 Implement Billboard Health Bars in `src/client/ui/HealthBar.tsx`
 
 ---
 
@@ -68,9 +69,9 @@ description: "Task list for IronGuard Mercs: Combat System (002)"
 
 **Purpose**: Things to fight.
 
-- [x] T023 Implement Chaser Enemy AI (Baseline) in `src/server/services/EnemyService.ts`
-- [x] T024 Implement Ranged Enemy AI (Baseline) in `src/server/services/EnemyService.ts`
-- [x] T025 Integrate Enemy Spawning with WaveRunner in `src/server/services/WaveService.ts`
+- [x] T024 Implement Chaser Enemy AI (Baseline) in `src/server/services/EnemyService.ts`
+- [x] T025 Implement Ranged Enemy AI (Baseline) in `src/server/services/EnemyService.ts`
+- [x] T026 Integrate Enemy Spawning with WaveRunner in `src/server/services/WaveService.ts`
 
 ---
 
@@ -78,9 +79,9 @@ description: "Task list for IronGuard Mercs: Combat System (002)"
 
 **Purpose**: Hardening.
 
-- [x] T026 Implement Combat Telemetry & Suspicion Logging in `src/server/services/CombatLogging.ts`
-- [x] T027 Configure Coverage Thresholds for `src/shared/algorithms/combat`
-- [x] T028 Document Tuning Knobs (Damage, Cooldowns) in `specs/002-combat-system/tuning.md`
+- [x] T027 Implement Combat Telemetry & Suspicion Logging in `src/server/services/CombatLogging.ts`
+- [x] T028 Configure Coverage Thresholds for `src/shared/algorithms/combat`
+- [x] T029 Document Tuning Knobs (Damage, Cooldowns) in `specs/002-combat-system/tuning.md`
 
 ---
 

@@ -30,6 +30,16 @@ Combat is **Real-Time**. Players control a single unit directly. Pacing is manag
 **Value**: "Kiting" and dodging are essential survivability tools in real-time combat.
 **Independent Test**: Move while firing basic attack. Move while casting "heavy" ability (verify slow/lock).
 
+#### User Story 3 - Deal Damage to Enemy (Priority: P0)
+**Description**: Player attacks an enemy. Damage is calculated, applied, and enemy dies at 0 HP.
+**Value**: Core combat loop — without this, nothing else matters.
+**Independent Test**: 
+  1. Spawn enemy with 100 HP
+  2. Player deals 100 damage attack
+  3. Verify enemy HP = 0
+  4. Verify enemy model destroyed
+  5. Verify CombatEvent emitted with `isFatal: true`
+
 ### Requirements
 
 #### Functional

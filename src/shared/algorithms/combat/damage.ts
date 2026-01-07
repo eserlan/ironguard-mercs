@@ -5,19 +5,21 @@ import { CombatRNG } from "./rng";
 import { DamageResult } from "../../domain/combat/types";
 
 export function resolveDamage(
-    attackerId: string, 
-    targetId: string, 
-    weapon: WeaponConfig, 
-    armor: number, 
-    rng: CombatRNG
+	attackerId: string,
+	targetId: string,
+	weapon: WeaponConfig,
+	armor: number,
+	rng: CombatRNG,
+	targetCurrentHp: number,
 ): DamageResult {
-    const { amount: critAmount, isCrit } = rollCrit(weapon.damage, 0.1, 2.0, rng);
-    const finalAmount = calculateMitigation(critAmount, armor);
-    
-    return {
-        amount: math.max(0, finalAmount),
-        isCrit,
-        targetId,
-        isFatal: false
-    };
+	const { amount: critAmount, isCrit } = rollCrit(weapon.damage, 0.1, 2.0, rng);
+	const finalAmount = calculateMitigation(critAmount, armor);
+	const amount = math.max(0, finalAmount);
+
+	return {
+		amount,
+		isCrit,
+		targetId,
+		isFatal: targetCurrentHp <= amount,
+	};
 }
