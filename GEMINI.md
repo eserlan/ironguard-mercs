@@ -33,4 +33,22 @@ Luau (Roblox): Follow standard conventions
 
 
 <!-- MANUAL ADDITIONS START -->
+
+### Manual Project Guidelines
+
+- **PR Only Policy**  
+  - No direct commits to the `main` branch.  
+  - All changes must go through pull requests with at least one review.  
+  - Use Code Review to enforce architectural and gameplay standards.
+
+- **TDD Priority**  
+  - Write tests before or alongside new logic, especially in `src/shared/algorithms`.  
+  - Every new shared logic module must have a corresponding `*.spec.ts` test file.  
+  - Maintain at least 80% line and function coverage; add or update tests when changing behavior.
+
+- **Flamework Standards**  
+  - Use `@Service` for services and `@Controller` for controllers; wire dependencies via constructor injection.  
+  - Keep core game math and algorithms as pure functions in `src/shared` (no direct Roblox API calls there).  
+  - Abilities should use Top (Server) / Bottom (Client) separation and be composed from reusable effect blocks.  
+  - Enemy AI must rely on `TargetingBiasService` scoring rather than hard aggro locks.
 <!-- MANUAL ADDITIONS END -->
