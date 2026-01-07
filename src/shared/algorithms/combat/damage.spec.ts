@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { resolveDamage } from './damage';
 import { WeaponType } from '../../domain/combat/config';
 import { CombatRNG } from './rng';
-import { CombatStats } from '../../shared/domain/combat/types';
+import { CombatStats } from '../../domain/combat/types';
 
 describe('resolveDamage', () => {
 	const weapon = { id: 'test', type: WeaponType.Melee, damage: 100, cooldown: 1, range: 5 };
