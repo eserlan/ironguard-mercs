@@ -23,8 +23,8 @@ export class CombatController implements OnStart {
 
 		GlobalEvents.client.CombatIntent.fire({
 			weaponId: "AssaultRifle",
-			origin: ray.Origin,
-			direction: ray.Direction,
+			origin: { x: ray.Origin.X, y: ray.Origin.Y, z: ray.Origin.Z },
+			direction: { x: ray.Direction.X, y: ray.Direction.Y, z: ray.Direction.Z },
 			timestamp: os.clock()
 		});
 	}
