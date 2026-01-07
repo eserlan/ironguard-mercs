@@ -4,6 +4,8 @@ global.math = Math as any;
 global.print = (...args: any[]) => console.log(...args);
 global.warn = (...args: any[]) => console.warn(...args);
 
+global.pairs = (t: object) => Object.entries(t)[Symbol.iterator]();
+
 global.task = {
     wait: (t: number) => new Promise(r => setTimeout(r, t * 1000)),
     delay: (t: number, cb: () => void) => setTimeout(cb, t * 1000),

@@ -17,3 +17,11 @@ export function logPerkChoice(userId: number, perkId: string, isTimeout: boolean
 export function logSlowTrigger(userId: number) {
 	logTelemetry(`SlowTrigger by ${userId}`);
 }
+
+export function logGearEquip(userId: number, gearId: string, slot: string) {
+	logTelemetry(`GearEquip:${gearId} in ${slot} by ${userId}`);
+}
+
+export function logGearProc(userId: number, gearId: string, trigger: string) {
+	logTelemetry(`GearProc:${gearId} on ${trigger} for ${userId}`);
+}

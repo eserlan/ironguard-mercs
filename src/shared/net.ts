@@ -7,6 +7,7 @@ interface ClientToServerEvents {
 	SelectClass(classId: string): void;
 	SetLoadout(loadout: { slotIndex: number; abilityId: string }[]): void;
 	AbilityIntent(intent: AbilityIntent): void;
+	EquipItem(slot: string, gearId: string): void;
 }
 
 interface ServerToClientEvents {
@@ -15,6 +16,7 @@ interface ServerToClientEvents {
 	LoadoutConfirmed(classId: string, slots: { slotIndex: number; abilityId: string }[]): void;
 	LoadoutRejected(reason: string): void;
 	SlotCooldownState(slotIndex: number, remaining: number, total: number): void;
+	GearEffectTriggered(gearId: string, effectType: string): void;
 }
 
 export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();
