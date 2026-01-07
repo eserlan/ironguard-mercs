@@ -19,8 +19,8 @@
 - [x] T005 [P] Implement Mitigation Curve (Armor/Defense) in `src/shared/algorithms/combat/mitigation.ts`
 - [x] T006 [P] Test Mitigation Curve edge cases in `src/shared/algorithms/combat/mitigation.spec.ts`
 - [x] T007 [P] Implement Crit Roll Logic integrated with `DeterministicSeedService` in `src/shared/algorithms/combat/crit.ts`
-- [ ] T008 [P] Implement Damage Resolver with Synergy support in `src/shared/algorithms/combat/damage.ts`
-- [ ] T009 [P] Test Damage Resolver synergy and fatal edge cases in `src/shared/algorithms/combat/damage.spec.ts`
+- [x] T008 [P] Implement Damage Resolver with Synergy support in `src/shared/algorithms/combat/damage.ts`
+- [x] T009 [P] Test Damage Resolver synergy and fatal edge cases in `src/shared/algorithms/combat/damage.spec.ts`
 - [x] T010 Implement Attribution Rules (Kills/Assists) in `src/shared/algorithms/combat/attribution.ts`
 
 ---
