@@ -5,14 +5,19 @@ import { MatchPhase, RunConfig } from "../../shared/domain/run";
 import { Log } from "../../shared/utils/log";
 import { resolveMissionDeath } from "../../shared/algorithms/permadeath";
 import { RosterService } from "./RosterService";
+import { SpawnService } from "./SpawnService";
 import { PartyMember } from "../../shared/domain/party/party-types";
+import { createWorldPlan } from "../../shared/algorithms/world-plan";
 
 @Service({})
 export class RunService implements OnStart, OnInit {
 	private fsm: RunStateMachine | undefined;
 	private sessionMembers = new Map<number, PartyMember>(); // UserId -> Session Data
 
-	constructor(private rosterService: RosterService) { }
+	constructor(
+		private rosterService: RosterService,
+		private spawnService: SpawnService,
+	) { }
 
 	onInit() { }
 
@@ -40,17 +45,36 @@ export class RunService implements OnStart, OnInit {
 
 		if (this.fsm.transition(MatchPhase.Generating)) {
 			Log.info(`Match starting! Seed: ${config.seed} Mode: ${config.missionMode}`);
+			
+			// 1. Generate World Plan
+			const worldPlan = createWorldPlan(config.seed);
+			this.fsm.setWorldPlan(worldPlan);
 			this.broadcastState();
 
 			task.delay(1, () => {
 				if (!this.fsm) return;
-				this.fsm.transition(MatchPhase.Spawning);
-				this.broadcastState();
-				task.delay(1, () => {
-					if (!this.fsm) return;
-					this.fsm.transition(MatchPhase.Playing);
+				if (this.fsm.transition(MatchPhase.Spawning)) {
 					this.broadcastState();
-				});
+
+					// 2. Spawn Players
+					const players: Player[] = [];
+					this.sessionMembers.forEach((_, userId) => {
+						const player = game.GetService("Players").GetPlayerByUserId(userId);
+						if (player) players.push(player);
+					});
+
+					if (worldPlan.playerSpawns.size() > 0) {
+						this.spawnService.spawnPlayers(players, worldPlan.playerSpawns);
+					} else {
+						Log.warn("No player spawns found in world plan!");
+					}
+
+					task.delay(1, () => {
+						if (!this.fsm) return;
+						this.fsm.transition(MatchPhase.Playing);
+						this.broadcastState();
+					});
+				}
 			});
 			return true;
 		} else {

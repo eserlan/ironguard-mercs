@@ -34,7 +34,7 @@ export abstract class StationComponent<A = StationAttributes, I extends Instance
 		return prompt;
 	}
 
-	protected openStation(stationType: "Locker" | "Bench" | "Terminal") {
+	protected openStation(stationType: "Roster Altar" | "Healing Fountain" | "Tome of Whispers") {
 		print(`[Lobby] Opening station: ${stationType}`);
 		this.lobbyController.setStation(LobbyState.AtStation, stationType);
 	}

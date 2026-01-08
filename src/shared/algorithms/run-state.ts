@@ -20,6 +20,10 @@ export class RunStateMachine {
 		return { ...this.state };
 	}
 
+	public setWorldPlan(plan: import("../domain/world").WorldPlan) {
+		this.state.worldPlan = plan;
+	}
+
 	public transition(to: MatchPhase): boolean {
 		const from = this.state.phase;
 		if (this.canTransition(from, to)) {

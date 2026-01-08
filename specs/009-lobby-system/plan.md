@@ -1,104 +1,81 @@
-# Lobby System - 3D Immersive Implementation Plan
+# Lobby System - Sanctuary of Valor Implementation Plan
 
-**Status**: Active
+**Status**: Implemented (Refined)
 **Last Updated**: 2026-01-08
 
 ## Technical Context
 
 | Tech | Choice | Notes |
 |------|--------|-------|
-| Networking | Flamework Networking | Standard for the project. |
-| Persistence | N/A (Ephemeral Hub) | Lobby state is runtime-only. |
-| Interaction | ProximityPrompts | Contextual interactions in 3D space. |
-| Detection | GetPartsInPart | Spatial query for pad detection. |
-| UI | React-Roblox | Hybrid HUD and Contextual menus. |
+| Networking | Flamework Networking | Standard authoritative events. |
+| Interaction | ProximityPrompts | Physical station interactions. |
+| Detection | GetPartsInPart | Spatial query for Circle of Unity. |
+| UI | React-Roblox | Hybrid HUD and Parchment-style menus. |
+| VFX | ParticleEmitters | Pillar of light and celestial gate effects. |
 
 ---
 
-## Constitution Check
+## Constitution Alignment
 
 | Principle | Adherence | Notes |
 |-----------|-----------|-------|
-| Modular Architecture | ✅ | Flamework components for world objects. |
-| Test-Driven Quality | ✅ | Unit tests for party logic; manual integration for 3D. |
-| Iterative Delivery | ✅ | Phase-based rollout from infra to world objects. |
+| Pure Game Logic | ✅ | Algorithms in `shared/algorithms/party`. |
+| Top/Bottom Ability | ✅ | Server-side validation with client-side HUD. |
+| UI Safety | ✅ | No React Fragments used in `AbilityBar` or `Lobby`. |
 
 ---
 
 ## Phases
 
-### Phase 1: World Components (Foundational)
+### Phase 1: Sanctuary Components (Completed)
 
-**Goal**: Bind logic to 3D parts using Flamework Components.
+**Goal**: Bind logic to the high-fantasy sanctuary objects.
 
-#### [NEW] [PartyPadComponent.ts](file:///src/client/components/Lobby/PartyPadComponent.ts)
-- Bind to `LobbyPartyPad`.
-- Cycle detection every 0.5s via `GetPartsInPart`.
-- Call `LobbyController.createParty()` / `joinParty()`.
+#### [NEW] [CircleOfUnityComponent.ts](file:///src/client/components/Lobby/CircleOfUnityComponent.ts)
+- Binds to `LobbyCircleOfUnity`.
+- Triggers `StepOnPad` / `StepOffPad` for co-op formation.
 
-#### [NEW] [PortalComponent.ts](file:///src/client/components/Lobby/PortalComponent.ts)
-- Bind to `LobbyDungeonPortal`.
-- Detect character touch.
-- Call `LobbyController.launchMission()`.
+#### [NEW] [TheGreatGateComponent.ts](file:///src/client/components/Lobby/TheGreatGateComponent.ts)
+- Binds to `LobbyTheGreatGate`.
+- Visual opening/glow when party is ready.
 
-#### [NEW] [StationComponent.ts](file:///src/client/components/Lobby/StationComponent.ts)
-- Base for Locker, Gear Bench, Pedestals.
-- Manages `ProximityPrompt` lifecycle.
+#### [NEW] [Station Base](file:///src/client/components/Lobby/StationComponent.ts)
+- Refined base class supporting `Roster Altar`, `Healing Fountain`, and `Tome of Whispers`.
 
 ---
 
-### Phase 2: Controller & Service Updates
+### Phase 2: Spiritual Interactions (Completed)
 
-**Goal**: Support 3D state in the backend.
+**Goal**: Implement the pillar and altars.
 
-#### [MODIFY] [LobbyService.ts](file:///src/server/services/LobbyService.ts)
-- Handle `isOnPad` state updates.
-- Update `launchMission` to validate physical proximity to portal.
-- Implement `SetDifficulty` logic.
+#### [NEW] [PillarOfFateComponent.ts](file:///src/client/components/Lobby/PillarOfFateComponent.ts)
+- Dynamic surface UI showing current difficulty (I-V).
+- Floating billboard with thematic descriptions.
 
-#### [MODIFY] [LobbyController.ts](file:///src/client/controllers/LobbyController.ts)
-- Handle contextual UI opening/closing.
-- Manage "In Station" state.
+#### [NEW] [BlackBellComponent.ts](file:///src/client/components/Lobby/BlackBellComponent.ts)
+- Striking the bell toggles Ironman mode with red visual feedback.
 
----
-
-### Phase 3: UI & VFX
-
-**Goal**: Visual feedback for the 3D hub.
-
-#### [NEW] [LobbyBillboard.tsx](file:///src/client/ui/components/LobbyBillboard.tsx)
-- React component mounted to `PartyPad` center.
-- Displays Room Code and Party List.
-
-#### [MODIFY] [Lobby.tsx](file:///src/client/ui/apps/Lobby.tsx)
-- Switch from fullscreen to contextual rendering.
+#### [NEW] [RosterAltarComponent.ts](file:///src/client/components/Lobby/RosterAltarComponent.ts)
+- Surface buttons for hero selection (Pledging).
+- Detailed hero stat billboard.
 
 ---
 
-### Phase 4: Ability Selection & Gameplay HUD
+### Phase 3: The Tome & The Font (Completed)
 
-**Goal**: Allow players to choose abilities and see them in-game.
+**Goal**: Ability and Gear customization.
 
-#### Ability Registration
-- Added `getAll()` to `AbilityRegistry`.
-- Updated `ClassController` to register class-specific abilities.
+#### [NEW] [TomeOfWhispersComponent.ts](file:///src/client/components/Lobby/TomeOfWhispersComponent.ts)
+- Opens the refined `AbilitySelector` with technical variant details.
 
-#### [NEW] [AbilitySelector.tsx](file:///src/client/ui/components/AbilitySelector.tsx)
-- Grid UI for selecting 4 abilities.
-- Displays TOP/BOTTOM cooldowns.
-
-#### [NEW] [AbilityBar.tsx](file:///src/client/ui/AbilityBar.tsx)
-- Gameplay HUD component.
-- Visual cooldown tracking via `useAbilityCooldowns` hook.
+#### [NEW] [HealingFountainComponent.ts](file:///src/client/components/Lobby/HealingFountainComponent.ts)
+- Triggers the `LoadoutEditor` for equipment modification.
 
 ---
 
 ## Verification Plan
 
-### Manual Verification
-1. Verify `PartyPad` auto-joins party on stand.
-2. Verify `Locker` opens selection UI via ProximityPrompt.
-3. Verify `Portal` launches mission only when all ready.
-
-### Automation
-- Unit tests for `LobbyService` room management.
+### Manual Studio Test
+1. **Pledging**: Select hero at Roster Altar -> Confirm Billboard updates.
+2. **Unity**: Step into Circle -> Room Code appears -> Pillar of Light visual.
+3. **The Gate**: All members pledge -> Gate glows -> Walk through -> Mission starts.

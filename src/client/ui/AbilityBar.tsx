@@ -39,7 +39,7 @@ export function AbilityBar({ loadout }: AbilityBarProps) {
 						<uistroke Thickness={2} Color={ability ? Color3.fromRGB(100, 100, 100) : Color3.fromRGB(50, 50, 50)} />
 
 						{ability && (
-							<>
+							<React.Fragment>
 								<textlabel
 									Text={ability.name}
 									Size={new UDim2(1, 0, 0.4, 0)}
@@ -93,7 +93,7 @@ export function AbilityBar({ loadout }: AbilityBarProps) {
 										ZIndex={3}
 									/>
 								)}
-							</>
+							</React.Fragment>
 						)}
 						
 						{!ability && (

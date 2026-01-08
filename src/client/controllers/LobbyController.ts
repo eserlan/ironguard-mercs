@@ -4,7 +4,7 @@ import { PartyRoom, LobbyState, MissionMode } from "shared/domain/party/party-ty
 
 export interface LobbyUiState {
 	status: LobbyState;
-	activeStation?: "Locker" | "Bench" | "Terminal";
+	activeStation?: "Roster Altar" | "Healing Fountain" | "Tome of Whispers";
 	room?: PartyRoom;
 	soloMercenaryId?: string;
 	abilityLoadout: { slotIndex: number; abilityId: string }[];
@@ -96,7 +96,7 @@ export class LobbyController implements OnStart {
 		Events.SetDifficulty(difficulty);
 	}
 
-	setStation(station: LobbyState.AtStation | LobbyState.Idle, stationType?: "Locker" | "Bench" | "Terminal") {
+	setStation(station: LobbyState.AtStation | LobbyState.Idle, stationType?: "Roster Altar" | "Healing Fountain" | "Tome of Whispers") {
 		this.updateState({
 			status: station,
 			activeStation: station === LobbyState.AtStation ? stationType : undefined
