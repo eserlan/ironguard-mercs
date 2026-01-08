@@ -15,3 +15,11 @@ export const ASHBLADE: ClassConfig = {
 	abilityLibrary: ["lunge", "execute", "shadowstep"],
 	baseStats: { hp: 80, speed: 20, defense: 10 },
 };
+
+export const VANGUARD: ClassConfig = {
+	id: "vanguard",
+	name: "Vanguard",
+	role: ClassRole.Protector,
+	abilityLibrary: ["charge", "slam", "fortress"],
+	baseStats: { hp: 120, speed: 16, defense: 30 },
+};

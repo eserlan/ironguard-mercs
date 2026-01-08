@@ -6,6 +6,7 @@ import { StationComponent } from "./StationComponent";
 })
 export class GearBenchComponent extends StationComponent {
     protected onTriggered() {
+        print("[Lobby] GearBench triggered - opening Bench station");
         this.openStation("Bench");
     }
 }

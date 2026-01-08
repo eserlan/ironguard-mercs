@@ -34,7 +34,8 @@ The lobby is a **physical 3D hub world** where players interact with the environ
 | **Difficulty Pedestal** | Set mission difficulty (1-5) | ProximityPrompt → cycle difficulty |
 | **Mode Banner** | Toggle Standard/Ironman | ProximityPrompt → toggle mode |
 | **Mercenary Locker** | Select mercenary from roster | ProximityPrompt → open selection UI |
-| **Gear Bench** | View/modify loadout | ProximityPrompt → open loadout UI |
+| **Ability Terminal** | Configure 4-slot ability loadout | ProximityPrompt → open ability selection UI for current class |
+| **Gear Bench** | View/modify gear loadout | ProximityPrompt → open gear loadout UI |
 
 ### Hub Layout
 
@@ -57,10 +58,16 @@ The lobby is a **physical 3D hub world** where players interact with the environ
      └──────────────────────────────────────┘
                         │
      ┌─────────┬────────┴────────┬─────────┐
-     │ LOCKER  │     SPAWN       │  GEAR   │
-     │  ROOM   │     POINT       │  BENCH  │
+     │ LOCKER  │     SPAWN       │ ABILITY │
+     │  ROOM   │     POINT       │ TERMINAL│
      └─────────┴─────────────────┴─────────┘
+                        │
+                 ┌──────┴──────┐
+                 │  GEAR BENCH │
+                 └─────────────┘
 ```
+
+(The Ability Terminal allows players to tweak their ability choices without re-selecting their class at the Locker).
 
 ### Out of Scope
 
@@ -119,6 +126,8 @@ The lobby is a **physical 3D hub world** where players interact with the environ
 - **FR-006**: Difficulty Pedestal MUST cycle difficulty 1-5 on interact.
 - **FR-007**: Mode Banner MUST toggle Standard/Ironman on interact.
 - **FR-008**: System MUST clean up party state when all players leave pad.
+- **FR-009**: Players MUST be able to configure a 4-slot ability loadout from their class library.
+- **FR-010**: Gameplay HUD MUST display equipped abilities with real-time cooldown visualization (TOP/BOTTOM sharing cooldown).
 
 #### Hub Components
 
@@ -127,7 +136,8 @@ The lobby is a **physical 3D hub world** where players interact with the environ
 - **DifficultyPedestalComponent**: ProximityPrompt to cycle difficulty.
 - **ModeBannerComponent**: ProximityPrompt to toggle mode.
 - **MercenaryLockerComponent**: ProximityPrompt to open mercenary selection UI.
-- **GearBenchComponent**: ProximityPrompt to open loadout UI.
+- **AbilityTerminalComponent**: ProximityPrompt to open ability selection UI.
+- **GearBenchComponent**: ProximityPrompt to open gear loadout UI.
 
 #### Key Entities
 

@@ -1,6 +1,7 @@
 import { Controller, OnStart } from "@flamework/core";
 import { ContextActionService, Workspace } from "@rbxts/services";
 import { Events } from "../events";
+import { getClock } from "shared/utils/time";
 
 @Controller({})
 export class CombatController implements OnStart {
@@ -25,14 +26,14 @@ export class CombatController implements OnStart {
 			weaponId: "AssaultRifle",
 			origin: { x: ray.Origin.X, y: ray.Origin.Y, z: ray.Origin.Z },
 			direction: { x: ray.Direction.X, y: ray.Direction.Y, z: ray.Direction.Z },
-			timestamp: os.clock()
+			timestamp: getClock()
 		});
 	}
 
 	private handleDash(state: Enum.UserInputState) {
 		if (state !== Enum.UserInputState.Begin) return;
 
-		const now = os.clock();
+		const now = getClock();
 		if (now - this.lastDash < this.dashCooldown) return;
 
 		this.lastDash = now;

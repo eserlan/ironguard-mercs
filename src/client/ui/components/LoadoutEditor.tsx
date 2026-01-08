@@ -46,7 +46,7 @@ export function LoadoutEditor({ loadout = {}, onEquip }: LoadoutEditorProps) {
                             Size={new UDim2(1, 0, 0, 30)}
                             BackgroundTransparency={1}
                             TextColor3={Color3.fromRGB(150, 150, 150)}
-                            TextSize={18}
+                            TextSize={22}
                             Font={Enum.Font.GothamBold}
                         />
 
@@ -58,7 +58,7 @@ export function LoadoutEditor({ loadout = {}, onEquip }: LoadoutEditorProps) {
                                 Size={new UDim2(1, 0, 1, 0)}
                                 BackgroundTransparency={1}
                                 TextColor3={equippedItem ? RARITY_COLORS[equippedItem.rarity] : Color3.fromRGB(80, 80, 80)}
-                                TextSize={16}
+                                TextSize={20}
                                 Font={Enum.Font.GothamMedium}
                             />
                         </frame>
@@ -80,7 +80,7 @@ export function LoadoutEditor({ loadout = {}, onEquip }: LoadoutEditorProps) {
                                     BackgroundColor3={equippedId === item.id ? Color3.fromRGB(50, 100, 50) : Color3.fromRGB(50, 50, 50)}
                                     TextColor3={RARITY_COLORS[item.rarity]}
                                     Font={Enum.Font.Gotham}
-                                    TextSize={14}
+                                    TextSize={18}
                                     Event={{ Activated: () => onEquip(slot, item.id) }}
                                 >
                                     <uicorner CornerRadius={new UDim(0, 6)} />

@@ -13,6 +13,8 @@ export class PartyPadComponent extends BaseComponent<object, BasePart> implement
 	private timeSinceLastCheck = 0;
 
 	onStart() {
+		print(`[Lobby] PartyPad component started on: ${this.instance.GetFullName()}`);
+
 		RunService.Heartbeat.Connect((dt) => {
 			this.timeSinceLastCheck += dt;
 			if (this.timeSinceLastCheck >= DETECTION_INTERVAL_SECONDS) {
@@ -42,8 +44,10 @@ export class PartyPadComponent extends BaseComponent<object, BasePart> implement
 		const isOnPad = currentPlayers.has(localPlayer);
 
 		if (!wasOnPad && isOnPad) {
+			print("[Lobby] PartyPad - player stepped ON pad");
 			Events.StepOnPad();
 		} else if (wasOnPad && !isOnPad) {
+			print("[Lobby] PartyPad - player stepped OFF pad");
 			Events.StepOffPad();
 		}
 

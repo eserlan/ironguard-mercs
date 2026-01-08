@@ -11,6 +11,7 @@ To enable the 3D hub, you must create parts in the `Workspace` and tag them usin
 | `LobbyPartyPad` | `BasePart` | Player detection volume for joining parties. |
 | `LobbyDungeonPortal` | `BasePart` | Collision volume for mission launch. |
 | `LobbyMercenaryLocker` | `BasePart` | ProximityPrompt point for Mercenary Selection. |
+| `LobbyAbilityTerminal` | `BasePart` | ProximityPrompt point for Ability Selection. |
 | `LobbyGearBench` | `BasePart` | ProximityPrompt point for Gear/Loadout. |
 | `LobbyDifficultyPedestal` | `BasePart` | ProximityPrompt point for Difficulty selection. |
 | `LobbyModeBanner` | `BasePart` | ProximityPrompt point for Mission Mode selection. |

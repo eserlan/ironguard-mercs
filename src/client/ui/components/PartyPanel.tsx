@@ -23,11 +23,11 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 			BorderSizePixel={0}
 		>
 			<uipadding PaddingTop={new UDim(0, 20)} PaddingLeft={new UDim(0, 20)} PaddingRight={new UDim(0, 20)} PaddingBottom={new UDim(0, 20)} />
-			
+
 			<textlabel
 				Text={`CODE: ${room.code}`}
 				Size={new UDim2(1, 0, 0, 40)}
-				TextSize={28}
+				TextSize={32}
 				Font={Enum.Font.GothamBold}
 				TextColor3={Color3.fromRGB(255, 255, 255)}
 				BackgroundTransparency={1}
@@ -42,6 +42,7 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 						BackgroundColor3={Color3.fromRGB(60, 60, 60)}
 						TextColor3={Color3.fromRGB(255, 255, 255)}
 						Font={Enum.Font.Gotham}
+						TextSize={20}
 						Event={{
 							Activated: () =>
 								onSetMode(
@@ -58,6 +59,7 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 						TextColor3={Color3.fromRGB(200, 200, 200)}
 						BackgroundTransparency={1}
 						Font={Enum.Font.Gotham}
+						TextSize={20}
 					/>
 				)}
 			</frame>
@@ -78,7 +80,7 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 					>
 						<uicorner CornerRadius={new UDim(0, 8)} />
 						<uipadding PaddingLeft={new UDim(0, 10)} PaddingRight={new UDim(0, 10)} />
-						
+
 						<textlabel
 							Text={member.displayName}
 							Size={new UDim2(0.7, 0, 1, 0)}
@@ -86,8 +88,9 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 							BackgroundTransparency={1}
 							TextColor3={Color3.fromRGB(255, 255, 255)}
 							Font={Enum.Font.Gotham}
+							TextSize={20}
 						/>
-						
+
 						<frame
 							Size={new UDim2(0, 12, 0, 12)}
 							Position={new UDim2(1, -12, 0.5, -6)}
@@ -105,12 +108,13 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 			<frame Size={new UDim2(1, 0, 0, 120)} Position={new UDim2(0, 0, 1, -120)} BackgroundTransparency={1}>
 				<textbutton
 					Text={localMember?.isReady ? "NOT READY" : "READY"}
-					Size={new UDim2(0.45, 0, 0, 40)}
+					Size={new UDim2(0.45, 0, 0, 50)}
 					BackgroundColor3={
 						localMember?.isReady ? Color3.fromRGB(200, 100, 100) : Color3.fromRGB(100, 200, 100)
 					}
 					TextColor3={Color3.fromRGB(255, 255, 255)}
 					Font={Enum.Font.GothamBold}
+					TextSize={22}
 					Event={{ Activated: () => onReady(!localMember?.isReady) }}
 				>
 					<uicorner CornerRadius={new UDim(0, 8)} />
@@ -119,27 +123,29 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 				{isHost && (
 					<textbutton
 						Text="LAUNCH"
-						Size={new UDim2(0.45, 0, 0, 40)}
+						Size={new UDim2(0.45, 0, 0, 50)}
 						Position={new UDim2(0.55, 0, 0, 0)}
 						BackgroundColor3={
 							canLaunch ? Color3.fromRGB(0, 200, 0) : Color3.fromRGB(80, 80, 80)
 						}
 						TextColor3={Color3.fromRGB(255, 255, 255)}
 						Font={Enum.Font.GothamBold}
+						TextSize={22}
 						AutoButtonColor={canLaunch}
 						Event={{ Activated: () => canLaunch && onLaunch() }}
 					>
 						<uicorner CornerRadius={new UDim(0, 8)} />
 					</textbutton>
 				)}
-				
+
 				<textbutton
 					Text="LEAVE PARTY"
-					Size={new UDim2(1, 0, 0, 30)}
-					Position={new UDim2(0, 0, 1, -30)}
+					Size={new UDim2(1, 0, 0, 40)}
+					Position={new UDim2(0, 0, 1, -40)}
 					BackgroundColor3={Color3.fromRGB(200, 50, 50)}
 					TextColor3={Color3.fromRGB(255, 255, 255)}
 					Font={Enum.Font.Gotham}
+					TextSize={18}
 					Event={{ Activated: onLeave }}
 				>
 					<uicorner CornerRadius={new UDim(0, 6)} />

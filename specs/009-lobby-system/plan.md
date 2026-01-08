@@ -75,6 +75,24 @@
 
 ---
 
+### Phase 4: Ability Selection & Gameplay HUD
+
+**Goal**: Allow players to choose abilities and see them in-game.
+
+#### Ability Registration
+- Added `getAll()` to `AbilityRegistry`.
+- Updated `ClassController` to register class-specific abilities.
+
+#### [NEW] [AbilitySelector.tsx](file:///src/client/ui/components/AbilitySelector.tsx)
+- Grid UI for selecting 4 abilities.
+- Displays TOP/BOTTOM cooldowns.
+
+#### [NEW] [AbilityBar.tsx](file:///src/client/ui/AbilityBar.tsx)
+- Gameplay HUD component.
+- Visual cooldown tracking via `useAbilityCooldowns` hook.
+
+---
+
 ## Verification Plan
 
 ### Manual Verification

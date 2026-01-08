@@ -6,6 +6,7 @@ import { LoadoutService } from "./LoadoutService";
 import { AbilityIntent } from "../../shared/domain/abilities/types";
 import { Log } from "../../shared/utils/log";
 import { Events } from "../events";
+import { getClock } from "shared/utils/time";
 
 @Service({})
 export class AbilityService implements OnStart {
@@ -31,7 +32,7 @@ export class AbilityService implements OnStart {
 		if (!config) return;
 
 		const variant = intent.action === "Top" ? config.variants.top : config.variants.bottom;
-		const now = os.clock();
+		const now = getClock();
 
 		if (!this.cdMgr.canCast(tostring(player.UserId), intent.slotIndex, now)) {
 			return;

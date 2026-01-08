@@ -1,6 +1,7 @@
 import { Service, OnStart } from "@flamework/core";
 import { Components } from "@flamework/components";
 import { ClassRegistry } from "../../shared/domain/classes/config";
+import { SHIELD_SAINT, ASHBLADE, VANGUARD } from "../../shared/data/classes/starter";
 import { Log } from "../../shared/utils/log";
 import { HealthComponent } from "../cmpts/HealthComponent";
 import { LoadoutService } from "./LoadoutService";
@@ -14,6 +15,9 @@ export class ClassService implements OnStart {
 
 	onStart() {
 		Log.info("ClassService started");
+		ClassRegistry.register(SHIELD_SAINT);
+		ClassRegistry.register(ASHBLADE);
+		ClassRegistry.register(VANGUARD);
 	}
 
 	public applyClassToPlayer(player: Player, classId: string) {
@@ -30,8 +34,8 @@ export class ClassService implements OnStart {
 		}
 
 		// Apply first 4 abilities as default loadout
-		const abilityIds = config.abilityLibrary.slice(0, 4);
-		const slots = abilityIds.map((id, index) => ({
+		const abilityIds = (config.abilityLibrary as string[]).filter((_, index) => index < 4);
+		const slots = abilityIds.map((id: string, index: number) => ({
 			slotIndex: index,
 			abilityId: id,
 		}));
@@ -43,8 +47,9 @@ export class ClassService implements OnStart {
 		return ClassRegistry.get(id);
 	}
 
-	public isClassUnlocked(_userId: number, _classId: string): boolean {
+	public isClassUnlocked(_userId: number, classId: string): boolean {
 		// Real impl: check PlayerProfile
-		return true;
+		// For now: Vanguard is locked
+		return classId !== "vanguard";
 	}
 }

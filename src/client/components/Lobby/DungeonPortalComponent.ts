@@ -2,6 +2,7 @@ import { Component, BaseComponent } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { LobbyController } from "client/controllers/LobbyController";
 import { Players } from "@rbxts/services";
+import { getClock } from "shared/utils/time";
 
 const LAUNCH_DEBOUNCE_SECONDS = 2;
 
@@ -17,11 +18,16 @@ export class DungeonPortalComponent extends BaseComponent<object, BasePart> impl
 	}
 
 	onStart() {
+		print(`[Lobby] DungeonPortal component started on: ${this.instance.GetFullName()}`);
+
 		this.instance.Touched.Connect((otherPart) => {
-			if (!this.active) return;
+			if (!this.active) {
+				print("[Lobby] DungeonPortal touched but not active");
+				return;
+			}
 
 			// Debounce to prevent multiple rapid triggers
-			const now = os.clock();
+			const now = getClock();
 			if (now - this.lastLaunchTime < LAUNCH_DEBOUNCE_SECONDS) return;
 
 			const character = otherPart.Parent;
@@ -29,6 +35,7 @@ export class DungeonPortalComponent extends BaseComponent<object, BasePart> impl
 
 			const player = Players.GetPlayerFromCharacter(character);
 			if (player === Players.LocalPlayer) {
+				print("[Lobby] DungeonPortal - local player touched, launching mission!");
 				this.lastLaunchTime = now;
 				this.lobbyController.launchMission();
 			}
@@ -38,15 +45,19 @@ export class DungeonPortalComponent extends BaseComponent<object, BasePart> impl
 		this.lobbyController.subscribe((state) => {
 			if (state.room) {
 				const allReady = state.room.members.every((m) => m.selectedMercenaryId !== undefined && m.isReady);
+				print(`[Lobby] DungeonPortal - room state update, allReady: ${allReady}`);
 				this.setActive(allReady);
 			} else {
 				// Solo check
-				this.setActive(state.soloMercenaryId !== undefined);
+				const soloReady = state.soloMercenaryId !== undefined;
+				print(`[Lobby] DungeonPortal - solo state update, ready: ${soloReady}`);
+				this.setActive(soloReady);
 			}
 		});
 	}
 
 	private setActive(active: boolean) {
+		print(`[Lobby] DungeonPortal - setActive: ${active}`);
 		this.active = active;
 		this.instance.Transparency = active ? 0.5 : 0.9;
 		this.instance.CanCollide = false;

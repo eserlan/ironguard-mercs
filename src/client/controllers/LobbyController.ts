@@ -4,9 +4,11 @@ import { PartyRoom, LobbyState, MissionMode } from "shared/domain/party/party-ty
 
 export interface LobbyUiState {
 	status: LobbyState;
-	activeStation?: "Locker" | "Bench";
+	activeStation?: "Locker" | "Bench" | "Terminal";
 	room?: PartyRoom;
 	soloMercenaryId?: string;
+	abilityLoadout: { slotIndex: number; abilityId: string }[];
+	unlockedClassIds: string[];
 	error?: string;
 }
 
@@ -14,7 +16,11 @@ export type StateListener = (state: LobbyUiState) => void;
 
 @Controller({})
 export class LobbyController implements OnStart {
-	private state: LobbyUiState = { status: LobbyState.Idle };
+	private state: LobbyUiState = {
+		status: LobbyState.Idle,
+		abilityLoadout: [],
+		unlockedClassIds: ["shield-saint", "ashblade"] // Default starters
+	};
 	private listeners = new Set<StateListener>();
 
 	onStart() {
@@ -37,6 +43,18 @@ export class LobbyController implements OnStart {
 		Events.MissionLaunching.connect((seed) => {
 			this.updateState({ status: LobbyState.Launching });
 		});
+
+		Events.UnlockedClassesUpdated.connect((classIds) => {
+			this.updateState({ unlockedClassIds: classIds });
+		});
+
+		Events.LoadoutConfirmed.connect((classId, slots) => {
+			this.updateState({ abilityLoadout: slots });
+		});
+
+		Events.LoadoutRejected.connect((reason) => {
+			this.updateState({ error: reason });
+		});
 	}
 
 	createParty() {
@@ -58,6 +76,10 @@ export class LobbyController implements OnStart {
 		Events.SelectMercenary(mercId);
 	}
 
+	setLoadout(slots: { slotIndex: number; abilityId: string }[]) {
+		Events.SetLoadout(slots);
+	}
+
 	equipGear(slot: string, gearId: string) {
 		Events.EquipItem(slot, gearId);
 	}
@@ -74,10 +96,10 @@ export class LobbyController implements OnStart {
 		Events.SetDifficulty(difficulty);
 	}
 
-	setStation(station: LobbyState.AtStation | LobbyState.Idle, type?: "Locker" | "Bench") {
+	setStation(station: LobbyState.AtStation | LobbyState.Idle, stationType?: "Locker" | "Bench" | "Terminal") {
 		this.updateState({
 			status: station,
-			activeStation: station === LobbyState.AtStation ? type : undefined
+			activeStation: station === LobbyState.AtStation ? stationType : undefined
 		});
 	}
 

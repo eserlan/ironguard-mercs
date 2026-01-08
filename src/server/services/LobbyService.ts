@@ -5,6 +5,8 @@ import { PartyRoom, PartyMember, MissionMode } from "shared/domain/party/party-t
 import { generatePartyCode } from "shared/algorithms/party/code-generator";
 import { RunService } from "./RunService";
 import { RunConfig } from "shared/domain/run";
+import { ClassService } from "./ClassService";
+import { getTime, getClock } from "shared/utils/time";
 
 const PORTAL_PROXIMITY_THRESHOLD = 15;
 const MAX_SEED_VALUE = 1000000;
@@ -16,7 +18,10 @@ export class LobbyService implements OnStart {
 	private soloMercenarySelections = new Map<string, string>(); // PlayerId -> MercenaryId
 	private soloGearSelections = new Map<string, Record<string, string>>(); // PlayerId -> Loadout
 
-	constructor(private runService: RunService) { }
+	constructor(
+		private runService: RunService,
+		private classService: ClassService,
+	) { }
 
 	onStart() {
 		Events.CreateParty.connect((player) => this.createParty(player));
@@ -32,6 +37,20 @@ export class LobbyService implements OnStart {
 		Events.LaunchMission.connect((player) => this.launchMission(player));
 
 		Players.PlayerRemoving.Connect((player) => this.leaveParty(player));
+		Players.PlayerAdded.Connect((player) => {
+			this.syncUnlocks(player);
+		});
+
+		// Sync existing players
+		for (const player of Players.GetPlayers()) {
+			this.syncUnlocks(player);
+		}
+	}
+
+	private syncUnlocks(player: Player) {
+		const allClassIds = ["shield-saint", "ashblade", "vanguard"];
+		const unlocked = allClassIds.filter((id) => this.classService.isClassUnlocked(player.UserId, id));
+		Events.UnlockedClassesUpdated.fire(player, unlocked);
 	}
 
 	private stepOnPad(player: Player) {
@@ -138,7 +157,7 @@ export class LobbyService implements OnStart {
 			mode: MissionMode.Standard,
 			difficulty: 1,
 			members: [member],
-			createdAt: os.time(),
+			createdAt: getTime(),
 		};
 
 		this.rooms.set(code, room);

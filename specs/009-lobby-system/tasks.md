@@ -160,3 +160,19 @@ Task: "Update LobbyController.ts to manage AtStation state and station events in
 - [x] T023 Create `LoadoutEditor.tsx` in `src/client/ui/components/`
 - [x] T024 Add visual state synchronization (SurfaceGuis/Attributes) to pedestals and banner
 - [x] T025 Implement Gear Bench interaction in `Lobby.tsx`
+
+---
+
+## Phase 9: Ability Selection & Loadout (Completed)
+
+**Purpose**: Enable ability customization and HUD visualization.
+
+- [x] T026 Add `getAll()` to `AbilityRegistry` in `src/shared/domain/abilities/config.ts`
+- [x] T027 Register class abilities in `ClassController.ts` in `src/client/controllers/ClassController.ts`
+- [x] T028 Create `AbilitySelector.tsx` in `src/client/ui/components/`
+- [x] T029 Implement `useAbilityCooldowns.ts` hook in `src/client/ui/hooks/`
+- [x] T030 Implement `AbilityBar.tsx` in `src/client/ui/`
+- [x] T031 Integrate `AbilitySelector` into `Lobby.tsx` flow
+- [x] T032 Wire `AbilityBar` into `Hud.tsx` with loadout state
+- [X] T033 Implement `AbilityTerminalComponent.ts` in `src/client/components/Lobby/`
+- [X] T034 Add `Terminal` to `activeStation` types in `LobbyController.ts` and `Lobby.tsx`

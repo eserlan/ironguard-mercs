@@ -1,3 +1,10 @@
 {
-    "terminal.integrated.shellIntegration.enabled": false
+    "terminal.integrated.shellIntegration.enabled": false,
+    "github.copilot.chat.mcpServers": {
+        "robloxstudio-mcp": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "robloxstudio-mcp"]
+        }
+    }
 }
