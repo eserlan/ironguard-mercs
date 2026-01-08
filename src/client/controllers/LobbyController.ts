@@ -5,6 +5,7 @@ import { PartyRoom, LobbyState, MissionMode } from "shared/domain/party/party-ty
 export interface LobbyUiState {
 	status: LobbyState;
 	room?: PartyRoom;
+	soloMercenaryId?: string;
 	error?: string;
 }
 
@@ -52,6 +53,7 @@ export class LobbyController implements OnStart {
 	}
 
 	selectMercenary(mercId: string) {
+		this.updateState({ soloMercenaryId: mercId });
 		Events.SelectMercenary(mercId);
 	}
 
@@ -61,6 +63,14 @@ export class LobbyController implements OnStart {
 
 	setMissionMode(mode: MissionMode) {
 		Events.SetMissionMode(mode);
+	}
+
+	setDifficulty(difficulty: number) {
+		Events.SetDifficulty(difficulty);
+	}
+
+	setStation(station: LobbyState.AtStation | LobbyState.Idle) {
+		this.updateState({ status: station });
 	}
 
 	launchMission() {

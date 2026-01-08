@@ -22,6 +22,10 @@ export default defineConfig({
     alias: {
       '@flamework/core': path.resolve(__dirname, './test/mocks/flamework.ts'),
       '@flamework/components': path.resolve(__dirname, './test/mocks/flamework.ts'),
+      '@rbxts/services': path.resolve(__dirname, './test/mocks/roblox-services.ts'),
+      'shared': path.resolve(__dirname, './src/shared'),
+      'server': path.resolve(__dirname, './src/server'),
+      'client': path.resolve(__dirname, './src/client'),
     }
   }
 })

@@ -23,6 +23,12 @@ global.math = {
 global.print = (...args: any[]) => console.log(...args);
 global.warn = (...args: any[]) => console.warn(...args);
 
+global.tostring = (val: any) => String(val);
+global.tonumber = (val: any) => {
+    const n = Number(val);
+    return isNaN(n) ? undefined : n;
+};
+
 global.pairs = (t: object) => Object.entries(t)[Symbol.iterator]();
 
 global.task = {

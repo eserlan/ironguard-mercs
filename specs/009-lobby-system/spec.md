@@ -1,7 +1,7 @@
 # Lobby System
 
 **Status**: Draft
-**Owner**: Gemini Agent
+**Owner**: Espen
 **Created**: 2026-01-08
 **Feature Branch**: `009-lobby-system`
 **Input**: Pre-mission hub for party formation and deployment.
@@ -23,79 +23,117 @@ Without a dedicated lobby system, players cannot coordinate before missions, bre
 
 ## Proposal / What
 
-### MVP Scope
+### Immersive 3D Hub
 
-For the initial implementation, the lobby supports:
-- **Single-player quick start**: Solo players can immediately select a mercenary and launch
-- **Party formation**: Host creates a room, others join via code or invite
-- **Mercenary selection**: Pick one mercenary from your roster to deploy
-- **Loadout preview**: View equipped gear (modification deferred to Spec 008)
-- **Mission mode selection**: Standard or Ironman mode
-- **Ready-up & launch**: All players must ready before host can launch
+The lobby is a **physical 3D hub world** where players interact with the environment to form parties and launch missions. No flat menu screens—players walk up to interactive stations.
 
-### Out of Scope (MVP)
+| Element | Function | Interaction |
+|---------|----------|-------------|
+| **Party Pad** | Group formation (1-4 players) | Stand on pad → auto-join party |
+| **Dungeon Portal** | Mission launch | Walk through when party ready |
+| **Difficulty Pedestal** | Set mission difficulty (1-5) | ProximityPrompt → cycle difficulty |
+| **Mode Banner** | Toggle Standard/Ironman | ProximityPrompt → toggle mode |
+| **Mercenary Locker** | Select mercenary from roster | ProximityPrompt → open selection UI |
+| **Gear Bench** | View/modify loadout | ProximityPrompt → open loadout UI |
+
+### Hub Layout
+
+```
+     ┌─────────────────────────────────────────┐
+     │            DUNGEON PORTAL               │
+     │         (glowing, animated)             │
+     └─────────────────────────────────────────┘
+                        │
+     ┌──────────────────┼──────────────────┐
+     │   DIFFICULTY     │     MODE         │
+     │   PEDESTAL       │     BANNER       │
+     └──────────────────┼──────────────────┘
+                        │
+     ┌──────────────────┴──────────────────┐
+     │                                      │
+     │           PARTY PAD                  │
+     │      (circular, 4 spots)             │
+     │                                      │
+     └──────────────────────────────────────┘
+                        │
+     ┌─────────┬────────┴────────┬─────────┐
+     │ LOCKER  │     SPAWN       │  GEAR   │
+     │  ROOM   │     POINT       │  BENCH  │
+     └─────────┴─────────────────┴─────────┘
+```
+
+### Out of Scope
 
 - Public matchmaking queue
 - Voice chat integration
 - Spectator mode
 - Party persistence across sessions
+- Mission Board / Contract selection
 
 ### User Scenarios & Testing
 
 #### User Story 1 - Solo Quick Launch (Priority: P0)
-**Description**: A solo player enters the lobby, selects a mercenary, and immediately launches a mission.
+**Description**: A solo player spawns in the hub, selects a mercenary at the Locker, and walks through the Portal.
 **Value**: Core entry point for single-player testing and casual play.
 **Acceptance Criteria**:
-- Player sees mercenary selection UI
-- Player can select a mercenary from their roster
-- Player can click "Launch" to start a mission
-- Mission starts with the selected mercenary
+- Player spawns at hub spawn point
+- Player interacts with Mercenary Locker → selection UI opens
+- Player walks through Dungeon Portal → mission starts
+- Mission spawns with selected mercenary
 
-#### User Story 2 - Create Party (Priority: P1)
-**Description**: A host creates a party room with a unique code. Other players can join using this code.
+#### User Story 2 - Form Party (Priority: P1)
+**Description**: Multiple players stand on the Party Pad to automatically form a group.
 **Value**: Enables co-op gameplay coordination.
 **Acceptance Criteria**:
-- Host clicks "Create Party" and receives a room code
-- Room code is displayed prominently
-- Room shows connected players as they join
-- Host can kick players from the room
+- First player on Party Pad creates party, sees room code above pad
+- Additional players stepping on pad auto-join
+- Players see party member list HUD
+- Stepping off pad → leaves party
 
-#### User Story 3 - Join Party (Priority: P1)
-**Description**: A player enters a room code to join an existing party.
-**Value**: Allows friends to group up for co-op.
+#### User Story 3 - Configure Mission (Priority: P1)
+**Description**: Party leader adjusts difficulty and mode using hub pedestals.
+**Value**: Allows customization before deployment.
 **Acceptance Criteria**:
-- Player enters room code in join dialog
-- Invalid codes show error message
-- Valid codes add player to the room
-- Player sees other party members
+- Interact with Difficulty Pedestal → cycles difficulty 1-5
+- Interact with Mode Banner → toggles Standard/Ironman
+- All party members see updated settings in HUD
 
-#### User Story 4 - Ready & Launch (Priority: P1)
-**Description**: All party members select mercenaries and ready up. Host launches the mission.
+#### User Story 4 - Launch Mission (Priority: P1)
+**Description**: All party members walk through the Portal together.
 **Value**: Coordinates squad deployment.
 **Acceptance Criteria**:
-- Each player selects a mercenary
-- Players click "Ready" to indicate readiness
-- Host sees ready status for all players
-- "Launch" button is enabled only when all players are ready
-- Launch starts mission for all party members
+- Each player must have selected a mercenary (via Locker)
+- Portal glows/activates only when all members are ready
+- Walking through Portal triggers mission launch for entire party
+- Mission spawns all party members together
 
 ### Requirements
 
 #### Functional
 
 - **FR-001**: System MUST allow solo players to launch missions without party formation.
-- **FR-002**: System MUST generate unique room codes for party creation.
-- **FR-003**: System MUST synchronize party state (players, ready status) across all members.
-- **FR-004**: System MUST enforce mercenary selection before ready-up.
-- **FR-005**: System MUST only allow mission launch when all players are ready.
-- **FR-006**: System MUST support Standard and Ironman mode selection at party level.
-- **FR-007**: System MUST clean up party state when host disconnects.
+- **FR-002**: System MUST auto-create party when first player steps on Party Pad.
+- **FR-003**: System MUST synchronize party state (players, mode, difficulty) across all members.
+- **FR-004**: System MUST enforce mercenary selection before portal entry.
+- **FR-005**: Portal MUST only activate (enable physical touch-trigger and visual glow) when all party members have selected mercenaries.
+- **FR-006**: Difficulty Pedestal MUST cycle difficulty 1-5 on interact.
+- **FR-007**: Mode Banner MUST toggle Standard/Ironman on interact.
+- **FR-008**: System MUST clean up party state when all players leave pad.
+
+#### Hub Components
+
+- **PartyPadComponent**: Detects players standing on pad, manages auto-join/leave.
+- **DungeonPortalComponent**: Validates readiness, triggers mission launch.
+- **DifficultyPedestalComponent**: ProximityPrompt to cycle difficulty.
+- **ModeBannerComponent**: ProximityPrompt to toggle mode.
+- **MercenaryLockerComponent**: ProximityPrompt to open mercenary selection UI.
+- **GearBenchComponent**: ProximityPrompt to open loadout UI.
 
 #### Key Entities
 
 - **LobbyState**: Current state of the lobby (Idle, InParty, Ready, Launching).
-- **PartyRoom**: Server-side representation of a party (code, host, members, mode).
-- **PartyMember**: Player info within a party (playerId, selectedMerc, isReady).
+- **PartyRoom**: Server-side representation of a party (code, host, members, mode, difficulty).
+- **PartyMember**: Player info within a party (playerId, selectedMerc, isOnPad).
 
 ## Technical / How
 
@@ -139,17 +177,18 @@ For the initial implementation, the lobby supports:
 
 ## Risks
 
-- **Host Migration**: If host disconnects, party is lost (acceptable for MVP).
-- **Code Collisions**: Room codes must be unique server-wide.
+- **Host Migration**: If host (first on pad) leaves, party ownership transfers to next player.
+- **Pad Overflow**: 5th player cannot step on pad; bounced back with feedback.
 - **Stale State**: Clients may show outdated party state if events are missed.
 
 ## Success Criteria
 
-- **SC-001**: Solo player can launch mission within 3 clicks from lobby entry.
-- **SC-002**: Two players can form a party and launch together using room code.
+- **SC-001**: Solo player can walk spawn→locker→portal in under 10 seconds.
+- **SC-002**: Two players on Party Pad see each other in party HUD.
 - **SC-003**: Party state sync verified with 4-player stress test.
-- **SC-004**: Mercenary selection correctly persists to mission spawn.
+- **SC-004**: Portal only activates when all members have selected mercenaries.
 
 ## Open Questions
 
-- None at this time.
+- Should room code be displayed above the Party Pad for invite purposes?
+- How to visually indicate mercenary selection status per player (glow, icon)?
