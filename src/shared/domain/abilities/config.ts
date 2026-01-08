@@ -14,6 +14,12 @@ export class AbilityRegistry {
 		return this.abilities.get(id);
 	}
 
+	public static getAll(): AbilityConfig[] {
+		const list: AbilityConfig[] = [];
+		this.abilities.forEach((c) => list.push(c));
+		return list;
+	}
+
 	public static validate(config: AbilityConfig): boolean {
 		if (!config.id || !config.name) return false;
 		if (config.variants.top.cooldown < 0 || config.variants.bottom.cooldown < 0) return false;

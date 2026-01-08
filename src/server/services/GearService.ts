@@ -1,4 +1,5 @@
 import { Service, OnStart } from "@flamework/core";
+import { HttpService } from "@rbxts/services";
 import { Events } from "../events";
 import { Log } from "../../shared/utils/log";
 
@@ -29,7 +30,7 @@ export class GearService implements OnStart {
 
 	public applyLoadoutToPlayer(player: Player, loadout: Record<string, string>) {
 		this.playerEquipment.set(player.UserId, loadout);
-		Log.info(`Applied loadout to ${player.Name}: ${JSON.stringify(loadout)}`);
+		Log.info(`Applied loadout to ${player.Name}: ${HttpService.JSONEncode(loadout)}`);
 		// In real impl: register stat modifiers and effects with EffectService
 	}
 

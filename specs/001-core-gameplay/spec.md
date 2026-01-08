@@ -23,6 +23,7 @@ Assemble a crew of specialized mercenaries for high-stakes, real-time tactical c
 1.  **Tactical Real-Time**: Combat is fast and lethal. Positioning (flanking, height, cover) matters as much as timing.
 2.  **Mercenary Economy**: Consequence drives depth. Mercenaries are assets to be maintained, risking permadeath for high rewards.
 3.  **Co-op Synergy (One Merc per Player)**: Designed for 1-4 players. Each participant selects one mercenary from their personal roster to deploy. Success comes from combining these unique tools.
+4.  **High Fantasy Aesthetic**: A grounded but majestic visual direction defined in [ART_DIRECTION.md](file:///home/espen/proj/ironguard-mercs/specs/ART_DIRECTION.md).
 
 ### Core Gameplay Loop
 1.  **Preparation (Meta)**: Each player selects *one* mercenary from their persistent roster, equips gear, and pays upkeep.

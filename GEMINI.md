@@ -37,19 +37,13 @@ Luau (Roblox): Follow standard conventions
 
 <!-- MANUAL ADDITIONS START -->
 
-### Manual Project Guidelines
+### Project Governance
 
-  - No direct commits to the `main` branch.  
-  - All changes must go through pull requests with at least one review.  
-  - Use Code Review to enforce architectural and gameplay standards.
+The core architectural principles and immutable development rules for this project are defined in the [CONSTITUTION.md](file:///home/espen/proj/ironguard-mercs/.specify/memory/constitution.md). 
 
-  - Write tests before or alongside new logic, especially in `src/shared/algorithms`.  
-  - Every new shared logic module must have a corresponding `*.spec.ts` test file.  
-  - Maintain at least 80% line and function coverage; add or update tests when changing behavior.
-  - **Pre-push Hook**: Husky is configured to run `npm run lint` and `npm test` before any push. Do not bypass this check.
-
-  - Use `@Service` for services and `@Controller` for controllers; wire dependencies via constructor injection.  
-  - Keep core game math and algorithms as pure functions in `src/shared` (no direct Roblox API calls there).  
-  - Abilities should use Top (Server) / Bottom (Client) separation and be composed from reusable effect blocks.  
-  - Enemy AI must rely on `TargetingBiasService` scoring rather than hard aggro locks.
+All developers must strictly adhere to the standards defined there, particularly regarding:
+- **Test-Driven Development (TDD)**
+- **Decoupled Architecture (@Service/@Controller)**
+- **UI Safety (Avoid React Fragments)**
+- **Pure Functional Logic in Shared**
 <!-- MANUAL ADDITIONS END -->

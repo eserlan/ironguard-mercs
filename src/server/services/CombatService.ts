@@ -9,6 +9,7 @@ import { Log } from "../../shared/utils/log";
 import { CombatValidation } from "./CombatValidation";
 import { HitDetectionService } from "./HitDetectionService";
 import { CombatIntent } from "../../shared/domain/combat/types";
+import { getTime, getClock } from "shared/utils/time";
 
 @Service({})
 export class CombatService implements OnStart {
@@ -42,7 +43,7 @@ export class CombatService implements OnStart {
 		const character = player.Character;
 		if (!character) return;
 
-		const now = os.clock();
+		const now = getClock();
 		if (!this.validator.validateTimestamp(intent.timestamp, now)) return;
 
 		const weapon = Weapons[intent.weaponId];
@@ -117,7 +118,7 @@ export class CombatService implements OnStart {
 			damage: damage,
 			isCrit: isCrit,
 			isFatal: isFatal,
-			timestamp: os.time(),
+			timestamp: getTime(),
 		});
 	}
 }

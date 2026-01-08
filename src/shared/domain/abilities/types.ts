@@ -41,6 +41,9 @@ export interface EffectBlock {
 }
 
 export interface AbilityVariantConfig {
+	name?: string;
+	description?: string;
+	technical?: string;
 	cooldown: number;
 	effectBlocks: EffectBlock[];
 	cost?: number;
@@ -49,6 +52,7 @@ export interface AbilityVariantConfig {
 export interface AbilityConfig {
 	id: string;
 	name: string;
+	description?: string;
 	category: AbilityCategory;
 	activationType: ActivationType;
 	targeting: TargetingType;

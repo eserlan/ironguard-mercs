@@ -3,7 +3,7 @@ import { EffectBlock } from "../abilities/types";
 export enum EquipmentSlot {
 	Weapon = "Weapon",
 	Offhand = "Offhand",
-	Armour = "Armour",
+	Armor = "Armor",
 	Utility = "Utility",
 }
 

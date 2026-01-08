@@ -3,6 +3,7 @@ import { Players, CollectionService } from "@rbxts/services";
 import { useLobby } from "client/ui/hooks/useLobby";
 import { LobbyState } from "shared/domain/party/party-types";
 import { MercenarySelector } from "client/ui/components/MercenarySelector";
+import { AbilitySelector } from "client/ui/components/AbilitySelector";
 import { PartyPanel } from "client/ui/components/PartyPanel";
 import { LobbyBillboard } from "client/ui/components/LobbyBillboard";
 import { LoadoutEditor } from "client/ui/components/LoadoutEditor";
@@ -10,6 +11,7 @@ import { LoadoutEditor } from "client/ui/components/LoadoutEditor";
 export function Lobby() {
 	const { state, controller } = useLobby();
 	const [pads, setPads] = useState<BasePart[]>([]);
+	const [tempSelectedClass, setTempSelectedClass] = useState<string | undefined>();
 
 	useEffect(() => {
 		setPads(CollectionService.GetTagged("LobbyPartyPad") as BasePart[]);
@@ -50,37 +52,101 @@ export function Lobby() {
 				<LobbyBillboard key={pad.GetFullName()} room={state.room!} adornee={pad} />
 			))}
 
-			{/* Station UI (Locker or Gear Bench) */}
+			{/* Station UI (Locker or Gear Bench or Terminal) */}
 			{isAtStation && (
-				<frame Size={new UDim2(1, 0, 1, 0)} BackgroundColor3={Color3.fromRGB(20, 20, 20)} BackgroundTransparency={0.2}>
-					<uipadding PaddingTop={new UDim(0, 50)} PaddingBottom={new UDim(0, 50)} PaddingLeft={new UDim(0, 50)} PaddingRight={new UDim(0, 50)} />
+				<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1} ZIndex={1}>
+					{/* Dark overlay background */}
+					<frame
+						Size={new UDim2(1, 0, 1, 0)}
+						BackgroundColor3={Color3.fromRGB(0, 0, 0)}
+						BackgroundTransparency={0.4}
+						ZIndex={1}
+					/>
 
-					{state.activeStation === "Locker" ? (
-						<MercenarySelector
-							selectedId={selectedMerc}
-							onSelect={(id) => {
-								controller.selectMercenary(id);
-								controller.setStation(LobbyState.Idle);
+					{/* Station content */}
+					<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1} ZIndex={2}>
+						{state.activeStation === "Roster Altar" ? (
+							!tempSelectedClass ? (
+								<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1}>
+									<uipadding PaddingTop={new UDim(0, 50)} PaddingBottom={new UDim(0, 50)} PaddingLeft={new UDim(0, 50)} PaddingRight={new UDim(0, 50)} />
+									<MercenarySelector
+										selectedId={selectedMerc}
+										unlockedIds={state.unlockedClassIds}
+										onSelect={(id) => {
+											setTempSelectedClass(id);
+										}}
+									/>
+								</frame>
+							) : (
+								<AbilitySelector
+									classId={tempSelectedClass}
+									onConfirm={(slots) => {
+										controller.selectMercenary(tempSelectedClass);
+										controller.setLoadout(slots);
+										controller.setStation(LobbyState.Idle);
+										setTempSelectedClass(undefined);
+									}}
+								/>
+							)
+						) : state.activeStation === "Tome of Whispers" ? (
+							selectedMerc ? (
+								<AbilitySelector
+									classId={selectedMerc}
+									onConfirm={(slots) => {
+										controller.setLoadout(slots);
+										controller.setStation(LobbyState.Idle);
+									}}
+								/>
+							) : (
+								<frame
+									Size={new UDim2(0, 500, 0, 150)}
+									Position={new UDim2(0.5, -250, 0.5, -75)}
+									BackgroundColor3={Color3.fromRGB(40, 30, 30)}
+								>
+									<uicorner CornerRadius={new UDim(0, 12)} />
+									<textlabel
+										Text="PLEDGE A HERO AT THE ROSTER ALTAR FIRST"
+										Size={new UDim2(1, 0, 1, 0)}
+										BackgroundTransparency={1}
+										TextColor3={Color3.fromRGB(255, 100, 100)}
+										Font={Enum.Font.GothamBold}
+										TextSize={28}
+										TextWrapped={true}
+									/>
+								</frame>
+							)
+						) : (
+							<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1}>
+								<uipadding PaddingTop={new UDim(0, 50)} PaddingBottom={new UDim(0, 50)} PaddingLeft={new UDim(0, 50)} PaddingRight={new UDim(0, 50)} />
+								<LoadoutEditor
+									loadout={currentLoadout}
+									onEquip={(slot, id) => controller.equipGear(slot, id)}
+								/>
+							</frame>
+						)}
+
+						{/* Back button - always visible */}
+						<textbutton
+							Text="✕ BACK"
+							Size={new UDim2(0, 120, 0, 50)}
+							Position={new UDim2(0, 30, 0, 30)}
+							BackgroundColor3={Color3.fromRGB(180, 50, 50)}
+							TextColor3={Color3.fromRGB(255, 255, 255)}
+							Font={Enum.Font.GothamBold}
+							TextSize={22}
+							Event={{
+								Activated: () => {
+									if (tempSelectedClass) {
+										setTempSelectedClass(undefined);
+									} else {
+										controller.setStation(LobbyState.Idle);
+									}
+								}
 							}}
-						/>
-					) : (
-						<LoadoutEditor
-							loadout={currentLoadout}
-							onEquip={(slot, id) => controller.equipGear(slot, id)}
-						/>
-					)}
-
-					<textbutton
-						Text="CLOSE"
-						Size={new UDim2(0, 100, 0, 40)}
-						Position={new UDim2(0.5, -50, 1, -40)}
-						BackgroundColor3={Color3.fromRGB(200, 50, 50)}
-						TextColor3={Color3.fromRGB(255, 255, 255)}
-						Font={Enum.Font.GothamBold}
-						Event={{ Activated: () => controller.setStation(LobbyState.Idle) }}
-					>
-						<uicorner CornerRadius={new UDim(0, 8)} />
-					</textbutton>
+						>
+							<uicorner CornerRadius={new UDim(0, 10)} />
+						</textbutton>
+					</frame>
 				</frame>
 			)}
 

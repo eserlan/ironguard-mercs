@@ -95,7 +95,7 @@ describe("Gear Types", () => {
             const equipment: PlayerEquipment = {
                 slots: new Map([
                     [EquipmentSlot.Weapon, "iron-sword"],
-                    [EquipmentSlot.Armour, "leather-vest"],
+                    [EquipmentSlot.Armor, "leather-vest"],
                 ]),
                 sideboard: ["healing-potion", "smoke-bomb"],
             };
