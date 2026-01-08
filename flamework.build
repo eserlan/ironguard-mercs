@@ -32,6 +32,7 @@
 		"ironguard-mercs:out/shared/algorithms/classes/threat-bias@ThreatBiasModel": "shared/algorithms/classes/threat-bias@ThreatBiasModel",
 		"ironguard-mercs:out/server/services/TargetingBiasService@TargetingBiasService": "server/services/TargetingBiasService@TargetingBiasService",
 		"ironguard-mercs:out/server/services/AIService@AIService": "server/services/AIService@AIService",
+		"ironguard-mercs:out/server/services/AIController@AIController": "server/services/AIController@AIController",
 		"ironguard-mercs:out/shared/domain/abilities/config@AbilityRegistry": "shared/domain/abilities/config@AbilityRegistry",
 		"ironguard-mercs:out/shared/algorithms/classes/slot-cooldowns@SlotCooldownManager": "shared/algorithms/classes/slot-cooldowns@SlotCooldownManager",
 		"ironguard-mercs:out/server/services/ProjectileService@ProjectileService": "server/services/ProjectileService@ProjectileService",
