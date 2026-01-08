@@ -6,7 +6,7 @@ import { Players } from "@rbxts/services";
 @Component({
 	tag: "LobbyDungeonPortal",
 })
-export class DungeonPortalComponent extends BaseComponent<{}, BasePart> implements OnStart {
+export class DungeonPortalComponent extends BaseComponent<object, BasePart> implements OnStart {
 	private active = false;
 
 	constructor(private lobbyController: LobbyController) {
@@ -41,8 +41,8 @@ export class DungeonPortalComponent extends BaseComponent<{}, BasePart> implemen
 	private setActive(active: boolean) {
 		this.active = active;
 		this.instance.Transparency = active ? 0.5 : 0.9;
-		this.instance.CanCollide = false; 
-		
+		this.instance.CanCollide = false;
+
 		// VFX: Toggle all particle emitters
 		this.instance.GetDescendants().forEach((child) => {
 			if (child.IsA("ParticleEmitter")) {

@@ -79,18 +79,7 @@ export class LobbyService implements OnStart {
 		const member = room.members.find((m) => m.playerId === playerId);
 		if (member) {
 			member.isOnPad = false;
-			
-			// FR-008: If all members leave pad, or if this player leaves pad in a multi-person party?
-			// Spec Story 2 says "Stepping off pad -> leaves party".
-			// But Story 1 implies you can be in a state where you aren't on a pad (locker).
-			// Let's stick to FR-008: clean up when ALL leave pad.
-			const anyOnPad = room.members.some((m) => m.isOnPad);
-			if (!anyOnPad) {
-				this.leaveParty(player);
-			} else {
-				// If Story 2 means INDIVIDUAL exit:
-				this.leaveParty(player);
-			}
+			this.broadcastUpdate(room);
 		}
 	}
 
@@ -185,17 +174,13 @@ export class LobbyService implements OnStart {
 
 		Events.PartyLeft.fire(player);
 
-		if (room.members.size() === 0 || room.hostId === playerId) {
-			// Destroy room if empty or host left
+		if (room.members.size() === 0) {
+			// Destroy room if empty
 			this.rooms.delete(code);
-			// Notify others if host left
-			for (const member of room.members) {
-				const memberPlayer = Players.GetPlayerByUserId(tonumber(member.playerId)!);
-				if (memberPlayer) {
-					Events.PartyLeft.fire(memberPlayer);
-					this.playerRoomMap.delete(member.playerId);
-				}
-			}
+		} else if (room.hostId === playerId) {
+			// Host left - transfer ownership to next member
+			room.hostId = room.members[0].playerId;
+			this.broadcastUpdate(room);
 		} else {
 			this.broadcastUpdate(room);
 		}

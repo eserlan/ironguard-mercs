@@ -101,9 +101,9 @@
 
 **Purpose**: Final validation and environment cleanup.
 
-- [ ] T019 [P] Verify hub object tagging per `quickstart.md`
-- [ ] T020 Documentation updates for 3D Hub mechanics
-- [ ] T021 Final manual test of Solo and Party flows in Studio
+- [X] T019 [P] Verify hub object tagging per `quickstart.md`
+- [X] T020 Documentation updates for 3D Hub mechanics
+- [X] T021 Final manual test of Solo and Party flows in Studio
 
 ---
 
