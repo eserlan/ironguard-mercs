@@ -1,4 +1,4 @@
-import { EnemyRole } from "../../domain/enemies/types";
+import { EnemyRole } from "../../domain/enemies/enemy-types";
 
 export interface TargetCandidate {
 	id: string;

@@ -15,17 +15,12 @@
       "node_modules/@rbxts",
       "node_modules/@flamework"
     ],
+    "baseUrl": "src",
     "rootDir": "src",
     "outDir": "out",
     "plugins": [
       {
-        "transform": "@flamework/core/out/transformer"
-      },
-      {
-        "transform": "@flamework/networking/out/transformer"
-      },
-      {
-        "transform": "@flamework/components/out/transformer"
+        "transform": "rbxts-transformer-flamework"
       }
     ]
   },

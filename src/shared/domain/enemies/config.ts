@@ -1,4 +1,4 @@
-import { EnemyRole, EnemyTier, EnemyStats, MoveConfig } from "./types";
+import { EnemyRole, EnemyTier, EnemyStats, MoveConfig } from "./enemy-types";
 
 export interface EnemyArchetype {
 	id: string;

@@ -1,5 +1,5 @@
 import { EnemyArchetype } from "../../domain/enemies/config";
-import { EnemyRole, EnemyTier } from "../../domain/enemies/types";
+import { EnemyRole, EnemyTier } from "../../domain/enemies/enemy-types";
 
 export const VOID_REAVER: EnemyArchetype = {
 	id: "void-reaver",

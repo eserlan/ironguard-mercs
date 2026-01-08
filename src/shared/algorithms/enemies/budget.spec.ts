@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateMaxEnemies } from './budget';
-import { EnemyTier } from '../../domain/enemies/types';
+import { EnemyTier } from '../../domain/enemies/enemy-types';
 
 describe('calculateMaxEnemies', () => {
     it('calculates for minion', () => {

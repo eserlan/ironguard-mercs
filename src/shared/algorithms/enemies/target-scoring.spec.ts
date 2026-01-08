@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateTargetScore } from './target-scoring';
-import { EnemyRole } from '../../domain/enemies/types';
+import { EnemyRole } from '../../domain/enemies/enemy-types';
 
 describe('calculateTargetScore', () => {
 	it('Assassin prefers isolated targets', () => {

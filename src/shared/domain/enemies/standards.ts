@@ -1,4 +1,4 @@
-import { EnemyTier } from "./types";
+import { EnemyTier } from "./enemy-types";
 
 export const TELEGRAPH_STANDARDS = {
 	[EnemyTier.Minion]: { windup: 1.0, aftermath: 0.5 },
