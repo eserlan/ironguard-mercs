@@ -17,6 +17,9 @@ interface ClientToServerEvents {
 	SelectMercenary(mercId: string): void;
 	SetReady(ready: boolean): void;
 	SetMissionMode(mode: string): void;
+	SetDifficulty(difficulty: number): void;
+	StepOnPad(): void;
+	StepOffPad(): void;
 	LaunchMission(): void;
 }
 

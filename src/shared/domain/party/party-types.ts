@@ -1,5 +1,6 @@
 export enum LobbyState {
 	Idle = "Idle",
+	AtStation = "AtStation",
 	Creating = "Creating",
 	Joining = "Joining",
 	InParty = "InParty",
@@ -17,12 +18,14 @@ export interface PartyMember {
 	displayName: string;
 	selectedMercenaryId?: string;
 	isReady: boolean;
+	isOnPad: boolean;
 }
 
 export interface PartyRoom {
 	code: string;
 	hostId: string;
 	mode: MissionMode;
+	difficulty: number;
 	members: PartyMember[];
 	createdAt: number;
 }

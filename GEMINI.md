@@ -33,7 +33,6 @@ Luau (Roblox): Follow standard conventions
 ## Recent Changes
 - 000-ui-tech-spec: Added TypeScript (roblox-ts -> Luau) + `@rbxts/react`, `@rbxts/react-roblox`, `@flamework/core`
 - 001-core-gameplay: Refined vision to Real-Time Tactical Co-op; added Roster Management and Ironman Mode (Permadeath).
-- 001-core-gameplay: Implemented real-time RunStateMachine, Combat hooks, and Permadeath logic.
 
 
 <!-- MANUAL ADDITIONS START -->
