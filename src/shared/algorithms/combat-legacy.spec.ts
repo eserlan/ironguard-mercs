@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { calculateDamage, CombatStats } from './combat';
+import { calculateDamage } from './combat-legacy';
+import { CombatStats } from '../domain/combat/types';
 
 describe('Combat Algorithms', () => {
     const stats: CombatStats = {
