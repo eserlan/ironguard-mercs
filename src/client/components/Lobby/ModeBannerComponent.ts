@@ -11,6 +11,17 @@ export class ModeBannerComponent extends StationComponent {
 		super(lobbyController);
 	}
 
+	onStart() {
+		super.onStart();
+		this.lobbyController.subscribe((state) => {
+			if (state.room) {
+				this.instance.SetAttribute("Mode", state.room.mode);
+			} else {
+				this.instance.SetAttribute("Mode", MissionMode.Standard);
+			}
+		});
+	}
+
 	protected onTriggered() {
 		const state = this.lobbyController.getState();
 		if (!state.room) return;

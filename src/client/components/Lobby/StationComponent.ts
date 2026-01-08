@@ -30,7 +30,7 @@ export abstract class StationComponent<A = StationAttributes, I extends Instance
 		return prompt;
 	}
 
-	protected openStation() {
-		this.lobbyController.setStation(LobbyState.AtStation);
+	protected openStation(type: "Locker" | "Bench") {
+		this.lobbyController.setStation(LobbyState.AtStation, type);
 	}
 }

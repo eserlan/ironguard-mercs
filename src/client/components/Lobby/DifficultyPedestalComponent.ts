@@ -10,9 +10,23 @@ export class DifficultyPedestalComponent extends StationComponent {
 		super(lobbyController);
 	}
 
+	onStart() {
+		super.onStart();
+		this.lobbyController.subscribe((state) => {
+			if (state.room) {
+				this.instance.SetAttribute("Difficulty", state.room.difficulty);
+			} else {
+				this.instance.SetAttribute("Difficulty", 1);
+			}
+		});
+	}
+
 	protected onTriggered() {
 		const state = this.lobbyController.getState();
-		if (!state.room) return;
+		if (!state.room) {
+			// Solo pseudo-room logic if needed, but for now just 1
+			return;
+		}
 
 		// Cycle 1-5
 		let nextDifficulty = state.room.difficulty + 1;

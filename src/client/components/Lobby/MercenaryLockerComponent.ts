@@ -6,6 +6,6 @@ import { StationComponent } from "./StationComponent";
 })
 export class MercenaryLockerComponent extends StationComponent {
 	protected onTriggered() {
-		this.openStation();
+		this.openStation("Locker");
 	}
 }
