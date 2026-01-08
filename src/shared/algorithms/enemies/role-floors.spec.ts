@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ROLE_FLOORS } from './role-floors';
-import { EnemyRole } from '../../domain/enemies/types';
+import { EnemyRole } from '../../domain/enemies/enemy-types';
 
 describe('ROLE_FLOORS', () => {
     it('Assassin floor met when isolated', () => {

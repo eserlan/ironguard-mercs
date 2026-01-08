@@ -1,4 +1,4 @@
-import { AIPhase } from "../../domain/enemies/types";
+import { AIPhase } from "../../domain/enemies/enemy-types";
 
 export class EnemyAIStateMachine {
 	private currentPhase: AIPhase = AIPhase.Idle;

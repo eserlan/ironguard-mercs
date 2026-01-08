@@ -1,4 +1,4 @@
-import { EnemyStats } from "../../domain/enemies/types";
+import { EnemyStats } from "../../domain/enemies/enemy-types";
 
 export enum VariantType {
 	Normal = "Normal",

@@ -3,7 +3,7 @@ import { Log } from "../../shared/utils/log";
 import { TargetingBiasService } from "./TargetingBiasService";
 import { calculateTargetScore, TargetCandidate } from "../../shared/algorithms/enemies/target-scoring";
 import { isIsolated, isLowHp } from "../../shared/algorithms/enemies/targeting-helpers";
-import { EnemyRole } from "../../shared/domain/enemies/types";
+import { EnemyRole } from "../../shared/domain/enemies/enemy-types";
 
 @Service({})
 export class AIController implements OnStart {
@@ -14,7 +14,12 @@ export class AIController implements OnStart {
 	onStart() {
 		Log.info("AIController initialized");
 
+		// Delay tick loop start to allow Rojo to sync modules
 		task.spawn(() => {
+			// Wait a few seconds for ReplicatedStorage to fully sync
+			task.wait(3);
+			Log.info("AIController tick loop starting");
+
 			while (task.wait(1)) {
 				this.tick();
 			}

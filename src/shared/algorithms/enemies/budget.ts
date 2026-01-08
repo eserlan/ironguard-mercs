@@ -1,4 +1,4 @@
-import { EnemyTier } from "../../domain/enemies/types";
+import { EnemyTier } from "../../domain/enemies/enemy-types";
 
 export const TIER_COSTS = {
 	[EnemyTier.Minion]: 10,

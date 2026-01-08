@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { EnemyAIStateMachine } from './ai-state';
-import { AIPhase } from '../../domain/enemies/types';
+import { AIPhase } from '../../domain/enemies/enemy-types';
 
 describe('EnemyAIStateMachine', () => {
     let fsm: EnemyAIStateMachine;
