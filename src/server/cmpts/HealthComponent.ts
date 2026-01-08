@@ -34,4 +34,14 @@ export class HealthComponent extends BaseComponent<object, BasePart> {
         this.logic.heal(amount);
         this.instance.SetAttribute("Health", this.logic.current);
     }
+
+    public setHealth(value: number) {
+        this.logic.current = value;
+        this.instance.SetAttribute("Health", value);
+    }
+
+    public setMaxHealth(value: number) {
+        this.logic.max = value;
+        this.instance.SetAttribute("MaxHealth", value);
+    }
 }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "rbxtsc",
+    "build": "rbxtsc && ./scripts/verify-transpilation.sh",
     "watch": "rbxtsc -w",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -33,7 +33,7 @@
     "prettier": "^3.7.4",
     "rbxts-transformer-flamework": "^1.3.2",
     "roblox-ts": "^3.0.0",
-    "typescript": "^5.9.3",
+    "typescript": "^5.5.3",
     "vitest": "^4.0.16"
   }
 }

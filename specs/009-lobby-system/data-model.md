@@ -38,10 +38,38 @@ Client-side state enum for UI rendering.
 ```typescript
 enum LobbyState {
     Idle = "Idle",           
-    AtStation = "AtStation", // Interacting with Locker/Gear (New for 3D Spec)
+    AtStation = "AtStation", // Interacting with Locker/Gear/Terminal
     InParty = "InParty",     
     Ready = "Ready",         
     Launching = "Launching", 
+}
+```
+
+### AbilityLoadout
+
+Representation of equipped abilities.
+
+```typescript
+interface EquippedSlot {
+    slotIndex: number; // 1-4
+    abilityId: string;
+}
+
+type AbilityLoadout = EquippedSlot[];
+```
+
+### LobbyUiState
+
+Extended state for the client controller.
+
+```typescript
+interface LobbyUiState {
+    status: LobbyState;
+    activeStation?: "Locker" | "Bench" | "Terminal";
+    room?: PartyRoom;
+    soloMercenaryId?: string;
+    abilityLoadout: AbilityLoadout;
+    unlockedClassIds: string[];
 }
 ```
 

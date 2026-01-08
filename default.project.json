@@ -2,6 +2,12 @@
   "name": "ironguard-mercs",
   "tree": {
     "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "Lobby": {
+        "$path": "assets/lobby/Lobby.model.json"
+      }
+    },
     "ReplicatedStorage": {
       "TS": {
         "$path": "out/shared"

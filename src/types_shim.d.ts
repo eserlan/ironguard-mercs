@@ -6,9 +6,9 @@ declare interface ClassSetterDecoratorContext { }
 declare interface ClassFieldDecoratorContext { }
 declare interface ClassAccessorDecoratorContext { }
 
-declare const math: Math;
-declare const os: {
-    time(): number;
-    clock(): number;
-    date(): string;
-};
+declare namespace os {
+    function time(): number;
+    function clock(): number;
+    function date(fmt?: string, time?: number): any;
+    function difftime(t2: number, t1: number): number;
+}

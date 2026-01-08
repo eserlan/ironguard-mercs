@@ -166,27 +166,39 @@ If it stops doing that, we change it.
 To support the delivery of these specs, we adhere to these technical standards:
 
 ### I. Modular Architecture
-Code MUST be organized into loosely coupled, highly cohesive modules. Dependencies between modules should be explicit and minimized.
+Code MUST be organized into loosely coupled, highly cohesive modules. Dependencies between modules should be explicit and minimized. Use Flamework `@Service` and `@Controller` for logic, with constructor injection for dependencies.
 
-### II. Test-Driven Quality
+### II. Pure Game Logic
+Keep core game math, algorithms, and state transitions as pure functions in `src/shared`. Avoid direct Roblox API calls (Workspace, ServerStorage, etc.) in these pure logic modules.
+
+### III. Top/Bottom Ability Design
+Abilities MUST separate authoritative server-side logic (Top) from client-side visualization, input handling, and prediction (Bottom). Compose abilities from reusable effect blocks.
+
+### IV. Test-Driven Quality
 Testing is non-negotiable. Changes MUST include accompanying tests (unit, integration, or contract). We prefer a "red-green-refactor" approach.
 
-### III. Documentation First
+### V. Documentation First
 Architecture, decisions, and public interfaces MUST be documented. Knowledge sharing is proactive, not reactive.
 
-### IV. Iterative Delivery
+### VI. Iterative Delivery
 Deliver value in small, functional increments. Prioritize a working MVP.
 
-### V. Clean Code & Conventions
+### VII. Clean Code & Conventions
 Follow established project conventions for naming, formatting, and structure.
 
-### VI. Version Control
+### VIII. Version Control
 Git-based workflow with clear, semantic commit messages.
 *   **No Direct Commits to Main**: Direct pushes to the `main` branch are strictly prohibited.
 *   **Pull Request Required**: All changes must be submitted via a Pull Request from a feature branch and pass CI checks (linting + tests) before merging.
 
-### VII. Security
+### IX. Security
 Zero tolerance for secrets in code. Mandatory input validation at system boundaries. Secure defaults over custom implementations.
+
+### X. Enemy AI Design
+Enemy AI MUST rely on `TargetingBiasService` scoring for target selection rather than hard "aggro" locks to ensure predictable and tunable behavior.
+
+### XI. UI Development Safety
+**Avoid React Fragments**: Do not use `<>` or `<React.Fragment>`. They are unreliable in the current Roblox React setup and often lead to "Element type is invalid" errors. Use a transparent `Frame` instead.
 
 ---
 

@@ -1,0 +1,446 @@
+{
+  "className": "Folder",
+  "properties": {
+    "Name": "Lobby"
+  },
+  "children": {
+    "MercenaryLocker": {
+      "className": "Model",
+      "children": {
+        "Base": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [6, 2, 4] },
+            "Position": { "Vector3": [-15, 1, 30] }
+          }
+        },
+        "Locker": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [5, 6, 3] },
+            "Position": { "Vector3": [-15, 5, 30] },
+            "Tags": { "Tags": ["LobbyRosterAltar"] }
+          },
+          "children": {
+            "ProximityPrompt": {
+              "className": "ProximityPrompt",
+              "properties": {
+                "ActionText": { "String": "Select Mercenary" },
+                "ObjectText": { "String": "Roster Altar" }
+              }
+            }
+          }
+        },
+        "Top": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [6, 1, 4] },
+            "Position": { "Vector3": [-15, 8.5, 30] }
+          }
+        }
+      }
+    },
+    "GearBench": {
+      "className": "Model",
+      "children": {
+        "Table": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [6, 0.5, 4] },
+            "Position": { "Vector3": [15, 3, 30] },
+            "Tags": { "Tags": ["LobbyHealingFountain"] }
+          },
+          "children": {
+            "ProximityPrompt": {
+              "className": "ProximityPrompt",
+              "properties": {
+                "ActionText": { "String": "Manage Gear" },
+                "ObjectText": { "String": "Healing Fountain" }
+              }
+            }
+          }
+        },
+        "Leg1": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [0.5, 2.5, 0.5] },
+            "Position": { "Vector3": [12.5, 1.25, 28.5] }
+          }
+        },
+        "Leg2": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [0.5, 2.5, 0.5] },
+            "Position": { "Vector3": [17.5, 1.25, 28.5] }
+          }
+        },
+        "Leg3": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [0.5, 2.5, 0.5] },
+            "Position": { "Vector3": [12.5, 1.25, 31.5] }
+          }
+        },
+        "Leg4": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [0.5, 2.5, 0.5] },
+            "Position": { "Vector3": [17.5, 1.25, 31.5] }
+          }
+        },
+        "AnvilDecor": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 272 },
+            "BrickColor": { "BrickColor": 199 },
+            "Size": { "Vector3": [1.5, 1, 1] },
+            "Position": { "Vector3": [15, 3.75, 30] }
+          }
+        }
+      }
+    },
+    "PartyPad": {
+      "className": "Model",
+      "children": {
+        "Platform": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1001 },
+            "Size": { "Vector3": [12, 0.5, 12] },
+            "Position": { "Vector3": [0, 0.25, 15] },
+            "Shape": { "Enum": 1 },
+            "Tags": { "Tags": ["LobbyCircleOfUnity"] }
+          },
+          "children": {
+            "PointLight": {
+              "className": "PointLight",
+              "properties": {
+                "Brightness": { "Float32": 1 },
+                "Color": { "Color3": [1, 0.9, 0.7] },
+                "Range": { "Float32": 20 }
+              }
+            }
+          }
+        },
+        "PlayerSpot1": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 24 },
+            "Size": { "Vector3": [2, 0.1, 2] },
+            "Position": { "Vector3": [-3, 0.55, 12] },
+            "Shape": { "Enum": 1 },
+            "Transparency": { "Float32": 0.5 }
+          }
+        },
+        "PlayerSpot2": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 24 },
+            "Size": { "Vector3": [2, 0.1, 2] },
+            "Position": { "Vector3": [3, 0.55, 12] },
+            "Shape": { "Enum": 1 },
+            "Transparency": { "Float32": 0.5 }
+          }
+        },
+        "PlayerSpot3": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 24 },
+            "Size": { "Vector3": [2, 0.1, 2] },
+            "Position": { "Vector3": [-3, 0.55, 18] },
+            "Shape": { "Enum": 1 },
+            "Transparency": { "Float32": 0.5 }
+          }
+        },
+        "PlayerSpot4": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 24 },
+            "Size": { "Vector3": [2, 0.1, 2] },
+            "Position": { "Vector3": [3, 0.55, 18] },
+            "Shape": { "Enum": 1 },
+            "Transparency": { "Float32": 0.5 }
+          }
+        }
+      }
+    },
+    "DifficultyPedestal": {
+      "className": "Model",
+      "children": {
+        "Base": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [4, 1, 4] },
+            "Position": { "Vector3": [-10, 0.5, 0] }
+          }
+        },
+        "Pillar": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [2, 4, 2] },
+            "Position": { "Vector3": [-10, 3, 0] }
+          }
+        },
+        "Crystal": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 37 },
+            "Size": { "Vector3": [1, 1.5, 1] },
+            "Position": { "Vector3": [-10, 5.75, 0] },
+            "Tags": { "Tags": ["LobbyBellsOfFate"] }
+          },
+          "children": {
+            "ProximityPrompt": {
+              "className": "ProximityPrompt",
+              "properties": {
+                "ActionText": { "String": "Change Difficulty" },
+                "ObjectText": { "String": "Bells of Fate" }
+              }
+            },
+            "PointLight": {
+              "className": "PointLight",
+              "properties": {
+                "Brightness": { "Float32": 2 },
+                "Color": { "Color3": [0, 1, 0.4] },
+                "Range": { "Float32": 12 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ModeBanner": {
+      "className": "Model",
+      "children": {
+        "Pole": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [0.5, 8, 0.5] },
+            "Position": { "Vector3": [10, 4, 0] }
+          }
+        },
+        "Banner": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 880 },
+            "BrickColor": { "BrickColor": 21 },
+            "Size": { "Vector3": [4, 5, 0.2] },
+            "Position": { "Vector3": [10, 5, 0.5] },
+            "Tags": { "Tags": ["LobbyBlackBell"] }
+          },
+          "children": {
+            "ProximityPrompt": {
+              "className": "ProximityPrompt",
+              "properties": {
+                "ActionText": { "String": "Toggle Mode" },
+                "ObjectText": { "String": "Black Bell" }
+              }
+            }
+          }
+        },
+        "BannerTop": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 848 },
+            "BrickColor": { "BrickColor": 38 },
+            "Size": { "Vector3": [5, 0.5, 0.5] },
+            "Position": { "Vector3": [10, 8, 0.5] }
+          }
+        }
+      }
+    },
+    "DungeonPortal": {
+      "className": "Model",
+      "children": {
+        "BasePlatform": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [12, 1, 8] },
+            "Position": { "Vector3": [0, 0.5, -20] }
+          }
+        },
+        "LeftPillar": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [2, 12, 2] },
+            "Position": { "Vector3": [-5, 7, -20] }
+          }
+        },
+        "RightPillar": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [2, 12, 2] },
+            "Position": { "Vector3": [5, 7, -20] }
+          }
+        },
+        "Arch": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [12, 2, 2] },
+            "Position": { "Vector3": [0, 14, -20] }
+          }
+        },
+        "Frame": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 24 },
+            "Size": { "Vector3": [8, 10, 0.5] },
+            "Position": { "Vector3": [0, 6, -20] },
+            "Transparency": { "Float32": 0.3 }
+          }
+        },
+        "PortalCenter": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "CanCollide": { "Bool": false },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 1019 },
+            "Size": { "Vector3": [6, 8, 0.2] },
+            "Position": { "Vector3": [0, 6, -20] },
+            "Transparency": { "Float32": 0.5 },
+            "Tags": { "Tags": ["LobbyTheGreatGate"] }
+          },
+          "children": {
+            "ProximityPrompt": {
+              "className": "ProximityPrompt",
+              "properties": {
+                "ActionText": { "String": "Enter Dungeon" },
+                "ObjectText": { "String": "The Great Gate" },
+                "Enabled": { "Bool": false }
+              }
+            },
+            "PointLight": {
+              "className": "PointLight",
+              "properties": {
+                "Brightness": { "Float32": 3 },
+                "Color": { "Color3": [0.5, 0.8, 1] },
+                "Range": { "Float32": 25 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AbilityTerminal": {
+      "className": "Model",
+      "children": {
+        "Base": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 784 },
+            "BrickColor": { "BrickColor": 1013 },
+            "Size": { "Vector3": [3, 1, 3] },
+            "Position": { "Vector3": [0, 0.5, 30] }
+          }
+        },
+        "Terminal": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 256 },
+            "BrickColor": { "BrickColor": 199 },
+            "Size": { "Vector3": [2, 3, 1] },
+            "Position": { "Vector3": [0, 2.5, 30] },
+            "Tags": { "Tags": ["LobbyTomeOfWhispers"] }
+          },
+          "children": {
+            "ProximityPrompt": {
+              "className": "ProximityPrompt",
+              "properties": {
+                "ActionText": { "String": "Configure Abilities" },
+                "ObjectText": { "String": "Tome of Whispers" }
+              }
+            }
+          }
+        },
+        "Screen": {
+          "className": "Part",
+          "properties": {
+            "Anchored": { "Bool": true },
+            "Material": { "Enum": 288 },
+            "BrickColor": { "BrickColor": 1019 },
+            "Size": { "Vector3": [1.8, 1.5, 0.1] },
+            "Position": { "Vector3": [0, 3.5, 29.4] }
+          }
+        }
+      }
+    },
+    "LobbySpawn": {
+      "className": "SpawnLocation",
+      "properties": {
+        "Anchored": { "Bool": true },
+        "Material": { "Enum": 784 },
+        "BrickColor": { "BrickColor": 1013 },
+        "Size": { "Vector3": [6, 1, 6] },
+        "Position": { "Vector3": [0, 0.5, 40] },
+        "Neutral": { "Bool": true },
+        "Duration": { "Int32": 0 }
+      }
+    }
+  }
+}
+

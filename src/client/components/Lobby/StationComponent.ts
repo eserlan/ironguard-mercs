@@ -15,8 +15,12 @@ export abstract class StationComponent<A = StationAttributes, I extends Instance
 
 	onStart() {
 		const instance = this.instance as unknown as BasePart;
+		print(`[Lobby] StationComponent started on: ${instance.GetFullName()}`);
 		const prompt = instance.FindFirstChildWhichIsA("ProximityPrompt") ?? this.createPrompt();
-		prompt.Triggered.Connect(() => this.onTriggered());
+		prompt.Triggered.Connect(() => {
+			print(`[Lobby] ProximityPrompt triggered on: ${instance.GetFullName()}`);
+			this.onTriggered();
+		});
 	}
 
 	protected abstract onTriggered(): void;
@@ -30,7 +34,8 @@ export abstract class StationComponent<A = StationAttributes, I extends Instance
 		return prompt;
 	}
 
-	protected openStation(type: "Locker" | "Bench") {
-		this.lobbyController.setStation(LobbyState.AtStation, type);
+	protected openStation(stationType: "Roster Altar" | "Healing Fountain" | "Tome of Whispers") {
+		print(`[Lobby] Opening station: ${stationType}`);
+		this.lobbyController.setStation(LobbyState.AtStation, stationType);
 	}
 }
