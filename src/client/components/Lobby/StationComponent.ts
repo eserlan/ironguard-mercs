@@ -3,6 +3,7 @@ import { OnStart } from "@flamework/core";
 import { LobbyController } from "client/controllers/LobbyController";
 import { LobbyState } from "shared/domain/party/party-types";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StationAttributes {
 }
 

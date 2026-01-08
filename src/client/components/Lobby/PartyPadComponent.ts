@@ -6,7 +6,7 @@ import { Players, RunService } from "@rbxts/services";
 @Component({
 	tag: "LobbyPartyPad",
 })
-export class PartyPadComponent extends BaseComponent<{}, BasePart> implements OnStart {
+export class PartyPadComponent extends BaseComponent<object, BasePart> implements OnStart {
 	private playersOnPad = new Set<Player>();
 
 	onStart() {
