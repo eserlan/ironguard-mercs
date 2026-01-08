@@ -1,4 +1,5 @@
 import { MatchPhase, MatchState, RunConfig } from "../domain/run";
+import { WorldPlan } from "../domain/world";
 import { getTime } from "../utils/time";
 
 export class RunStateMachine {
@@ -20,7 +21,7 @@ export class RunStateMachine {
 		return { ...this.state };
 	}
 
-	public setWorldPlan(plan: import("../domain/world").WorldPlan) {
+	public setWorldPlan(plan: WorldPlan) {
 		this.state.worldPlan = plan;
 	}
 
@@ -28,11 +29,11 @@ export class RunStateMachine {
 		const from = this.state.phase;
 		if (this.canTransition(from, to)) {
 			this.state.phase = to;
-			
+
 			if (to === MatchPhase.Playing && this.state.startTime === 0) {
 				this.state.startTime = getTime();
 			}
-			
+
 			return true;
 		}
 		return false;

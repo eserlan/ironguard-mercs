@@ -342,7 +342,7 @@ export class LobbyService implements OnStart {
 			const allReady = room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
 			if (!allReady) return;
 
-			const seed = math.random(0, MAX_SEED_VALUE - 1);
+			const seed = math.random() * MAX_SEED_VALUE;
 			const config: RunConfig = {
 				seed: seed,
 				mode: "ArenaClear",
@@ -358,7 +358,7 @@ export class LobbyService implements OnStart {
 			const mercId = this.soloMercenarySelections.get(playerId);
 			if (!mercId) return;
 
-			const seed = math.random(0, MAX_SEED_VALUE - 1);
+			const seed = math.random() * MAX_SEED_VALUE;
 			const config: RunConfig = {
 				seed: seed,
 				mode: "ArenaClear",

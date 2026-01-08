@@ -32,14 +32,12 @@ export class ClassService implements OnStart {
 				health.setHealth(config.baseStats.hp);
 			}
 		}
-
 		// Apply first 4 abilities as default loadout
 		const abilityIds = (config.abilityLibrary as string[]).filter((_, index) => index < 4);
-		const slots = abilityIds.map((id: string, index: number) => ({
+		const slots = abilityIds.map((id, index) => ({
 			slotIndex: index,
 			abilityId: id,
 		}));
-
 		this.loadoutService.setSessionLoadout(player.UserId, classId, slots);
 	}
 

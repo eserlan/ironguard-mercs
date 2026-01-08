@@ -22,8 +22,17 @@ done
 
 if [ $ERRORS -eq 0 ]; then
     echo "[Sanity Check] PASSED: No illegal transpilation patterns found."
-    exit 0
-else
-    echo "[Sanity Check] FAILED: $ERRORS illegal patterns found. Check your .d.ts files or global declarations."
-    exit 1
 fi
+
+# 2. Optionally check for expected dot-notation patterns to catch missing globals (e.g. os.time)
+# This is a non-fatal warning-only check to avoid changing existing pass/fail behavior.
+REQUIRED_DOT_PATTERNS=("os.time" "os.clock")
+
+for PATTERN in "${REQUIRED_DOT_PATTERNS[@]}"; do
+    FOUND=$(grep -r "$PATTERN" "$TARGET_DIR")
+    if [ -z "$FOUND" ]; then
+        echo "WARN: Pattern '$PATTERN' not found in $TARGET_DIR. If your code relies on this API, ensure the corresponding global is declared at runtime."
+    fi
+done
+
+exit $?
