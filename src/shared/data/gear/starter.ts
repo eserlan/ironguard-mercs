@@ -23,7 +23,7 @@ export const STARTER_GEAR: GearItem[] = [
 	{
 		id: "plate-armour",
 		name: "Plate Armour",
-		slot: EquipmentSlot.Armour,
+		slot: EquipmentSlot.Armor,
 		type: GearType.Passive,
 		rarity: GearRarity.Common,
 		effects: [{ type: EffectType.MitigationMod, params: { flat: 5 } }],

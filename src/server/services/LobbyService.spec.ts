@@ -30,7 +30,8 @@ vi.mock("server/events", () => ({
         PartyJoined: { fire: vi.fn() },
         PartyUpdated: { fire: vi.fn() },
         PartyLeft: { fire: vi.fn() },
-        MissionLaunching: { fire: vi.fn() }
+        MissionLaunching: { fire: vi.fn() },
+        UnlockedClassesUpdated: { fire: vi.fn() }
     }
 }));
 
@@ -42,16 +43,21 @@ vi.mock("shared/algorithms/party/code-generator", () => ({
 import { LobbyService } from "./LobbyService";
 import { MissionMode } from "shared/domain/party/party-types";
 import { CollectionService } from "@rbxts/services";
+import { Events } from "server/events";
 
 describe("LobbyService", () => {
     let lobbyService: LobbyService;
     let mockRunService: any;
+    let mockClassService: any;
 
     beforeEach(() => {
         mockRunService = {
             startMatch: vi.fn().mockReturnValue(true)
         };
-        lobbyService = new LobbyService(mockRunService);
+        mockClassService = {
+            isClassUnlocked: vi.fn().mockReturnValue(true)
+        };
+        lobbyService = new LobbyService(mockRunService, mockClassService);
     });
 
     it("should allow solo launch if mercenary is selected and player is ready", () => {
@@ -185,5 +191,20 @@ describe("LobbyService", () => {
 
         const room = (lobbyService as any).getRoom(mockPlayer);
         expect(room.members[0].loadout.Weapon).toBe("iron-sword");
+    });
+
+    it("should filter locked classes during sync", () => {
+        const mockPlayer = { UserId: 1, DisplayName: "Player1" } as Player;
+
+        // Mock ClassService to only unlock 'shield-saint'
+        mockClassService.isClassUnlocked.mockImplementation((_uid: number, classId: string) => {
+            return classId === "shield-saint";
+        });
+
+        // Trigger sync
+        (lobbyService as any).syncUnlocks(mockPlayer);
+
+        // Verify event fired with filtered list
+        expect(Events.UnlockedClassesUpdated.fire).toHaveBeenCalledWith(mockPlayer, ["shield-saint"]);
     });
 });

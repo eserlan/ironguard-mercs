@@ -19,7 +19,7 @@ export const DASH: AbilityConfig = {
 		bottom: {
 			name: "Quick Dash",
 			description: "A shorter, more frequent hop.",
-			technical: "Dash 5 Studs forward.",
+			technical: "Dash 5 studs forward.",
 			cooldown: 3,
 			effectBlocks: [{ type: EffectType.Dash, value: 50 }]
 		}

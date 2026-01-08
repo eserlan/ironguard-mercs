@@ -69,7 +69,7 @@ if (!Array.prototype.remove) {
     });
 }
 
-// Polyfill for Luau String.size() 
+// Polyfill for Luau string.size() 
 if (!(String.prototype as any).size) {
     Object.defineProperty(String.prototype, "size", {
         value: function () {
@@ -80,7 +80,7 @@ if (!(String.prototype as any).size) {
     });
 }
 
-// Polyfill for Luau String.sub(start, end) - 1-indexed, inclusive
+// Polyfill for Luau string.sub(start, end) - 1-indexed, inclusive
 if (!(String.prototype as any).sub) {
     Object.defineProperty(String.prototype, "sub", {
         value: function (start: number, end?: number) {

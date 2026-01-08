@@ -18,7 +18,7 @@ export function LoadoutEditor({ loadout = {}, onEquip }: LoadoutEditorProps) {
     const slots = [
         EquipmentSlot.Weapon,
         EquipmentSlot.Offhand,
-        EquipmentSlot.Armour,
+        EquipmentSlot.Armor,
         EquipmentSlot.Utility,
     ];
 

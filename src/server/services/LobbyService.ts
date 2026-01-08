@@ -6,7 +6,7 @@ import { generatePartyCode } from "shared/algorithms/party/code-generator";
 import { RunService } from "./RunService";
 import { RunConfig } from "shared/domain/run";
 import { ClassService } from "./ClassService";
-import { getTime, getClock } from "shared/utils/time";
+import { getTime } from "shared/utils/time";
 
 const PORTAL_PROXIMITY_THRESHOLD = 15;
 const MAX_SEED_VALUE = 1000000;
@@ -342,7 +342,7 @@ export class LobbyService implements OnStart {
 			const allReady = room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
 			if (!allReady) return;
 
-			const seed = math.random(MAX_SEED_VALUE);
+			const seed = math.random(0, MAX_SEED_VALUE - 1);
 			const config: RunConfig = {
 				seed: seed,
 				mode: "ArenaClear",
@@ -358,7 +358,7 @@ export class LobbyService implements OnStart {
 			const mercId = this.soloMercenarySelections.get(playerId);
 			if (!mercId) return;
 
-			const seed = math.random(MAX_SEED_VALUE);
+			const seed = math.random(0, MAX_SEED_VALUE - 1);
 			const config: RunConfig = {
 				seed: seed,
 				mode: "ArenaClear",

@@ -27,9 +27,9 @@ export class ClassService implements OnStart {
 		const character = player.Character;
 		if (character) {
 			const health = this.components.getComponent<HealthComponent>(character);
-			if (health && config.baseStats.Health) {
-				health.setMaxHealth(config.baseStats.Health);
-				health.setHealth(config.baseStats.Health);
+			if (health && config.baseStats.hp) {
+				health.setMaxHealth(config.baseStats.hp);
+				health.setHealth(config.baseStats.hp);
 			}
 		}
 
