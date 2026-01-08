@@ -3,11 +3,14 @@ import { OnStart } from "@flamework/core";
 import { LobbyController } from "client/controllers/LobbyController";
 import { Players } from "@rbxts/services";
 
+const LAUNCH_DEBOUNCE_SECONDS = 2;
+
 @Component({
 	tag: "LobbyDungeonPortal",
 })
 export class DungeonPortalComponent extends BaseComponent<object, BasePart> implements OnStart {
 	private active = false;
+	private lastLaunchTime = 0;
 
 	constructor(private lobbyController: LobbyController) {
 		super();
@@ -17,11 +20,16 @@ export class DungeonPortalComponent extends BaseComponent<object, BasePart> impl
 		this.instance.Touched.Connect((otherPart) => {
 			if (!this.active) return;
 
+			// Debounce to prevent multiple rapid triggers
+			const now = os.clock();
+			if (now - this.lastLaunchTime < LAUNCH_DEBOUNCE_SECONDS) return;
+
 			const character = otherPart.Parent;
 			if (!character || !character.IsA("Model")) return;
 
 			const player = Players.GetPlayerFromCharacter(character);
 			if (player === Players.LocalPlayer) {
+				this.lastLaunchTime = now;
 				this.lobbyController.launchMission();
 			}
 		});

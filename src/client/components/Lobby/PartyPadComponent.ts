@@ -3,14 +3,23 @@ import { OnStart } from "@flamework/core";
 import { Events } from "client/events";
 import { Players, RunService } from "@rbxts/services";
 
+const DETECTION_INTERVAL_SECONDS = 0.5;
+
 @Component({
 	tag: "LobbyPartyPad",
 })
 export class PartyPadComponent extends BaseComponent<object, BasePart> implements OnStart {
 	private playersOnPad = new Set<Player>();
+	private timeSinceLastCheck = 0;
 
 	onStart() {
-		RunService.Heartbeat.Connect(() => this.updateDetection());
+		RunService.Heartbeat.Connect((dt) => {
+			this.timeSinceLastCheck += dt;
+			if (this.timeSinceLastCheck >= DETECTION_INTERVAL_SECONDS) {
+				this.timeSinceLastCheck = 0;
+				this.updateDetection();
+			}
+		});
 	}
 
 	private updateDetection() {

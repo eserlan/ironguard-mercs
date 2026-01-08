@@ -6,6 +6,9 @@ import { generatePartyCode } from "shared/algorithms/party/code-generator";
 import { RunService } from "./RunService";
 import { RunConfig } from "shared/domain/run";
 
+const PORTAL_PROXIMITY_THRESHOLD = 15;
+const MAX_SEED_VALUE = 1000000;
+
 @Service({})
 export class LobbyService implements OnStart {
 	private rooms = new Map<string, PartyRoom>();
@@ -46,7 +49,7 @@ export class LobbyService implements OnStart {
 		// Not in a room, try to join an existing one or create new
 		// Simplified: Join the first room that isn't full
 		let targetRoom: PartyRoom | undefined;
-		for (const [_, room] of this.rooms) {
+		for (const [, room] of this.rooms) {
 			if (room.members.size() < 4) {
 				targetRoom = room;
 				break;
@@ -55,16 +58,42 @@ export class LobbyService implements OnStart {
 
 		if (targetRoom) {
 			this.joinParty(player, targetRoom.code);
-			const member = targetRoom.members.find((m) => m.playerId === playerId);
-			if (member) member.isOnPad = true;
-			this.broadcastUpdate(targetRoom);
+
+			// Verify join succeeded before mutating
+			const joinedCode = this.playerRoomMap.get(playerId);
+			if (!joinedCode || joinedCode !== targetRoom.code) {
+				return;
+			}
+
+			const updatedRoom = this.rooms.get(joinedCode);
+			if (!updatedRoom) {
+				return;
+			}
+
+			const member = updatedRoom.members.find((m) => m.playerId === playerId);
+			if (member) {
+				member.isOnPad = true;
+				this.broadcastUpdate(updatedRoom);
+			}
 		} else {
 			this.createParty(player);
-			const newCode = this.playerRoomMap.get(playerId)!;
-			const newRoom = this.rooms.get(newCode)!;
-			const member = newRoom.members.find((m) => m.playerId === playerId)!;
-			member.isOnPad = true;
-			this.broadcastUpdate(newRoom);
+
+			// Verify party was created before proceeding
+			const newCode = this.playerRoomMap.get(playerId);
+			if (!newCode) {
+				return;
+			}
+
+			const newRoom = this.rooms.get(newCode);
+			if (!newRoom) {
+				return;
+			}
+
+			const member = newRoom.members.find((m) => m.playerId === playerId);
+			if (member) {
+				member.isOnPad = true;
+				this.broadcastUpdate(newRoom);
+			}
 		}
 	}
 
@@ -83,19 +112,12 @@ export class LobbyService implements OnStart {
 		}
 	}
 
-	private createParty(player: Player) {
+	private createParty(player: Player): boolean {
 		this.leaveParty(player); // Ensure clean state
 
 		let code = generatePartyCode();
-		let attempts = 0;
-		while (this.rooms.has(code) && attempts < 10) {
+		while (this.rooms.has(code)) {
 			code = generatePartyCode();
-			attempts++;
-		}
-
-		if (this.rooms.has(code)) {
-			warn("Failed to generate unique party code");
-			return;
 		}
 
 		const playerId = tostring(player.UserId);
@@ -121,6 +143,7 @@ export class LobbyService implements OnStart {
 
 		Events.PartyCreated.fire(player, code);
 		Events.PartyJoined.fire(player, room);
+		return true;
 	}
 
 	private joinParty(player: Player, code: string) {
@@ -252,7 +275,7 @@ export class LobbyService implements OnStart {
 		let nearPortal = false;
 		for (const portal of portals) {
 			if (portal.IsA("BasePart")) {
-				if (character.GetPivot().Position.sub(portal.Position).Magnitude < 15) {
+				if (character.GetPivot().Position.sub(portal.Position).Magnitude < PORTAL_PROXIMITY_THRESHOLD) {
 					nearPortal = true;
 					break;
 				}
@@ -271,7 +294,7 @@ export class LobbyService implements OnStart {
 			const allReady = room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
 			if (!allReady) return;
 
-			const seed = math.random(1000000);
+			const seed = math.random(MAX_SEED_VALUE);
 			const config: RunConfig = {
 				seed: seed,
 				mode: "ArenaClear",
@@ -288,15 +311,14 @@ export class LobbyService implements OnStart {
 			}
 
 			if (this.runService.startMatch(config, partyMembers)) {
-				// Notify and cleanup
-				this.cleanupRoom(room);
+				this.cleanupRoom(room, seed);
 			}
 		} else {
 			// Solo launch
 			const mercId = this.soloMercenarySelections.get(playerId);
 			if (!mercId) return;
 
-			const seed = math.random(1000000);
+			const seed = math.random(MAX_SEED_VALUE);
 			const config: RunConfig = {
 				seed: seed,
 				mode: "ArenaClear",
@@ -314,11 +336,11 @@ export class LobbyService implements OnStart {
 		}
 	}
 
-	private cleanupRoom(room: PartyRoom) {
+	private cleanupRoom(room: PartyRoom, seed: number) {
 		for (const member of room.members) {
 			const memberPlayer = Players.GetPlayerByUserId(tonumber(member.playerId)!);
 			if (memberPlayer) {
-				Events.MissionLaunching.fire(memberPlayer, room.createdAt); // Use createdAt or seed
+				Events.MissionLaunching.fire(memberPlayer, seed);
 			}
 			this.playerRoomMap.delete(member.playerId);
 		}
