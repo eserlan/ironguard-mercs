@@ -3,9 +3,9 @@ import React, { StrictMode } from "@rbxts/react";
 import { createRoot } from "@rbxts/react-roblox";
 import { Players } from "@rbxts/services";
 import { App } from "client/ui/apps/App";
-import { AppState, updateAppHealth } from "client/ui/state/app-state";
+import { updateAppHealth } from "client/ui/state/app-state";
 
-@Controller()
+@Controller({})
 export class HudController implements OnStart {
 	onStart() {
 		const player = Players.LocalPlayer;
@@ -30,8 +30,7 @@ export class HudController implements OnStart {
 	}
 
 	public updateHealth(current: number) {
-		AppState.health = current;
-		// In a real app, we'd trigger a re-render or use a store
+		updateAppHealth(current);
 		print(`HudController: Health updated to ${current}`);
 	}
 }
