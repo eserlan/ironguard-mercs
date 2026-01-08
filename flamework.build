@@ -62,7 +62,6 @@
 		"ironguard-mercs:out/server/services/EnemySpawnService@EnemySpawnService": "server/services/EnemySpawnService@EnemySpawnService",
 		"ironguard-mercs:out/server/services/GearEffectService@GearEffectService": "server/services/GearEffectService@GearEffectService",
 		"ironguard-mercs:out/server/services/GearService@GearService": "server/services/GearService@GearService",
-		"ironguard-mercs:out/server/services/HitDetection@HitDetectionService": "server/services/HitDetection@HitDetectionService",
 		"ironguard-mercs:out/server/services/InitializerService@InitializerService": "server/services/InitializerService@InitializerService",
 		"ironguard-mercs:out/server/services/LOSService@LOSService": "server/services/LOSService@LOSService",
 		"ironguard-mercs:out/server/services/LobbyService@LobbyService": "server/services/LobbyService@LobbyService",

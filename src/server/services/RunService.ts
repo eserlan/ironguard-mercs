@@ -45,7 +45,7 @@ export class RunService implements OnStart, OnInit {
 
 		if (this.fsm.transition(MatchPhase.Generating)) {
 			Log.info(`Match starting! Seed: ${config.seed} Mode: ${config.missionMode}`);
-			
+
 			// 1. Generate World Plan
 			const worldPlan = createWorldPlan(config.seed);
 			this.fsm.setWorldPlan(worldPlan);

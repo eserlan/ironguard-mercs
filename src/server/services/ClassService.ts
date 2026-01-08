@@ -43,6 +43,8 @@ export class ClassService implements OnStart {
 		this.loadoutService.setSessionLoadout(player.UserId, classId, slots);
 	}
 
+
+
 	public getClass(id: string) {
 		return ClassRegistry.get(id);
 	}
