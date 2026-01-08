@@ -6,19 +6,19 @@ import { isIsolated, isLowHp } from "../../shared/algorithms/enemies/targeting-h
 import { EnemyRole } from "../../shared/domain/enemies/enemy-types";
 
 @Service({})
-export class AIController implements OnStart {
+export class AIService implements OnStart {
 	private enemies = new Set<Model>();
 
 	constructor(private biasService: TargetingBiasService) { }
 
 	onStart() {
-		Log.info("AIController initialized");
+		Log.info("AIService initialized");
 
 		// Delay tick loop start to allow Rojo to sync modules
 		task.spawn(() => {
 			// Wait a few seconds for ReplicatedStorage to fully sync
 			task.wait(3);
-			Log.info("AIController tick loop starting");
+			Log.info("AIService tick loop starting");
 
 			while (task.wait(1)) {
 				this.tick();

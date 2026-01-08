@@ -1,8 +1,30 @@
 import { Controller, OnStart } from "@flamework/core";
-import Maid from "@rbxts/maid";
 import { Workspace, TweenService } from "@rbxts/services";
 
-@Controller()
+type MaidTask = Instance | RBXScriptConnection | (() => void);
+
+class Maid {
+	private readonly tasks = new Array<MaidTask>();
+
+	public GiveTask(task: MaidTask): void {
+		this.tasks.push(task);
+	}
+
+	public Destroy(): void {
+		for (const task of this.tasks) {
+			if (typeIs(task, "RBXScriptConnection")) {
+				task.Disconnect();
+			} else if (typeIs(task, "Instance")) {
+				task.Destroy();
+			} else {
+				task();
+			}
+		}
+		this.tasks.clear();
+	}
+}
+
+@Controller({})
 export class VFXController implements OnStart {
 	private template: BillboardGui;
 
@@ -11,7 +33,7 @@ export class VFXController implements OnStart {
 		const bill = new Instance("BillboardGui");
 		bill.Size = new UDim2(0, 100, 0, 50);
 		bill.AlwaysOnTop = true;
-		
+
 		const label = new Instance("TextLabel");
 		label.Size = new UDim2(1, 0, 1, 0);
 		label.BackgroundTransparency = 1;
@@ -19,7 +41,7 @@ export class VFXController implements OnStart {
 		label.TextStrokeTransparency = 0;
 		label.TextScaled = true;
 		label.Parent = bill;
-		
+
 		this.template = bill;
 	}
 
@@ -29,7 +51,7 @@ export class VFXController implements OnStart {
 
 	public spawnDamageNumber(position: Vector3, amount: number, isCrit: boolean) {
 		const maid = new Maid();
-		
+
 		const part = new Instance("Part");
 		part.Transparency = 1;
 		part.CanCollide = false;
@@ -41,7 +63,7 @@ export class VFXController implements OnStart {
 		const gui = this.template.Clone();
 		const label = gui.FindFirstChildOfClass("TextLabel")!;
 		label.Text = tostring(math.floor(amount));
-		
+
 		if (isCrit) {
 			label.TextColor3 = new Color3(1, 0, 0); // Red for crit
 			label.TextSize = 32;
@@ -53,7 +75,7 @@ export class VFXController implements OnStart {
 		// Animation
 		const duration = 1.0;
 		const targetPos = position.add(new Vector3(0, 5, 0));
-		
+
 		const tweenInfo = new TweenInfo(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
 		const tween = TweenService.Create(part, tweenInfo, { Position: targetPos });
 		tween.Play();

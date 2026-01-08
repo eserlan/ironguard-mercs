@@ -5,14 +5,12 @@ export function Hud() {
 	const [health, setHealth] = useState(AppState.health);
 
 	useEffect(() => {
-		// Poll for changes for this MVP. In real app, subscribe to an event.
-		const connection = game.GetService("RunService").Heartbeat.Connect(() => {
-			if (AppState.health !== health) {
-				setHealth(AppState.health);
-			}
+		// Subscribe to AppState changes for proper React updates
+		const unsubscribe = AppState.subscribe((state) => {
+			setHealth(state.health);
 		});
-		return () => connection.Disconnect();
-	}, [health]);
+		return unsubscribe;
+	}, []);
 
 	return (
 		<frame
