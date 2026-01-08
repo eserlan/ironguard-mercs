@@ -5,6 +5,7 @@ import { LobbyState } from "shared/domain/party/party-types";
 import { MercenarySelector } from "client/ui/components/MercenarySelector";
 import { PartyPanel } from "client/ui/components/PartyPanel";
 import { LobbyBillboard } from "client/ui/components/LobbyBillboard";
+import { LoadoutEditor } from "client/ui/components/LoadoutEditor";
 
 export function Lobby() {
 	const { state, controller } = useLobby();
@@ -37,7 +38,10 @@ export function Lobby() {
 
 	const isInParty = (state.status === LobbyState.InParty || state.status === LobbyState.Ready) && state.room !== undefined;
 	const isAtStation = state.status === LobbyState.AtStation;
-	const selectedMerc = state.room?.members.find((m) => m.playerId === localPlayerId)?.selectedMercenaryId;
+
+	const localMember = state.room?.members.find((m) => m.playerId === localPlayerId);
+	const selectedMerc = localMember?.selectedMercenaryId ?? state.soloMercenaryId;
+	const currentLoadout = localMember?.loadout;
 
 	return (
 		<screengui IgnoreGuiInset ResetOnSpawn={false}>
@@ -46,18 +50,25 @@ export function Lobby() {
 				<LobbyBillboard key={pad.GetFullName()} room={state.room!} adornee={pad} />
 			))}
 
-			{/* Mercenary Selector (Shown only when interacting with Locker) */}
+			{/* Station UI (Locker or Gear Bench) */}
 			{isAtStation && (
 				<frame Size={new UDim2(1, 0, 1, 0)} BackgroundColor3={Color3.fromRGB(20, 20, 20)} BackgroundTransparency={0.2}>
 					<uipadding PaddingTop={new UDim(0, 50)} PaddingBottom={new UDim(0, 50)} PaddingLeft={new UDim(0, 50)} PaddingRight={new UDim(0, 50)} />
-					
-					<MercenarySelector
-						selectedId={selectedMerc}
-						onSelect={(id) => {
-							controller.selectMercenary(id);
-							controller.setStation(LobbyState.Idle);
-						}}
-					/>
+
+					{state.activeStation === "Locker" ? (
+						<MercenarySelector
+							selectedId={selectedMerc}
+							onSelect={(id) => {
+								controller.selectMercenary(id);
+								controller.setStation(LobbyState.Idle);
+							}}
+						/>
+					) : (
+						<LoadoutEditor
+							loadout={currentLoadout}
+							onEquip={(slot, id) => controller.equipGear(slot, id)}
+						/>
+					)}
 
 					<textbutton
 						Text="CLOSE"

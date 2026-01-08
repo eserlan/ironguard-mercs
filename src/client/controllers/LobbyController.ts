@@ -4,6 +4,7 @@ import { PartyRoom, LobbyState, MissionMode } from "shared/domain/party/party-ty
 
 export interface LobbyUiState {
 	status: LobbyState;
+	activeStation?: "Locker" | "Bench";
 	room?: PartyRoom;
 	soloMercenaryId?: string;
 	error?: string;
@@ -57,6 +58,10 @@ export class LobbyController implements OnStart {
 		Events.SelectMercenary(mercId);
 	}
 
+	equipGear(slot: string, gearId: string) {
+		Events.EquipItem(slot, gearId);
+	}
+
 	setReady(ready: boolean) {
 		Events.SetReady(ready);
 	}
@@ -69,8 +74,11 @@ export class LobbyController implements OnStart {
 		Events.SetDifficulty(difficulty);
 	}
 
-	setStation(station: LobbyState.AtStation | LobbyState.Idle) {
-		this.updateState({ status: station });
+	setStation(station: LobbyState.AtStation | LobbyState.Idle, type?: "Locker" | "Bench") {
+		this.updateState({
+			status: station,
+			activeStation: station === LobbyState.AtStation ? type : undefined
+		});
 	}
 
 	launchMission() {

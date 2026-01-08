@@ -21,6 +21,7 @@ vi.mock("server/events", () => ({
         JoinParty: { connect: vi.fn() },
         LeaveParty: { connect: vi.fn() },
         SelectMercenary: { connect: vi.fn() },
+        EquipItem: { connect: vi.fn() },
         SetReady: { connect: vi.fn() },
         SetMissionMode: { connect: vi.fn() },
         SetDifficulty: { connect: vi.fn() },
@@ -174,5 +175,15 @@ describe("LobbyService", () => {
         // Try launch - should succeed
         (lobbyService as any).launchMission(mockHost);
         expect(mockRunService.startMatch).toHaveBeenCalled();
+    });
+
+    it("should allow selecting gear", () => {
+        const mockPlayer = { UserId: 1, DisplayName: "Player1" } as Player;
+        (lobbyService as any).createParty(mockPlayer);
+
+        (lobbyService as any).equipItem(mockPlayer, "Weapon", "iron-sword");
+
+        const room = (lobbyService as any).getRoom(mockPlayer);
+        expect(room.members[0].loadout.Weapon).toBe("iron-sword");
     });
 });

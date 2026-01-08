@@ -149,4 +149,14 @@ Task: "Update LobbyController.ts to manage AtStation state and station events in
 2. US1 -> Solo play ready.
 3. US2 -> Co-op joining ready.
 4. US3 -> Customization ready.
-5. US4 -> Co-op deployment ready.
+
+---
+
+## Phase 8: Hub Polish & Gear Bench (Next Steps)
+
+**Purpose**: Complete the immersive hub vision with loadout modification and visual feedback.
+
+- [ ] T022 Implement `GearBenchComponent.ts` in `src/client/components/Lobby/`
+- [ ] T023 Create `LoadoutEditor.tsx` in `src/client/ui/components/`
+- [ ] T024 Add visual state synchronization (SurfaceGuis/Attributes) to pedestals and banner
+- [ ] T025 Implement Gear Bench interaction in `Lobby.tsx`
