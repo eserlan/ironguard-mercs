@@ -10,7 +10,7 @@ export interface LobbyUiState {
 
 export type StateListener = (state: LobbyUiState) => void;
 
-@Controller()
+@Controller({})
 export class LobbyController implements OnStart {
 	private state: LobbyUiState = { status: LobbyState.Idle };
 	private listeners = new Set<StateListener>();

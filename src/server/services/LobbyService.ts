@@ -6,12 +6,12 @@ import { generatePartyCode } from "shared/algorithms/party/code-generator";
 import { RunService } from "./RunService";
 import { RunConfig } from "shared/domain/run";
 
-@Service()
+@Service({})
 export class LobbyService implements OnStart {
 	private rooms = new Map<string, PartyRoom>();
 	private playerRoomMap = new Map<string, string>(); // PlayerId -> RoomCode
 
-	constructor(private runService: RunService) {}
+	constructor(private runService: RunService) { }
 
 	onStart() {
 		Events.CreateParty.connect((player) => this.createParty(player));
