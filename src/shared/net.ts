@@ -2,6 +2,7 @@ import { Networking } from "@flamework/networking";
 import { MatchState } from "./domain/run";
 import { AbilityIntent } from "./domain/abilities/types";
 import { CombatIntent, CombatEvent } from "./domain/combat/types";
+import { PartyRoom } from "./domain/party/party-types";
 
 interface ClientToServerEvents {
 	RequestStartRun(seed?: number): void;
@@ -10,6 +11,13 @@ interface ClientToServerEvents {
 	SetLoadout(loadout: { slotIndex: number; abilityId: string }[]): void;
 	AbilityIntent(intent: AbilityIntent): void;
 	EquipItem(slot: string, gearId: string): void;
+	CreateParty(): void;
+	JoinParty(code: string): void;
+	LeaveParty(): void;
+	SelectMercenary(mercId: string): void;
+	SetReady(ready: boolean): void;
+	SetMissionMode(mode: string): void;
+	LaunchMission(): void;
 }
 
 interface ServerToClientEvents {
@@ -21,6 +29,11 @@ interface ServerToClientEvents {
 	SlotCooldownState(slotIndex: number, remaining: number, total: number): void;
 	GearEffectTriggered(gearId: string, effectType: string): void;
 	AbilityActivated(sourceId: string, abilityId: string, slotIndex: number): void;
+	PartyCreated(code: string): void;
+	PartyJoined(roomState: PartyRoom): void;
+	PartyUpdated(roomState: PartyRoom): void;
+	PartyLeft(): void;
+	MissionLaunching(seed: number): void;
 }
 
 export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();

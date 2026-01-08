@@ -19,43 +19,47 @@ export class RunService implements OnStart, OnInit {
 		Log.info("RunService started");
 		
 		Events.RequestStartRun.connect((player, seed) => {
-			this.requestStart(player, seed);
+			// Legacy debug start - assigns random mercenary if none selected? 
+            // Or just fail if no party? 
+            // For now, let's keep it minimal or deprecate it. 
+			// this.requestStart(player, seed);
+            Log.warn("RequestStartRun is deprecated. Use Lobby system.");
 		});
 	}
 
-	private requestStart(player: Player, seed?: number) {
-		if (this.activeMercenaries.has(player.UserId)) {
-			Log.warn(`Player ${player.Name} already has an active mercenary.`);
-			return;
-		}
+    public startMatch(config: RunConfig, partyMembers: Map<Player, string>) {
+		if (this.fsm && this.fsm.getState().phase !== MatchPhase.Lobby) {
+            Log.warn("Attempted to start match while one is in progress");
+            return false;
+       }
 
-		const config: RunConfig = {
-			seed: seed ?? 0,
-			mode: "ArenaClear",
-			missionMode: "Standard",
-			difficulty: 1,
-		};
+       this.fsm = new RunStateMachine(config);
+       
+       this.activeMercenaries.clear();
+       for (const [player, mercId] of partyMembers) {
+           this.activeMercenaries.set(player.UserId, mercId);
+       }
 
-		this.fsm = new RunStateMachine(config);
-
-		if (this.fsm.transition(MatchPhase.Generating)) {
-			Log.info(`Match starting! Seed: ${seed ?? 0}`);
-			this.broadcastState();
-			
-			task.delay(1, () => {
-				if (!this.fsm) return;
-				this.fsm.transition(MatchPhase.Spawning);
-				this.broadcastState();
-				task.delay(1, () => {
-					if (!this.fsm) return;
-					this.fsm.transition(MatchPhase.Playing);
-					this.broadcastState();
-				});
-			});
-		} else {
-			Log.warn("Cannot start run from current state");
-		}
-	}
+       if (this.fsm.transition(MatchPhase.Generating)) {
+           Log.info(`Match starting! Seed: ${config.seed} Mode: ${config.missionMode}`);
+           this.broadcastState();
+           
+           task.delay(1, () => {
+               if (!this.fsm) return;
+               this.fsm.transition(MatchPhase.Spawning);
+               this.broadcastState();
+               task.delay(1, () => {
+                   if (!this.fsm) return;
+                   this.fsm.transition(MatchPhase.Playing);
+                   this.broadcastState();
+               });
+           });
+           return true;
+       } else {
+           Log.warn("Cannot start run from current state");
+           return false;
+       }
+    }
 
 	public resolveMission(result: "Victory" | "Defeat") {
 		if (!this.fsm) return;
