@@ -35,6 +35,7 @@ export class VFXController implements OnStart {
 		bill.AlwaysOnTop = true;
 
 
+
 		const label = new Instance("TextLabel");
 		label.Size = new UDim2(1, 0, 1, 0);
 		label.BackgroundTransparency = 1;
@@ -42,6 +43,7 @@ export class VFXController implements OnStart {
 		label.TextStrokeTransparency = 0;
 		label.TextScaled = true;
 		label.Parent = bill;
+
 
 
 		this.template = bill;
@@ -53,6 +55,7 @@ export class VFXController implements OnStart {
 
 	public spawnDamageNumber(position: Vector3, amount: number, isCrit: boolean) {
 		const maid = new Maid();
+
 
 
 		const part = new Instance("Part");
@@ -68,6 +71,7 @@ export class VFXController implements OnStart {
 		label.Text = tostring(math.floor(amount));
 
 
+
 		if (isCrit) {
 			label.TextColor3 = new Color3(1, 0, 0); // Red for crit
 			label.TextSize = 32;
@@ -79,6 +83,7 @@ export class VFXController implements OnStart {
 		// Animation
 		const duration = 1.0;
 		const targetPos = position.add(new Vector3(0, 5, 0));
+
 
 
 		const tweenInfo = new TweenInfo(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
