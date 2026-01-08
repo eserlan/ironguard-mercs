@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { EnemyRegistry, EnemyArchetype } from './config';
-import { EnemyRole, EnemyTier, MoveConfig } from './types';
+import { EnemyRole, EnemyTier, MoveConfig } from './enemy-types';
 
 describe('EnemyRegistry', () => {
     it('validates correct config', () => {
