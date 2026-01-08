@@ -156,7 +156,7 @@ Task: "Update LobbyController.ts to manage AtStation state and station events in
 
 **Purpose**: Complete the immersive hub vision with loadout modification and visual feedback.
 
-- [ ] T022 Implement `GearBenchComponent.ts` in `src/client/components/Lobby/`
-- [ ] T023 Create `LoadoutEditor.tsx` in `src/client/ui/components/`
-- [ ] T024 Add visual state synchronization (SurfaceGuis/Attributes) to pedestals and banner
-- [ ] T025 Implement Gear Bench interaction in `Lobby.tsx`
+- [x] T022 Implement `GearBenchComponent.ts` in `src/client/components/Lobby/`
+- [x] T023 Create `LoadoutEditor.tsx` in `src/client/ui/components/`
+- [x] T024 Add visual state synchronization (SurfaceGuis/Attributes) to pedestals and banner
+- [x] T025 Implement Gear Bench interaction in `Lobby.tsx`

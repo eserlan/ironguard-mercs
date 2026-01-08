@@ -5,11 +5,12 @@ import { MatchPhase, RunConfig } from "../../shared/domain/run";
 import { Log } from "../../shared/utils/log";
 import { resolveMissionDeath } from "../../shared/algorithms/permadeath";
 import { RosterService } from "./RosterService";
+import { PartyMember } from "../../shared/domain/party/party-types";
 
 @Service({})
 export class RunService implements OnStart, OnInit {
 	private fsm: RunStateMachine | undefined;
-	private activeMercenaries = new Map<number, string>(); // UserId -> MercenaryId
+	private sessionMembers = new Map<number, PartyMember>(); // UserId -> Session Data
 
 	constructor(private rosterService: RosterService) { }
 
@@ -24,7 +25,7 @@ export class RunService implements OnStart, OnInit {
 		});
 	}
 
-	public startMatch(config: RunConfig, partyMembers: Map<Player, string>) {
+	public startMatch(config: RunConfig, members: PartyMember[]) {
 		if (this.fsm && this.fsm.getState().phase !== MatchPhase.Lobby) {
 			Log.warn("Attempted to start match while one is in progress");
 			return false;
@@ -32,9 +33,9 @@ export class RunService implements OnStart, OnInit {
 
 		this.fsm = new RunStateMachine(config);
 
-		this.activeMercenaries.clear();
-		for (const [player, mercId] of partyMembers) {
-			this.activeMercenaries.set(player.UserId, mercId);
+		this.sessionMembers.clear();
+		for (const member of members) {
+			this.sessionMembers.set(tonumber(member.playerId)!, member);
 		}
 
 		if (this.fsm.transition(MatchPhase.Generating)) {
@@ -58,6 +59,10 @@ export class RunService implements OnStart, OnInit {
 		}
 	}
 
+	public getSessionMember(userId: number): PartyMember | undefined {
+		return this.sessionMembers.get(userId);
+	}
+
 	public resolveMission(result: "Victory" | "Defeat") {
 		if (!this.fsm) return;
 
@@ -74,7 +79,8 @@ export class RunService implements OnStart, OnInit {
 		const state = this.fsm.getState();
 
 		game.GetService("Players").GetPlayers().forEach(player => {
-			const mercId = this.activeMercenaries.get(player.UserId);
+			const member = this.sessionMembers.get(player.UserId);
+			const mercId = member?.selectedMercenaryId;
 			if (mercId) {
 				const roster = this.rosterService.getRoster(player);
 				const updatedRoster = resolveMissionDeath(roster, mercId, state.config.missionMode);
