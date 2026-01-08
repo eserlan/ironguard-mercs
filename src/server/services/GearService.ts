@@ -27,6 +27,12 @@ export class GearService implements OnStart {
 		return this.playerEquipment.get(userId);
 	}
 
+	public applyLoadoutToPlayer(player: Player, loadout: Record<string, string>) {
+		this.playerEquipment.set(player.UserId, loadout);
+		Log.info(`Applied loadout to ${player.Name}: ${JSON.stringify(loadout)}`);
+		// In real impl: register stat modifiers and effects with EffectService
+	}
+
 	public syncCooldown(player: Player, slot: any, remaining: number) {
 		// Real impl: broadcast SlotCooldownState from 005 logic
 	}

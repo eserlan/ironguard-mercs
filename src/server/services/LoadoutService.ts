@@ -18,9 +18,9 @@ export class LoadoutService implements OnStart {
 
 	private handleSetLoadout(player: Player, slots: { slotIndex: number; abilityId: string }[]) {
 		// Mock class selection for now or assume previous SelectClass call
-		const classId = "shield-saint"; 
+		const classId = "shield-saint";
 		const config = ClassRegistry.get(classId);
-		
+
 		if (!config) {
 			Events.LoadoutRejected.fire(player, "InvalidClass");
 			return;
@@ -39,5 +39,9 @@ export class LoadoutService implements OnStart {
 
 	public getLoadout(userId: number) {
 		return this.playerLoadouts.get(userId);
+	}
+
+	public setSessionLoadout(userId: number, classId: string, equippedSlots: { slotIndex: number; abilityId: string }[]) {
+		this.playerLoadouts.set(userId, { classId, equippedSlots });
 	}
 }

@@ -331,15 +331,7 @@ export class LobbyService implements OnStart {
 				difficulty: room.difficulty,
 			};
 
-			const partyMembers = new Map<Player, string>();
-			for (const member of room.members) {
-				const p = Players.GetPlayerByUserId(tonumber(member.playerId)!);
-				if (p && member.selectedMercenaryId) {
-					partyMembers.set(p, member.selectedMercenaryId);
-				}
-			}
-
-			if (this.runService.startMatch(config, partyMembers)) {
+			if (this.runService.startMatch(config, room.members)) {
 				this.cleanupRoom(room, seed);
 			}
 		} else {
@@ -355,12 +347,19 @@ export class LobbyService implements OnStart {
 				difficulty: 1,
 			};
 
-			const partyMembers = new Map<Player, string>();
-			partyMembers.set(player, mercId);
+			const soloMember: PartyMember = {
+				playerId: playerId,
+				displayName: player.DisplayName,
+				selectedMercenaryId: mercId,
+				loadout: this.soloGearSelections.get(playerId),
+				isReady: true,
+				isOnPad: true,
+			};
 
-			if (this.runService.startMatch(config, partyMembers)) {
+			if (this.runService.startMatch(config, [soloMember])) {
 				Events.MissionLaunching.fire(player, seed);
 				this.soloMercenarySelections.delete(playerId);
+				this.soloGearSelections.delete(playerId);
 			}
 		}
 	}
