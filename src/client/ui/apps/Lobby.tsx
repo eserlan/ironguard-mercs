@@ -132,7 +132,7 @@ export function Lobby() {
 
 						{/* Back button - upper right corner */}
 						<textbutton
-							Text="✕ BACK"
+							Text="X BACK"
 							Size={new UDim2(0, 120, 0, 50)}
 							Position={new UDim2(1, -150, 0, 30)}
 							BackgroundColor3={Color3.fromRGB(180, 50, 50)}
