@@ -215,7 +215,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 
 					{/* Close Button */}
 					<textbutton
-						Text="✕"
+						Text="X"
 						Size={new UDim2(0, 24, 0, 24)}
 						Position={new UDim2(1, -12, 0, -12)}
 						BackgroundColor3={Color3.fromRGB(150, 40, 40)}
@@ -231,42 +231,61 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 
 					{/* Title */}
 					<textlabel
-						Text={string.upper(activeInfo.name)}
+						Text={string.upper(activeInfo.name !== "" ? activeInfo.name : "UNKNOWN")}
 						Size={new UDim2(1, -30, 0, 30)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(255, 215, 0)}
-						Font={Enum.Font.GothamBlack}
+						Font={Enum.Font.GothamBold}
 						TextSize={20}
 						TextXAlignment={Enum.TextXAlignment.Left}
+						ZIndex={22}
+						TextTransparency={0}
 					/>
 
 					{/* Description */}
 					<textlabel
-						Text={activeInfo.description}
+						Text={activeInfo.description !== "" ? activeInfo.description : "No description available."}
 						Size={new UDim2(1, 0, 0, 60)}
 						Position={new UDim2(0, 0, 0, 35)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(210, 210, 210)}
-						Font={Enum.Font.Gotham}
+						Font={Enum.Font.GothamBold}
 						TextSize={15}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
+						ZIndex={22}
+						TextTransparency={0}
 					/>
 
 					{/* Technical Info */}
-					{activeInfo.technical !== "" && (
+					{activeInfo.technical !== "" ? (
 						<textlabel
 							Text={activeInfo.technical}
 							Size={new UDim2(1, 0, 0, 30)}
 							Position={new UDim2(0, 0, 1, -35)}
 							BackgroundTransparency={1}
 							TextColor3={Color3.fromRGB(140, 180, 255)}
-							Font={Enum.Font.GothamMedium}
+							Font={Enum.Font.GothamBold}
 							TextSize={13}
 							TextWrapped={true}
 							TextXAlignment={Enum.TextXAlignment.Left}
 							TextYAlignment={Enum.TextYAlignment.Bottom}
+							ZIndex={22}
+							TextTransparency={0}
+						/>
+					) : (
+						<textlabel
+							Text="No technical data."
+							Size={new UDim2(1, 0, 0, 30)}
+							Position={new UDim2(0, 0, 1, -35)}
+							BackgroundTransparency={1}
+							TextColor3={Color3.fromRGB(100, 100, 100)}
+							Font={Enum.Font.SourceSansItalic}
+							TextSize={13}
+							TextXAlignment={Enum.TextXAlignment.Left}
+							ZIndex={22}
+							TextTransparency={0}
 						/>
 					)}
 				</frame>
