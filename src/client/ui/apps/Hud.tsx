@@ -3,6 +3,9 @@ import { AppState } from "client/ui/state/app-state";
 import { AbilityBar } from "../AbilityBar";
 import { useLobby } from "../hooks/useLobby";
 
+import { Dependency } from "@flamework/core";
+import { AbilityController } from "client/controllers/AbilityController";
+
 export function Hud() {
 	const [health, setHealth] = useState(AppState.health);
 	const { state } = useLobby();
@@ -37,7 +40,7 @@ export function Hud() {
 				/>
 			</frame>
 
-			<AbilityBar loadout={state.abilityLoadout} />
+			<AbilityBar loadout={state.abilityLoadout} controller={Dependency<AbilityController>()} />
 		</frame>
 	);
 }

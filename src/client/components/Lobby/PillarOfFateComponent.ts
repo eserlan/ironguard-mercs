@@ -42,7 +42,7 @@ const FACES: Enum.NormalId[] = [
 @Component({
     tag: "LobbyPillarOfFate",
 })
-export class PillarOfFateComponent extends StationComponent {
+export class PillarOfFateComponent extends StationComponent<{}, Model | BasePart> {
     private crystal?: BasePart;
     private pillar?: BasePart;
     private pointLight?: PointLight;
@@ -51,19 +51,30 @@ export class PillarOfFateComponent extends StationComponent {
     private descriptionLabel?: TextLabel;
 
     constructor(lobbyController: LobbyController) {
-        super(lobbyController);
+        super(lobbyController); // Cast for super if needed, or suppress
     }
 
     onStart() {
         super.onStart();
-        Log.info("[Lobby] PillarOfFate component started");
+        Log.info(`[Lobby] PillarOfFate component started on ${this.instance.ClassName}: ${this.instance.Name}`);
 
-        // Find the crystal and pillar (the component is attached to Crystal, so we need to find siblings)
-        const parent = this.instance.Parent as Model;
-        if (parent) {
-            this.crystal = this.instance as BasePart;
-            this.pillar = parent.FindFirstChild("Pillar") as BasePart | undefined;
+        if (this.instance.IsA("Model")) {
+            // Component tag is on the Model (DifficultyPedestal)
+            this.crystal = this.instance.FindFirstChild("Crystal") as BasePart | undefined;
+            this.pillar = this.instance.FindFirstChild("Pillar") as BasePart | undefined;
+        } else if (this.instance.IsA("BasePart")) {
+            // Component tag is on the Part (Crystal), legacy/fallback
+            const parent = this.instance.Parent as Model;
+            this.crystal = this.instance;
+            if (parent) {
+                this.pillar = parent.FindFirstChild("Pillar") as BasePart | undefined;
+            }
+        }
+
+        if (this.crystal) {
             this.pointLight = this.crystal.FindFirstChildWhichIsA("PointLight") as PointLight | undefined;
+        } else {
+            Log.warn("[Lobby] PillarOfFate: Crystal part not found!");
         }
 
         // Create SurfaceGuis with TextLabels on each face of the pillar
@@ -97,7 +108,7 @@ export class PillarOfFateComponent extends StationComponent {
         this.updateDifficultyDisplay(1);
 
         this.lobbyController.subscribe((state) => {
-            const difficulty = state.room?.difficulty ?? 1;
+            const difficulty = state.room?.difficulty ?? state.soloDifficulty ?? 1;
             this.instance.SetAttribute("Difficulty", difficulty);
             this.updateDifficultyDisplay(difficulty);
         });
@@ -203,13 +214,12 @@ export class PillarOfFateComponent extends StationComponent {
     protected onTriggered() {
         Log.info("[Lobby] PillarOfFate triggered");
         const state = this.lobbyController.getState();
-        if (!state.room) {
-            Log.warn("[Lobby] PillarOfFate - no room, ignoring");
-            return;
-        }
+
+        // Get current difficulty from room or solo state
+        const currentDifficulty = state.room?.difficulty ?? state.soloDifficulty ?? 1;
 
         // Cycle 1-5
-        let nextDifficulty = state.room.difficulty + 1;
+        let nextDifficulty = currentDifficulty + 1;
         if (nextDifficulty > 5) nextDifficulty = 1;
 
         Log.info(`[Lobby] PillarOfFate - cycling to difficulty: ${nextDifficulty}`);
