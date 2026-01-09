@@ -90,6 +90,13 @@ src/
 -   **Redirect**: Handle damage forwarding from allies to the Saint.
 -   **VFX**: Implement holy thematic visuals (Pillars of Light, Gold Ribbons).
 
+### Phase 5: Ashblade Implementation (Cinder & Smoke)
+**Goal**: Deliver the high-speed, status-based striker kit.
+-   **Mobility**: Refine Dash logic to support precision positioning and backsteps.
+-   **Statuses**: Implement specialized debuffs (Scorch, Tether, Slow).
+-   **Execution**: Handle conditional damage bonuses based on active statuses.
+-   **VFX**: Implement ember and ash thematic visuals (Smoke Trails, Fire Bursts).
+
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |

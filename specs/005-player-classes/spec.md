@@ -17,6 +17,13 @@ A majestic mountain-top cathedral warrior. The Shield Saint is the wall between 
 - **Role**: Protector / Anchor.
 - **Weapon**: Heavy Greatshield and Mace.
 
+### The Ashblade: Shadow of the Cinder
+The mountain’s fleeting heat. The Ashblade moves like smoke and strikes like a sudden wildfire. Their abilities focus on **High Mobility**, **Precision Status**, and **Momentum-based Execution**.
+
+- **Theme**: Black ash, glowing embers, wisps of grey smoke, sharp metallic whispers.
+- **Role**: Striker / Duelist.
+- **Weapon**: Dual Twin-Blades of Cinder-Steel.
+
 ## Problem / Why
 
 Without distinct classes, player roles are ambiguous and team synergy is hard to achieve. We need a system that allows for specialized gameplay styles to ensure replayability and tactical depth. The "Shield Saint" and "Ashblade" establishment provides the core contrast (Anchor vs. Duelist) needed to validate the combat system's flexibility.

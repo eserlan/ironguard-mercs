@@ -106,6 +106,19 @@ description: "Task list for IronGuard Mercs: Player Classes System (005)"
 - [x] T037 Verify Shield Saint solo play flow per SC-002 (Variant Cooldowns)
 - [x] T038 Verify Shield Saint co-op play flow per SC-004 (10s survival against 30 DPS)
 
+---
+
+## Phase 10: Ashblade Kit Implementation (In Progress)
+
+**Goal**: Fully realize the Striker kit with mobility, status effects, and burst damage.
+
+- [ ] T039 Implement `EffectType.Status` handlers for (Scorch, Untargetable, Slow, Highlighted, Tether)
+- [ ] T040 Implement AoE Damage support in `StandardEffects.applyDamage`
+- [ ] T041 Implement "Cinder Dash" VFX for `CINDER_STEP` (TOP) in `src/client/controllers/VFXController.ts`
+- [ ] T042 Implement "Blaze Finisher" VFX for `BLAZE_FINISHER` (TOP) in `src/client/controllers/VFXController.ts`
+- [ ] T043 Verify Ashblade mobility chain logic (SC-003)
+- [ ] T044 Final integration pass for all class abilities in `src/server/services/AbilityService.ts`
+
 ## Implementation Strategy
 
 1.  **Architecture First**: T001-T004 establishes the new dual-variant ability schema.
