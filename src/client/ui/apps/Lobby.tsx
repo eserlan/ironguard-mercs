@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "@rbxts/react";
+import React, { useState, useEffect, useMemo } from "@rbxts/react";
 import { Players, CollectionService } from "@rbxts/services";
 import { useLobby } from "client/ui/hooks/useLobby";
 import { LobbyState } from "shared/domain/party/party-types";
@@ -23,6 +23,8 @@ export function Lobby() {
 		});
 		return () => sub.Disconnect();
 	}, []);
+
+	const abilityController = useMemo(() => Dependency<AbilityController>(), []);
 
 	const localPlayerId = tostring(Players.LocalPlayer.UserId);
 
@@ -170,7 +172,7 @@ export function Lobby() {
 			)}
 
 			{/* Ability HUD (Always visible in Lobby for testing) */}
-			<AbilityBar loadout={state.abilityLoadout} controller={Dependency<AbilityController>()} />
+			<AbilityBar loadout={state.abilityLoadout} controller={abilityController} />
 		</screengui>
 	);
 }
