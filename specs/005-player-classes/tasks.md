@@ -91,21 +91,20 @@ description: "Task list for IronGuard Mercs: Player Classes System (005)"
 
 ---
 
----
-
 ## Phase 9: Shield Saint Kit Implementation (Completed)
 
 **Goal**: Fully realize the Protector kit through the Abilities Framework.
 
-- [x] T029 Implement `EffectType.Shield` in `src/server/services/EffectService.ts`
-- [x] T030 Implement `EffectType.MitigationMod` in `src/server/services/EffectService.ts`
-- [x] T031 Implement `EffectType.Status` (Cleanse, Marked, Interrupt) in `src/server/services/EffectService.ts`
-- [x] T032 Implement `EffectType.StatMod` (Speed, Redirect) in `src/server/services/EffectService.ts`
-- [x] T033 Implement "Pillar of Light" VFX for `SANCTUARY_STEP` (TOP) in `src/client/controllers/VFXController.ts`
-- [x] T034 Implement "Shield Burst" VFX for `AEGIS_PULSE` (TOP) in `src/client/controllers/VFXController.ts`
-- [x] T035 Implement "Great Oath" VFX for `MARTYRS_PROMISE` (TOP) in `src/client/controllers/VFXController.ts`
-- [x] T036 Verify Shield Saint solo play flow (Self-Buffs, Cooldowns)
-- [x] T037 Verify Shield Saint co-op play flow (Ally Shielding, Damage Redirection)
+- [x] T029 [P] Create unit tests for Shield and Mitigation resolution in `src/server/services/EffectService.spec.ts`
+- [x] T030 Implement `EffectType.Shield` in `src/server/services/EffectService.ts`
+- [x] T031 Implement `EffectType.MitigationMod` in `src/server/services/EffectService.ts`
+- [x] T032 Implement `EffectType.Status` (Cleanse, Marked, Interrupt) in `src/server/services/EffectService.ts`
+- [x] T033 Implement `EffectType.StatMod` (Speed, Redirect) in `src/server/services/EffectService.ts`
+- [x] T034 Implement "Pillar of Light" VFX for `SANCTUARY_STEP` (TOP) in `src/client/controllers/VFXController.ts`
+- [x] T035 Implement "Shield Burst" VFX for `AEGIS_PULSE` (TOP) in `src/client/controllers/VFXController.ts`
+- [x] T036 Implement "Great Oath" VFX for `MARTYRS_PROMISE` (TOP) in `src/client/controllers/VFXController.ts`
+- [x] T037 Verify Shield Saint solo play flow per SC-002 (Variant Cooldowns)
+- [x] T038 Verify Shield Saint co-op play flow per SC-004 (10s survival against 30 DPS)
 
 ## Implementation Strategy
 

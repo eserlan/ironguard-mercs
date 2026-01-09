@@ -16,12 +16,12 @@ interface AbilityColumnProps {
 	total?: number;
 	keyCode: string;
 	controller: AbilityController;
+	onHover: (variant: "Top" | "Bottom" | undefined) => void;
 }
 
-function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controller }: AbilityColumnProps) {
+function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controller, onHover }: AbilityColumnProps) {
 	const ability = abilityId ? AbilityRegistry.get(abilityId) : undefined;
 	const [remaining, setRemaining] = useState(0);
-	const [hoveredVariant, setHoveredVariant] = useState<"Top" | "Bottom" | undefined>(undefined);
 
 	useEffect(() => {
 		if (!expiry || expiry <= os.clock()) {
@@ -29,6 +29,7 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 			return;
 		}
 		setRemaining(expiry - os.clock());
+
 		const conn = RunService.Heartbeat.Connect(() => {
 			const left = math.max(0, expiry - os.clock());
 			setRemaining(left);
@@ -57,8 +58,8 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 				AutoButtonColor={!!ability}
 				Event={{
 					Activated: () => ability && controller.requestCast(slotIndex, props.variant),
-					MouseEnter: () => setHoveredVariant(props.variant),
-					MouseLeave: () => setHoveredVariant(undefined)
+					MouseEnter: () => onHover(props.variant),
+					MouseLeave: () => onHover(undefined)
 				}}
 			>
 				<uicorner CornerRadius={new UDim(0, 4)} />
@@ -68,7 +69,7 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 					Color={ability ? Color3.fromRGB(120, 120, 120) : Color3.fromRGB(60, 60, 60)}
 				/>
 
-				{/* Always show Label */}
+				{/* Key Label */}
 				<textlabel
 					Text={props.label}
 					Size={new UDim2(0, 30, 0, 15)}
@@ -84,7 +85,7 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 					<React.Fragment>
 						{/* Variant Name */}
 						<textlabel
-							Text={variantData?.name?.upper() ?? props.variant}
+							Text={string.upper(variantData?.name ?? props.variant)}
 							Size={new UDim2(1, -10, 0.4, 0)}
 							Position={new UDim2(0, 5, 0, 5)}
 							BackgroundTransparency={1}
@@ -97,7 +98,6 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 						/>
 					</React.Fragment>
 				) : (
-					// Empty State
 					<textlabel
 						Text="EMPTY"
 						Size={new UDim2(1, 0, 1, 0)}
@@ -111,73 +111,9 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 		);
 	};
 
-	const tooltipData = hoveredVariant === "Top" ? ability?.variants.top : (hoveredVariant === "Bottom" ? ability?.variants.bottom : undefined);
-
 	return (
 		<frame Size={new UDim2(0, 70, 0, 140)} BackgroundTransparency={1} ZIndex={2}>
 			<uilistlayout FillDirection="Vertical" Padding={new UDim(0, 0)} SortOrder="LayoutOrder" />
-
-			{/* Tooltip Overlay */}
-			{tooltipData && (
-				<frame
-					Size={new UDim2(0, 200, 0, 100)}
-					Position={new UDim2(0.5, -100, 0, -110)}
-					BackgroundColor3={Color3.fromRGB(25, 25, 30)}
-					ZIndex={10}
-				>
-					<uicorner CornerRadius={new UDim(0, 8)} />
-					<uistroke
-						ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
-						Thickness={2}
-						Color={Color3.fromRGB(60, 60, 60)}
-					/>
-					<uipadding
-						PaddingTop={new UDim(0, 8)}
-						PaddingBottom={new UDim(0, 8)}
-						PaddingLeft={new UDim(0, 10)}
-						PaddingRight={new UDim(0, 10)}
-					/>
-
-
-					<textlabel
-						Text={string.upper(tooltipData.name ?? "Unknown")}
-						Size={new UDim2(1, 0, 0, 20)}
-						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(255, 215, 0)}
-						Font={Enum.Font.GothamBlack}
-						TextSize={14}
-						TextXAlignment={Enum.TextXAlignment.Left}
-					/>
-
-					<textlabel
-						Text={tooltipData.description ?? ""}
-						Size={new UDim2(1, 0, 0, 40)}
-						Position={new UDim2(0, 0, 0, 22)}
-						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(220, 220, 220)}
-						Font={Enum.Font.Gotham}
-						TextSize={12}
-						TextWrapped={true}
-						TextXAlignment={Enum.TextXAlignment.Left}
-						TextYAlignment={Enum.TextYAlignment.Top}
-					/>
-
-					{!!tooltipData.technical && (
-						<textlabel
-							Text={tooltipData.technical}
-							Size={new UDim2(1, 0, 0, 30)}
-							Position={new UDim2(0, 0, 1, -30)}
-							BackgroundTransparency={1}
-							TextColor3={Color3.fromRGB(150, 200, 255)}
-							Font={Enum.Font.GothamMedium}
-							TextSize={10}
-							TextWrapped={true}
-							TextXAlignment={Enum.TextXAlignment.Left}
-							TextYAlignment={Enum.TextYAlignment.Bottom}
-						/>
-					)}
-				</frame>
-			)}
 
 			{/* Top Button (Shift) */}
 			<frame Size={new UDim2(1, 0, 0.5, 0)} BackgroundTransparency={1} LayoutOrder={1}>
@@ -197,31 +133,33 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 					height={new UDim(1, 0)}
 					color={Color3.fromRGB(50, 50, 60)}
 				/>
-				{/* Cooldown Overlay */}
-				{isCooldown && (
-					<frame
-						Size={new UDim2(1, 0, fillScale, 0)}
-						Position={new UDim2(0, 0, 1 - fillScale, 0)}
-						BackgroundColor3={Color3.fromRGB(255, 50, 50)}
-						BackgroundTransparency={0.6}
-						ZIndex={5}
-					>
-						<uicorner CornerRadius={new UDim(0, 6)} />
-					</frame>
-				)}
-				{isCooldown && (
-					<textlabel
-						Text={string.format("%.1f", remaining)}
-						Size={new UDim2(1, 0, 1, 0)}
-						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(255, 255, 255)}
-						TextSize={22}
-						Font={Enum.Font.GothamBold}
-						ZIndex={6}
-						TextStrokeTransparency={0.5}
-					/>
-				)}
 			</frame>
+
+			{/* Cooldown Overlay */}
+			{isCooldown && (
+				<frame
+					Size={new UDim2(1, 0, fillScale, 0)}
+					Position={new UDim2(0, 0, 1 - fillScale, 0)}
+					BackgroundColor3={Color3.fromRGB(255, 50, 50)}
+					BackgroundTransparency={0.6}
+					ZIndex={5}
+				>
+					<uicorner CornerRadius={new UDim(0, 6)} />
+				</frame>
+			)}
+
+			{isCooldown && (
+				<textlabel
+					Text={string.format("%.1f", remaining)}
+					Size={new UDim2(1, 0, 1, 0)}
+					BackgroundTransparency={1}
+					TextColor3={Color3.fromRGB(255, 255, 255)}
+					TextSize={22}
+					Font={Enum.Font.GothamBold}
+					ZIndex={6}
+					TextStrokeTransparency={0.5}
+				/>
+			)}
 		</frame>
 	);
 }
@@ -229,37 +167,122 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	const cooldowns = useAbilityCooldowns();
 	const keyLabels = ["1", "2", "3", "4"];
+	const [hoveredInfo, setHoveredInfo] = useState<{ name: string; description: string; technical: string } | undefined>(undefined);
 
 	return (
 		<frame
-			Size={new UDim2(0, 280, 0, 140)}
+			Size={new UDim2(1, 0, 0, 140)}
 			AnchorPoint={new Vector2(0.5, 1)}
 			Position={new UDim2(0.5, 0, 1, -2)}
 			BackgroundTransparency={1}
 		>
-			<uilistlayout
-				FillDirection="Horizontal"
-				Padding={new UDim(0, 0)}
-				HorizontalAlignment="Center"
-				VerticalAlignment="Bottom"
-			/>
-
-			{[0, 1, 2, 3].map((slotIndex) => {
-				const entry = loadout.find((l) => l.slotIndex === slotIndex);
-				const cooldown = cooldowns.get(slotIndex);
-
-				return (
-					<AbilityColumn
-						key={slotIndex}
-						slotIndex={slotIndex}
-						abilityId={entry?.abilityId}
-						expiry={cooldown?.expiry}
-						total={cooldown?.total}
-						keyCode={keyLabels[slotIndex]}
-						controller={controller}
+			{/* Info Panel (Bottom Left) */}
+			{hoveredInfo && (
+				<frame
+					Size={new UDim2(0, 300, 0, 140)}
+					Position={new UDim2(0, 20, 0, 0)} // Left aligned within the container
+					BackgroundColor3={Color3.fromRGB(25, 25, 30)}
+					ZIndex={10}
+				>
+					<uicorner CornerRadius={new UDim(0, 8)} />
+					<uistroke
+						ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
+						Thickness={2}
+						Color={Color3.fromRGB(60, 60, 60)}
 					/>
-				);
-			})}
+					<uipadding
+						PaddingTop={new UDim(0, 15)}
+						PaddingBottom={new UDim(0, 15)}
+						PaddingLeft={new UDim(0, 20)}
+						PaddingRight={new UDim(0, 20)}
+					/>
+
+					{/* Title */}
+					<textlabel
+						Text={string.upper(hoveredInfo.name)}
+						Size={new UDim2(1, 0, 0, 30)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(255, 215, 0)}
+						Font={Enum.Font.GothamBlack}
+						TextSize={22}
+						TextXAlignment={Enum.TextXAlignment.Left}
+					/>
+
+					{/* Description */}
+					<textlabel
+						Text={hoveredInfo.description}
+						Size={new UDim2(1, 0, 0, 60)}
+						Position={new UDim2(0, 0, 0, 35)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(220, 220, 220)}
+						Font={Enum.Font.Gotham}
+						TextSize={16}
+						TextWrapped={true}
+						TextXAlignment={Enum.TextXAlignment.Left}
+						TextYAlignment={Enum.TextYAlignment.Top}
+					/>
+
+					{/* Technical */}
+					{!!hoveredInfo.technical && (
+						<textlabel
+							Text={hoveredInfo.technical}
+							Size={new UDim2(1, 0, 0, 30)}
+							Position={new UDim2(0, 0, 1, -30)}
+							BackgroundTransparency={1}
+							TextColor3={Color3.fromRGB(150, 200, 255)}
+							Font={Enum.Font.GothamMedium}
+							TextSize={14}
+							TextWrapped={true}
+							TextXAlignment={Enum.TextXAlignment.Left}
+							TextYAlignment={Enum.TextYAlignment.Bottom}
+						/>
+					)}
+				</frame>
+			)}
+
+			{/* Ability Columns Container (Centered) */}
+			<frame
+				Size={new UDim2(1, 0, 1, 0)}
+				BackgroundTransparency={1}
+			>
+				<uilistlayout
+					FillDirection="Horizontal"
+					Padding={new UDim(0, 0)}
+					HorizontalAlignment="Center"
+					VerticalAlignment="Bottom"
+				/>
+
+				{[0, 1, 2, 3].map((slotIndex) => {
+					const entry = loadout.find((l) => l.slotIndex === slotIndex);
+					const cooldown = cooldowns.get(slotIndex);
+					return (
+						<AbilityColumn
+							key={slotIndex}
+							slotIndex={slotIndex}
+							abilityId={entry?.abilityId}
+							expiry={cooldown?.expiry}
+							total={cooldown?.total}
+							keyCode={keyLabels[slotIndex]}
+							controller={controller}
+							onHover={(variant) => {
+								if (!variant || !entry?.abilityId) {
+									setHoveredInfo(undefined);
+									return;
+								}
+								const ability = AbilityRegistry.get(entry.abilityId);
+								const data = variant === "Top" ? ability?.variants.top : ability?.variants.bottom;
+								if (data) {
+									setHoveredInfo({
+										name: data.name ?? "Unknown",
+										description: data.description ?? "",
+										technical: data.technical ?? ""
+									});
+								}
+							}}
+						/>
+					);
+				})}
+			</frame>
 		</frame>
 	);
 }

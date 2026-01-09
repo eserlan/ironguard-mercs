@@ -95,11 +95,4 @@ This system builds on the **Abilities Framework (003)**. The `AbilityIntent` inc
 - **SC-001**: A player can select a class in the lobby and have their ability set updated.
 - **SC-002**: An ability correctly triggers a long cooldown for a TOP action and a short one for a BOTTOM action.
 - **SC-003**: Ashblade can successfully kill a "Grunt" enemy in under 5 seconds using momentum.
-- **SC-004**: Shield Saint can keep an ally alive for 10 seconds under sustained "Ranged" enemy fire.
-
-## Success Criteria
-
-- **SC-001**: A player can select a class in the lobby and have their ability set updated.
-- **SC-002**: An ability correctly triggers a long cooldown for a TOP action and a short one for a BOTTOM action.
-- **SC-003**: Ashblade can successfully kill a "Grunt" enemy in under 5 seconds using momentum.
-- **SC-004**: Shield Saint can keep an ally alive for 10 seconds under sustained "Ranged" enemy fire.
+- **SC-004**: Shield Saint can keep an ally at >20% HP for 10 seconds while they are targeted by 3 Grunt Archers (10 DPS each).

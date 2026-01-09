@@ -130,11 +130,11 @@ export function Lobby() {
 							</frame>
 						)}
 
-						{/* Back button - always visible */}
+						{/* Back button - upper right corner */}
 						<textbutton
 							Text="✕ BACK"
 							Size={new UDim2(0, 120, 0, 50)}
-							Position={new UDim2(0, 30, 0, 30)}
+							Position={new UDim2(1, -150, 0, 30)}
 							BackgroundColor3={Color3.fromRGB(180, 50, 50)}
 							TextColor3={Color3.fromRGB(255, 255, 255)}
 							Font={Enum.Font.GothamBold}
