@@ -55,7 +55,8 @@ describe("LobbyService", () => {
             startMatch: vi.fn().mockReturnValue(true)
         };
         mockClassService = {
-            isClassUnlocked: vi.fn().mockReturnValue(true)
+            isClassUnlocked: vi.fn().mockReturnValue(true),
+            applyClassToPlayer: vi.fn()
         };
         lobbyService = new LobbyService(mockRunService, mockClassService);
     });
