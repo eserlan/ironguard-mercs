@@ -198,12 +198,12 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 
 	// hoveredInfo is only for the "pending" state or logic
 	const [pendingHover, setPendingHover] = useState<
-		{ startTime: number; data: { name: string; description: string; technical: string } } | undefined
+		{ startTime: number; data: { name: string; description: string; technical: string; parentName: string } } | undefined
 	>(undefined);
 	// activeInfo is the "sticky" information currently shown
-	const [activeInfo, setActiveInfo] = useState<{ name: string; description: string; technical: string } | undefined>(
-		undefined,
-	);
+	const [activeInfo, setActiveInfo] = useState<
+		{ name: string; description: string; technical: string; parentName: string } | undefined
+	>(undefined);
 
 	useEffect(() => {
 		if (activeInfo) {
@@ -241,8 +241,8 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 			{activeInfo && (
 				<frame
 					key="InfoPanel"
-					Size={new UDim2(0, 320, 0, 180)}
-					Position={new UDim2(0, 20, 0, -58)}
+					Size={new UDim2(0, 320, 0, 240)}
+					Position={new UDim2(0, 20, 0, -118)}
 					BackgroundColor3={Color3.fromRGB(30, 30, 35)}
 					ZIndex={200}
 					Visible={true}
@@ -279,7 +279,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					<textlabel
 						key="Title"
 						Text={string.upper(activeInfo.name)}
-						Size={new UDim2(1, 0, 0, 30)}
+						Size={new UDim2(1, 0, 0, 25)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(255, 215, 0)}
 						Font={Enum.Font.GothamBlack}
@@ -288,16 +288,30 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						ZIndex={202}
 					/>
 
+					{/* Parent Ability Context */}
+					<textlabel
+						key="ParentName"
+						Text={`[${string.upper(activeInfo.parentName)}]`}
+						Size={new UDim2(1, 0, 0, 15)}
+						Position={new UDim2(0, 0, 0, 28)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(150, 150, 160)}
+						Font={Enum.Font.SourceSansItalic}
+						TextSize={14}
+						TextXAlignment={Enum.TextXAlignment.Left}
+						ZIndex={202}
+					/>
+
 					{/* Description */}
 					<textlabel
 						key="Desc"
 						Text={activeInfo.description}
-						Size={new UDim2(1, 0, 0, 60)}
-						Position={new UDim2(0, 0, 0, 40)}
+						Size={new UDim2(1, 0, 0, 50)}
+						Position={new UDim2(0, 0, 0, 50)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(230, 230, 230)}
 						Font={Enum.Font.GothamMedium}
-						TextSize={16}
+						TextSize={15}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
@@ -308,8 +322,8 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					<textlabel
 						key="Tech"
 						Text={activeInfo.technical}
-						Size={new UDim2(1, 0, 0, 40)}
-						Position={new UDim2(0, 0, 1, -40)}
+						Size={new UDim2(1, 0, 0, 75)}
+						Position={new UDim2(0, 0, 1, -75)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(160, 200, 255)}
 						Font={Enum.Font.GothamBold}
@@ -373,6 +387,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 										name: data.name ?? "Unknown",
 										description: data.description ?? "",
 										technical: data.technical ?? "",
+										parentName: ability.name ?? "Core Ability",
 									};
 									setPendingHover({ startTime: os.clock(), data: info });
 								}
