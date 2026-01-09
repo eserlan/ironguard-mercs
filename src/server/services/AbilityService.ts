@@ -59,6 +59,7 @@ export class AbilityService implements OnStart {
 		}
 
 		this.cdMgr.setCooldown(tostring(player.UserId), intent.slotIndex, now, variant.cooldown);
+		Events.SlotCooldownState.fire(player, intent.slotIndex, variant.cooldown, variant.cooldown);
 		Events.AbilityActivated.broadcast(tostring(player.UserId), slot.abilityId, intent.slotIndex);
 
 		// Execute effects

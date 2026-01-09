@@ -245,9 +245,11 @@ export class LobbyService implements OnStart {
 			if (member) {
 				member.selectedMercenaryId = mercId;
 				this.broadcastUpdate(room);
+				this.classService.applyClassToPlayer(player, mercId);
 			}
 		} else {
 			this.soloMercenarySelections.set(playerId, mercId);
+			this.classService.applyClassToPlayer(player, mercId);
 		}
 	}
 

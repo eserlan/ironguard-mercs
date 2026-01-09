@@ -209,7 +209,7 @@ export class RosterAltarComponent extends StationComponent {
         nameLabel.Font = Enum.Font.GothamBold;
         nameLabel.TextSize = 26;
         nameLabel.TextColor3 = Color3.fromRGB(100, 255, 100);
-        nameLabel.Text = "Pledge a Hero";
+        nameLabel.Text = "Pledge a Merc";
         nameLabel.Parent = frame;
 
         this.detailNameLabel = nameLabel;
@@ -280,7 +280,7 @@ export class RosterAltarComponent extends StationComponent {
             }
         } else {
             if (this.detailNameLabel) {
-                this.detailNameLabel.Text = "Pledge a Hero";
+                this.detailNameLabel.Text = "Pledge a Merc";
                 this.detailNameLabel.TextColor3 = Color3.fromRGB(200, 200, 200);
             }
             if (this.detailRoleLabel) {

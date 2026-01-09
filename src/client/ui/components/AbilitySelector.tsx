@@ -38,7 +38,7 @@ export function AbilitySelector({ classId, onConfirm }: AbilitySelectorProps) {
 
 	const handleConfirm = () => {
 		const loadout = selectedAbilities.map((id, index) => ({
-			slotIndex: index + 1,
+			slotIndex: index,
 			abilityId: id,
 		}));
 		Log.info(`[AbilitySelector] Confirming loadout with ${loadout.size()} abilities: ${selectedAbilities.join(", ")}`);

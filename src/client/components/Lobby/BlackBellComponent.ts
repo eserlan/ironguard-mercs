@@ -69,7 +69,7 @@ export class BlackBellComponent extends StationComponent {
         this.updateModeDisplay(MissionMode.Standard);
 
         this.lobbyController.subscribe((state) => {
-            const mode = state.room?.mode ?? MissionMode.Standard;
+            const mode = state.room?.mode ?? state.soloMode ?? MissionMode.Standard;
             this.instance.SetAttribute("Mode", mode);
             this.updateModeDisplay(mode);
         });
@@ -140,12 +140,11 @@ export class BlackBellComponent extends StationComponent {
     protected onTriggered() {
         Log.info("[Lobby] BlackBell triggered");
         const state = this.lobbyController.getState();
-        if (!state.room) {
-            Log.warn("[Lobby] BlackBell - no room, ignoring");
-            return;
-        }
 
-        const nextMode = state.room.mode === MissionMode.Standard ? MissionMode.Ironman : MissionMode.Standard;
+        // Get current mode from room or solo state
+        const currentMode = state.room?.mode ?? state.soloMode ?? MissionMode.Standard;
+        const nextMode = currentMode === MissionMode.Standard ? MissionMode.Ironman : MissionMode.Standard;
+
         Log.info(`[Lobby] BlackBell - toggling to mode: ${nextMode}`);
         this.lobbyController.setMissionMode(nextMode);
     }

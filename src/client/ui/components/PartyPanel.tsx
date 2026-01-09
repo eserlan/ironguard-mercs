@@ -8,10 +8,11 @@ interface PartyPanelProps {
 	onReady: (ready: boolean) => void;
 	onLaunch: () => void;
 	onSetMode: (mode: MissionMode) => void;
+	onSetDifficulty: (diff: number) => void;
 	onLeave: () => void;
 }
 
-export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onSetMode, onLeave }: PartyPanelProps) {
+export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onSetMode, onSetDifficulty, onLeave }: PartyPanelProps) {
 	const localMember = room.members.find((m) => m.playerId === localPlayerId);
 	const canLaunch = isHost && room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
 
@@ -64,10 +65,55 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 				)}
 			</frame>
 
+			{/* Difficulty Selector */}
+			<frame Size={new UDim2(1, 0, 0, 40)} Position={new UDim2(0, 0, 0, 100)} BackgroundTransparency={1}>
+				<textlabel
+					Text={`Difficulty: ${room.difficulty}`}
+					Size={new UDim2(0.6, 0, 1, 0)}
+					Position={new UDim2(0.2, 0, 0, 0)}
+					TextColor3={Color3.fromRGB(255, 255, 255)}
+					BackgroundTransparency={1}
+					Font={Enum.Font.GothamBold}
+					TextSize={20}
+				/>
+				{isHost && (
+					<React.Fragment>
+						<textbutton
+							Text="<"
+							Size={new UDim2(0.2, 0, 1, 0)}
+							Position={new UDim2(0, 0, 0, 0)}
+							BackgroundColor3={Color3.fromRGB(60, 60, 60)}
+							TextColor3={Color3.fromRGB(255, 255, 255)}
+							Font={Enum.Font.GothamBold}
+							TextSize={20}
+							Event={{
+								Activated: () => onSetDifficulty(math.max(1, room.difficulty - 1)),
+							}}
+						>
+							<uicorner CornerRadius={new UDim(0, 6)} />
+						</textbutton>
+						<textbutton
+							Text=">"
+							Size={new UDim2(0.2, 0, 1, 0)}
+							Position={new UDim2(0.8, 0, 0, 0)}
+							BackgroundColor3={Color3.fromRGB(60, 60, 60)}
+							TextColor3={Color3.fromRGB(255, 255, 255)}
+							Font={Enum.Font.GothamBold}
+							TextSize={20}
+							Event={{
+								Activated: () => onSetDifficulty(math.min(5, room.difficulty + 1)),
+							}}
+						>
+							<uicorner CornerRadius={new UDim(0, 6)} />
+						</textbutton>
+					</React.Fragment>
+				)}
+			</frame>
+
 			{/* Member List */}
 			<scrollingframe
-				Size={new UDim2(1, 0, 0.6, 0)}
-				Position={new UDim2(0, 0, 0, 110)}
+				Size={new UDim2(1, 0, 0.45, 0)}
+				Position={new UDim2(0, 0, 0, 150)}
 				BackgroundTransparency={1}
 				ScrollBarThickness={4}
 			>

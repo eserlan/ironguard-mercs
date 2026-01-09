@@ -7,6 +7,8 @@ export interface LobbyUiState {
 	activeStation?: "Roster Altar" | "Healing Fountain" | "Tome of Whispers";
 	room?: PartyRoom;
 	soloMercenaryId?: string;
+	soloDifficulty: number;
+	soloMode: MissionMode;
 	abilityLoadout: { slotIndex: number; abilityId: string }[];
 	unlockedClassIds: string[];
 	error?: string;
@@ -19,7 +21,9 @@ export class LobbyController implements OnStart {
 	private state: LobbyUiState = {
 		status: LobbyState.Idle,
 		abilityLoadout: [],
-		unlockedClassIds: ["shield-saint", "ashblade"] // Default starters
+		unlockedClassIds: ["shield-saint", "ashblade"], // Default starters
+		soloDifficulty: 1,
+		soloMode: MissionMode.Standard
 	};
 	private listeners = new Set<StateListener>();
 
@@ -89,10 +93,12 @@ export class LobbyController implements OnStart {
 	}
 
 	setMissionMode(mode: MissionMode) {
+		this.updateState({ soloMode: mode });
 		Events.SetMissionMode(mode);
 	}
 
 	setDifficulty(difficulty: number) {
+		this.updateState({ soloDifficulty: difficulty });
 		Events.SetDifficulty(difficulty);
 	}
 

@@ -7,6 +7,9 @@ import { AbilitySelector } from "client/ui/components/AbilitySelector";
 import { PartyPanel } from "client/ui/components/PartyPanel";
 import { LobbyBillboard } from "client/ui/components/LobbyBillboard";
 import { LoadoutEditor } from "client/ui/components/LoadoutEditor";
+import { AbilityBar } from "client/ui/AbilityBar";
+import { Dependency } from "@flamework/core";
+import { AbilityController } from "client/controllers/AbilityController";
 
 export function Lobby() {
 	const { state, controller } = useLobby();
@@ -102,16 +105,18 @@ export function Lobby() {
 									Size={new UDim2(0, 500, 0, 150)}
 									Position={new UDim2(0.5, -250, 0.5, -75)}
 									BackgroundColor3={Color3.fromRGB(40, 30, 30)}
+									ZIndex={5}
 								>
 									<uicorner CornerRadius={new UDim(0, 12)} />
 									<textlabel
-										Text="PLEDGE A HERO AT THE ROSTER ALTAR FIRST"
+										Text="PLEDGE A MERC AT THE ROSTER ALTAR FIRST"
 										Size={new UDim2(1, 0, 1, 0)}
 										BackgroundTransparency={1}
 										TextColor3={Color3.fromRGB(255, 100, 100)}
 										Font={Enum.Font.GothamBold}
 										TextSize={28}
 										TextWrapped={true}
+										ZIndex={5}
 									/>
 								</frame>
 							)
@@ -159,9 +164,13 @@ export function Lobby() {
 					onReady={(r) => controller.setReady(r)}
 					onLaunch={() => controller.launchMission()}
 					onSetMode={(m) => controller.setMissionMode(m)}
+					onSetDifficulty={(d) => controller.setDifficulty(d)}
 					onLeave={() => controller.leaveParty()}
 				/>
 			)}
+
+			{/* Ability HUD (Always visible in Lobby for testing) */}
+			<AbilityBar loadout={state.abilityLoadout} controller={Dependency<AbilityController>()} />
 		</screengui>
 	);
 }

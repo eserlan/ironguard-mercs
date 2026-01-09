@@ -24,8 +24,8 @@ export function MercenarySelector({ selectedId, unlockedIds, onSelect }: Mercena
 				<textbutton
 					key={cls.id}
 					Text=""
-					Size={new UDim2(0, 0, 0, 0)}
 					BackgroundColor3={selectedId === cls.id ? Color3.fromRGB(50, 200, 50) : Color3.fromRGB(60, 60, 60)}
+					ZIndex={10}
 					Event={{
 						Activated: () => onSelect(cls.id),
 					}}
@@ -40,6 +40,7 @@ export function MercenarySelector({ selectedId, unlockedIds, onSelect }: Mercena
 						TextColor3={Color3.fromRGB(255, 255, 255)}
 						TextSize={24}
 						Font={Enum.Font.GothamBold}
+						ZIndex={10}
 					/>
 
 					<textlabel
@@ -50,6 +51,7 @@ export function MercenarySelector({ selectedId, unlockedIds, onSelect }: Mercena
 						TextColor3={Color3.fromRGB(200, 200, 200)}
 						TextSize={18}
 						Font={Enum.Font.Gotham}
+						ZIndex={10}
 					/>
 
 					<textlabel
@@ -60,6 +62,7 @@ export function MercenarySelector({ selectedId, unlockedIds, onSelect }: Mercena
 						TextColor3={Color3.fromRGB(180, 180, 180)}
 						TextSize={16}
 						Font={Enum.Font.Gotham}
+						ZIndex={10}
 					/>
 				</textbutton>
 			))
