@@ -21,6 +21,7 @@ interface AbilityColumnProps {
 function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controller }: AbilityColumnProps) {
 	const ability = abilityId ? AbilityRegistry.get(abilityId) : undefined;
 	const [remaining, setRemaining] = useState(0);
+	const [hoveredVariant, setHoveredVariant] = useState<"Top" | "Bottom" | undefined>(undefined);
 
 	useEffect(() => {
 		if (!expiry || expiry <= os.clock()) {
@@ -54,7 +55,11 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 				Size={new UDim2(new UDim(1, 0), props.height)}
 				BackgroundColor3={ability ? props.color : Color3.fromRGB(30, 30, 30)}
 				AutoButtonColor={!!ability}
-				Event={{ Activated: () => ability && controller.requestCast(slotIndex, props.variant) }}
+				Event={{
+					Activated: () => ability && controller.requestCast(slotIndex, props.variant),
+					MouseEnter: () => setHoveredVariant(props.variant),
+					MouseLeave: () => setHoveredVariant(undefined)
+				}}
 			>
 				<uicorner CornerRadius={new UDim(0, 4)} />
 				<uistroke
@@ -106,9 +111,73 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 		);
 	};
 
+	const tooltipData = hoveredVariant === "Top" ? ability?.variants.top : (hoveredVariant === "Bottom" ? ability?.variants.bottom : undefined);
+
 	return (
-		<frame Size={new UDim2(0, 70, 0, 140)} BackgroundTransparency={1}>
+		<frame Size={new UDim2(0, 70, 0, 140)} BackgroundTransparency={1} ZIndex={2}>
 			<uilistlayout FillDirection="Vertical" Padding={new UDim(0, 0)} SortOrder="LayoutOrder" />
+
+			{/* Tooltip Overlay */}
+			{tooltipData && (
+				<frame
+					Size={new UDim2(0, 200, 0, 100)}
+					Position={new UDim2(0.5, -100, 0, -110)}
+					BackgroundColor3={Color3.fromRGB(25, 25, 30)}
+					ZIndex={10}
+				>
+					<uicorner CornerRadius={new UDim(0, 8)} />
+					<uistroke
+						ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
+						Thickness={2}
+						Color={Color3.fromRGB(60, 60, 60)}
+					/>
+					<uipadding
+						PaddingTop={new UDim(0, 8)}
+						PaddingBottom={new UDim(0, 8)}
+						PaddingLeft={new UDim(0, 10)}
+						PaddingRight={new UDim(0, 10)}
+					/>
+
+
+					<textlabel
+						Text={string.upper(tooltipData.name ?? "Unknown")}
+						Size={new UDim2(1, 0, 0, 20)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(255, 215, 0)}
+						Font={Enum.Font.GothamBlack}
+						TextSize={14}
+						TextXAlignment={Enum.TextXAlignment.Left}
+					/>
+
+					<textlabel
+						Text={tooltipData.description ?? ""}
+						Size={new UDim2(1, 0, 0, 40)}
+						Position={new UDim2(0, 0, 0, 22)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(220, 220, 220)}
+						Font={Enum.Font.Gotham}
+						TextSize={12}
+						TextWrapped={true}
+						TextXAlignment={Enum.TextXAlignment.Left}
+						TextYAlignment={Enum.TextYAlignment.Top}
+					/>
+
+					{!!tooltipData.technical && (
+						<textlabel
+							Text={tooltipData.technical}
+							Size={new UDim2(1, 0, 0, 30)}
+							Position={new UDim2(0, 0, 1, -30)}
+							BackgroundTransparency={1}
+							TextColor3={Color3.fromRGB(150, 200, 255)}
+							Font={Enum.Font.GothamMedium}
+							TextSize={10}
+							TextWrapped={true}
+							TextXAlignment={Enum.TextXAlignment.Left}
+							TextYAlignment={Enum.TextYAlignment.Bottom}
+						/>
+					)}
+				</frame>
+			)}
 
 			{/* Top Button (Shift) */}
 			<frame Size={new UDim2(1, 0, 0.5, 0)} BackgroundTransparency={1} LayoutOrder={1}>
