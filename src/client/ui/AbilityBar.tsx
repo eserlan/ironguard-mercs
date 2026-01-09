@@ -3,6 +3,7 @@ import { RunService } from "@rbxts/services";
 import { AbilityRegistry } from "shared/domain/abilities/config";
 import { useAbilityCooldowns } from "./hooks/useAbilityCooldowns";
 import type { AbilityController } from "client/controllers/AbilityController";
+import { Log } from "shared/utils/log";
 
 interface AbilityBarProps {
 	loadout: { slotIndex: number; abilityId: string }[];
@@ -18,6 +19,80 @@ interface AbilityColumnProps {
 	controller: AbilityController;
 	onHover: (variant: "Top" | "Bottom" | undefined) => void;
 }
+
+// Move outside to avoid unmounting on every render
+const AbilityButton = (props: {
+	variant: "Top" | "Bottom";
+	label: string;
+	height: UDim;
+	color: Color3;
+	ability?: ReturnType<typeof AbilityRegistry.get>;
+	slotIndex: number;
+	controller: AbilityController;
+	onHover: (variant: "Top" | "Bottom" | undefined) => void;
+}) => {
+	const variantData = props.variant === "Top" ? props.ability?.variants.top : props.ability?.variants.bottom;
+
+	return (
+		<textbutton
+			Text=""
+			Size={new UDim2(new UDim(1, 0), props.height)}
+			BackgroundColor3={props.ability ? props.color : Color3.fromRGB(30, 30, 30)}
+			AutoButtonColor={!!props.ability}
+			Event={{
+				Activated: () => props.ability && props.controller.requestCast(props.slotIndex, props.variant),
+				MouseEnter: () => props.onHover(props.variant),
+				MouseLeave: () => props.onHover(undefined),
+			}}
+		>
+			<uicorner CornerRadius={new UDim(0, 4)} />
+			<uistroke
+				ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
+				Thickness={1}
+				Color={props.ability ? Color3.fromRGB(120, 120, 120) : Color3.fromRGB(60, 60, 60)}
+			/>
+
+			{/* Key Label */}
+			<textlabel
+				Text={props.label}
+				Size={new UDim2(0, 30, 0, 15)}
+				Position={new UDim2(1, -35, 1, -20)}
+				BackgroundTransparency={1}
+				TextColor3={props.ability ? Color3.fromRGB(200, 200, 200) : Color3.fromRGB(80, 80, 80)}
+				TextSize={14}
+				Font={Enum.Font.GothamBlack}
+				TextXAlignment={Enum.TextXAlignment.Right}
+			/>
+
+			{props.ability ? (
+				<React.Fragment>
+					{/* Variant Name */}
+					<textlabel
+						Text={string.upper(variantData?.name ?? props.variant)}
+						Size={new UDim2(1, -10, 0.4, 0)}
+						Position={new UDim2(0, 5, 0, 5)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(255, 255, 255)}
+						TextSize={props.variant === "Top" ? 11 : 12}
+						Font={Enum.Font.GothamBold}
+						TextWrapped={true}
+						TextXAlignment={Enum.TextXAlignment.Left}
+						TextYAlignment={Enum.TextYAlignment.Top}
+					/>
+				</React.Fragment>
+			) : (
+				<textlabel
+					Text="EMPTY"
+					Size={new UDim2(1, 0, 1, 0)}
+					BackgroundTransparency={1}
+					TextColor3={Color3.fromRGB(50, 50, 50)}
+					TextSize={10}
+					Font={Enum.Font.GothamBold}
+				/>
+			)}
+		</textbutton>
+	);
+};
 
 function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controller, onHover }: AbilityColumnProps) {
 	const ability = abilityId ? AbilityRegistry.get(abilityId) : undefined;
@@ -41,76 +116,6 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 	const fillScale = total && total > 0 ? remaining / total : 0;
 	const isCooldown = remaining > 0;
 
-	// Helper component for a button within the column
-	const AbilityButton = (props: {
-		variant: "Top" | "Bottom";
-		label: string;
-		height: UDim;
-		color: Color3;
-	}) => {
-		const variantData = props.variant === "Top" ? ability?.variants.top : ability?.variants.bottom;
-
-		return (
-			<textbutton
-				Text=""
-				Size={new UDim2(new UDim(1, 0), props.height)}
-				BackgroundColor3={ability ? props.color : Color3.fromRGB(30, 30, 30)}
-				AutoButtonColor={!!ability}
-				Event={{
-					Activated: () => ability && controller.requestCast(slotIndex, props.variant),
-					MouseEnter: () => onHover(props.variant),
-					MouseLeave: () => onHover(undefined)
-				}}
-			>
-				<uicorner CornerRadius={new UDim(0, 4)} />
-				<uistroke
-					ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
-					Thickness={1}
-					Color={ability ? Color3.fromRGB(120, 120, 120) : Color3.fromRGB(60, 60, 60)}
-				/>
-
-				{/* Key Label */}
-				<textlabel
-					Text={props.label}
-					Size={new UDim2(0, 30, 0, 15)}
-					Position={new UDim2(1, -35, 1, -20)}
-					BackgroundTransparency={1}
-					TextColor3={ability ? Color3.fromRGB(200, 200, 200) : Color3.fromRGB(80, 80, 80)}
-					TextSize={14}
-					Font={Enum.Font.GothamBlack}
-					TextXAlignment={Enum.TextXAlignment.Right}
-				/>
-
-				{ability ? (
-					<React.Fragment>
-						{/* Variant Name */}
-						<textlabel
-							Text={string.upper(variantData?.name ?? props.variant)}
-							Size={new UDim2(1, -10, 0.4, 0)}
-							Position={new UDim2(0, 5, 0, 5)}
-							BackgroundTransparency={1}
-							TextColor3={Color3.fromRGB(255, 255, 255)}
-							TextSize={props.variant === "Top" ? 11 : 12}
-							Font={Enum.Font.GothamBold}
-							TextWrapped={true}
-							TextXAlignment={Enum.TextXAlignment.Left}
-							TextYAlignment={Enum.TextYAlignment.Top}
-						/>
-					</React.Fragment>
-				) : (
-					<textlabel
-						Text="EMPTY"
-						Size={new UDim2(1, 0, 1, 0)}
-						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(50, 50, 50)}
-						TextSize={10}
-						Font={Enum.Font.GothamBold}
-					/>
-				)}
-			</textbutton>
-		);
-	};
-
 	return (
 		<frame Size={new UDim2(0, 70, 0, 140)} BackgroundTransparency={1} ZIndex={2}>
 			<uilistlayout FillDirection="Vertical" Padding={new UDim(0, 0)} SortOrder="LayoutOrder" />
@@ -122,6 +127,10 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 					label={`S+${keyCode}`}
 					height={new UDim(1, 0)}
 					color={Color3.fromRGB(60, 50, 40)}
+					ability={ability}
+					slotIndex={slotIndex}
+					controller={controller}
+					onHover={onHover}
 				/>
 			</frame>
 
@@ -132,6 +141,10 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 					label={keyCode}
 					height={new UDim(1, 0)}
 					color={Color3.fromRGB(50, 50, 60)}
+					ability={ability}
+					slotIndex={slotIndex}
+					controller={controller}
+					onHover={onHover}
 				/>
 			</frame>
 
@@ -165,8 +178,23 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 }
 
 export function AbilityBar({ loadout, controller }: AbilityBarProps) {
+	print(`[AbilityBar] Render loop started. Loadout pointer: ${loadout}`);
 	const cooldowns = useAbilityCooldowns();
 	const keyLabels = ["1", "2", "3", "4"];
+
+	useEffect(() => {
+		print(`[AbilityBar] Mount effect triggered`);
+	}, []);
+
+	useEffect(() => {
+		const loadoutArray = loadout as unknown as Array<{ slotIndex: number; abilityId: string }>;
+		const sz = typeOf(loadout) === "table" ? loadout.size() : 0;
+		print(`[AbilityBar] Loadout changed. size=${sz}`);
+		for (const [i, l] of pairs(loadout)) {
+			const entry = l as { slotIndex: number; abilityId: string };
+			print(` - [${i}] slot=${entry.slotIndex} id=${entry.abilityId}`);
+		}
+	}, [loadout]);
 
 	// hoveredInfo is only for the "pending" state or logic
 	const [pendingHover, setPendingHover] = useState<
@@ -178,8 +206,17 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	);
 
 	useEffect(() => {
+		if (activeInfo) {
+			print(`[AbilityBar] activeInfo set to: ${activeInfo.name}`);
+		} else {
+			print("[AbilityBar] activeInfo cleared");
+		}
+	}, [activeInfo]);
+
+	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
 			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
+				print(`[AbilityBar] SUCCESS: 0.5s hovered! Setting activeInfo for: ${pendingHover.data.name}`);
 				setActiveInfo(pendingHover.data);
 				setPendingHover(undefined);
 			}
@@ -187,7 +224,10 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 		return () => conn.Disconnect();
 	}, [pendingHover]);
 
-	const closePanel = () => setActiveInfo(undefined);
+	const closePanel = () => {
+		print("[AbilityBar] UI EVENT: Close button clicked");
+		setActiveInfo(undefined);
+	};
 
 	return (
 		<frame
@@ -195,99 +235,90 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 			AnchorPoint={new Vector2(0.5, 1)}
 			Position={new UDim2(0.5, 0, 1, -2)}
 			BackgroundTransparency={1}
+			ZIndex={1}
 		>
 			{/* Info Panel (Bottom Left) - Sticky / Persistent */}
 			{activeInfo && (
 				<frame
-					Size={new UDim2(0, 320, 0, 150)}
-					Position={new UDim2(0, 20, 0, -10)} // Slightly higher to avoid overlap if needed
-					BackgroundColor3={Color3.fromRGB(20, 20, 25)}
-					ZIndex={20}
+					key="InfoPanel"
+					Size={new UDim2(0, 320, 0, 180)}
+					Position={new UDim2(0, 20, 0, -220)}
+					BackgroundColor3={Color3.fromRGB(30, 30, 35)}
+					ZIndex={200}
+					Visible={true}
+					Active={true}
 				>
-					<uicorner CornerRadius={new UDim(0, 8)} />
-					<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={2} Color={Color3.fromRGB(80, 80, 90)} />
+					<uicorner CornerRadius={new UDim(0, 12)} />
+					<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={3} Color={Color3.fromRGB(200, 160, 40)} />
+
 					<uipadding
-						PaddingTop={new UDim(0, 15)}
-						PaddingBottom={new UDim(0, 15)}
-						PaddingLeft={new UDim(0, 20)}
-						PaddingRight={new UDim(0, 20)}
+						PaddingTop={new UDim(0, 20)}
+						PaddingBottom={new UDim(0, 20)}
+						PaddingLeft={new UDim(0, 25)}
+						PaddingRight={new UDim(0, 25)}
 					/>
 
 					{/* Close Button */}
 					<textbutton
+						key="CloseBtn"
 						Text="X"
-						Size={new UDim2(0, 24, 0, 24)}
-						Position={new UDim2(1, -12, 0, -12)}
-						BackgroundColor3={Color3.fromRGB(150, 40, 40)}
+						Size={new UDim2(0, 32, 0, 32)}
+						Position={new UDim2(1, -16, 0, -16)}
+						BackgroundColor3={Color3.fromRGB(200, 50, 50)}
 						TextColor3={Color3.fromRGB(255, 255, 255)}
 						Font={Enum.Font.GothamBold}
-						TextSize={14}
-						ZIndex={21}
+						TextSize={24}
+						ZIndex={210}
 						Event={{ Activated: closePanel }}
 					>
 						<uicorner CornerRadius={new UDim(1, 0)} />
-						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={1} Color={Color3.fromRGB(255, 255, 255)} />
+						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={2} Color={Color3.fromRGB(255, 255, 255)} />
 					</textbutton>
 
 					{/* Title */}
 					<textlabel
-						Text={string.upper(activeInfo.name !== "" ? activeInfo.name : "UNKNOWN")}
-						Size={new UDim2(1, -30, 0, 30)}
+						key="Title"
+						Text={string.upper(activeInfo.name)}
+						Size={new UDim2(1, 0, 0, 30)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(255, 215, 0)}
-						Font={Enum.Font.GothamBold}
-						TextSize={20}
+						Font={Enum.Font.GothamBlack}
+						TextSize={22}
 						TextXAlignment={Enum.TextXAlignment.Left}
-						ZIndex={22}
-						TextTransparency={0}
+						ZIndex={202}
 					/>
 
 					{/* Description */}
 					<textlabel
-						Text={activeInfo.description !== "" ? activeInfo.description : "No description available."}
+						key="Desc"
+						Text={activeInfo.description}
 						Size={new UDim2(1, 0, 0, 60)}
-						Position={new UDim2(0, 0, 0, 35)}
+						Position={new UDim2(0, 0, 0, 40)}
 						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(210, 210, 210)}
-						Font={Enum.Font.GothamBold}
-						TextSize={15}
+						TextColor3={Color3.fromRGB(230, 230, 230)}
+						Font={Enum.Font.GothamMedium}
+						TextSize={16}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
-						ZIndex={22}
-						TextTransparency={0}
+						ZIndex={202}
 					/>
 
 					{/* Technical Info */}
-					{activeInfo.technical !== "" ? (
-						<textlabel
-							Text={activeInfo.technical}
-							Size={new UDim2(1, 0, 0, 30)}
-							Position={new UDim2(0, 0, 1, -35)}
-							BackgroundTransparency={1}
-							TextColor3={Color3.fromRGB(140, 180, 255)}
-							Font={Enum.Font.GothamBold}
-							TextSize={13}
-							TextWrapped={true}
-							TextXAlignment={Enum.TextXAlignment.Left}
-							TextYAlignment={Enum.TextYAlignment.Bottom}
-							ZIndex={22}
-							TextTransparency={0}
-						/>
-					) : (
-						<textlabel
-							Text="No technical data."
-							Size={new UDim2(1, 0, 0, 30)}
-							Position={new UDim2(0, 0, 1, -35)}
-							BackgroundTransparency={1}
-							TextColor3={Color3.fromRGB(100, 100, 100)}
-							Font={Enum.Font.SourceSansItalic}
-							TextSize={13}
-							TextXAlignment={Enum.TextXAlignment.Left}
-							ZIndex={22}
-							TextTransparency={0}
-						/>
-					)}
+					<textlabel
+						key="Tech"
+						Text={activeInfo.technical}
+						Size={new UDim2(1, 0, 0, 40)}
+						Position={new UDim2(0, 0, 1, -40)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(160, 200, 255)}
+						Font={Enum.Font.GothamBold}
+						TextSize={14}
+						TextWrapped={true}
+						TextXAlignment={Enum.TextXAlignment.Left}
+						TextYAlignment={Enum.TextYAlignment.Bottom}
+						ZIndex={202}
+					/>
 				</frame>
 			)}
 
@@ -301,7 +332,14 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 				/>
 
 				{[0, 1, 2, 3].map((slotIndex) => {
-					const entry = loadout.find((l) => l.slotIndex === slotIndex);
+					let entry: (typeof loadout)[number] | undefined = undefined;
+					for (const l of loadout) {
+						if (l.slotIndex === slotIndex) {
+							entry = l;
+							break;
+						}
+					}
+
 					const cooldown = cooldowns.get(slotIndex);
 					return (
 						<AbilityColumn
@@ -314,14 +352,23 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 							controller={controller}
 							onHover={(variant) => {
 								if (!variant || !entry?.abilityId) {
-									setPendingHover(undefined);
+									if (pendingHover) {
+										print(`[AbilityBar] Hover Cleared (No variant or no abilityId for slot ${slotIndex})`);
+										setPendingHover(undefined);
+									}
 									return;
 								}
 								const ability = AbilityRegistry.get(entry.abilityId);
-								if (!ability) return;
+								if (!ability) {
+									print(`[AbilityBar] Hover Warning: ${entry.abilityId} NOT in Registry`);
+									return;
+								}
 
 								const data = variant === "Top" ? ability.variants.top : ability.variants.bottom;
 								if (data) {
+									print(`[AbilityBar] Hovering valid variant: ${data.name}`);
+									if (pendingHover?.data.name === data.name) return;
+
 									const info = {
 										name: data.name ?? "Unknown",
 										description: data.description ?? "",
