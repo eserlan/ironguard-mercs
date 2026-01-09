@@ -242,7 +242,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 				<frame
 					key="InfoPanel"
 					Size={new UDim2(0, 320, 0, 180)}
-					Position={new UDim2(0, 20, 0, -220)}
+					Position={new UDim2(0, 20, 0, -58)}
 					BackgroundColor3={Color3.fromRGB(30, 30, 35)}
 					ZIndex={200}
 					Visible={true}
