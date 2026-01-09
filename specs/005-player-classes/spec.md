@@ -10,6 +10,13 @@
 
 Player Classes define a character’s combat role, ability library, and gameplay identity. They determine how a player contributes to the team through distinct mechanics, pacing, and decision-making styles. This feature establishes the base class system and introduces two starter classes: **Shield Saint** (Protector) and **Ashblade** (Striker).
 
+### The Shield Saint: Anchor of the Sanctuary
+A majestic mountain-top cathedral warrior. The Shield Saint is the wall between the darkness and the weak. Their abilities focus on **Pledging Protection**, **Sacred Mitigation**, and **Spiritual Attunement**.
+
+- **Theme**: Ivory stone, gold filigree, pillars of light, deep choral swells.
+- **Role**: Protector / Anchor.
+- **Weapon**: Heavy Greatshield and Mace.
+
 ## Problem / Why
 
 Without distinct classes, player roles are ambiguous and team synergy is hard to achieve. We need a system that allows for specialized gameplay styles to ensure replayability and tactical depth. The "Shield Saint" and "Ashblade" establishment provides the core contrast (Anchor vs. Duelist) needed to validate the combat system's flexibility.

@@ -13,11 +13,13 @@ export class HealthComponent extends BaseComponent<object, BasePart> {
     onStart() {
         this.instance.SetAttribute("Health", this.logic.current);
         this.instance.SetAttribute("MaxHealth", this.logic.max);
+        this.instance.SetAttribute("Shield", 0);
     }
 
     public takeDamage(amount: number) {
         if (this.logic.damage(amount)) {
             this.instance.SetAttribute("Health", 0);
+            this.instance.SetAttribute("Shield", 0);
 
             // If player died, mission failed
             if (this.instance.IsA("Model") && game.GetService("Players").GetPlayerFromCharacter(this.instance)) {
@@ -27,12 +29,18 @@ export class HealthComponent extends BaseComponent<object, BasePart> {
             this.instance.Destroy();
         } else {
             this.instance.SetAttribute("Health", this.logic.current);
+            this.instance.SetAttribute("Shield", this.logic.shield);
         }
     }
 
     public heal(amount: number) {
         this.logic.heal(amount);
         this.instance.SetAttribute("Health", this.logic.current);
+    }
+
+    public addShield(amount: number) {
+        this.logic.addShield(amount);
+        this.instance.SetAttribute("Shield", this.logic.shield);
     }
 
     public setHealth(value: number) {

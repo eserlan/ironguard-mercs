@@ -52,4 +52,21 @@ export const StandardEffects = {
 
 		health.heal(block.value ?? 0);
 	},
+
+	applyShield(target: Instance, block: EffectBlock, components: Components) {
+		const health = components.getComponent<HealthComponent>(target);
+		if (!health) return;
+
+		health.addShield(block.value ?? 0);
+	},
+
+	applyDash(target: Instance, block: EffectBlock) {
+		if (!target.IsA("Model")) return;
+		const root = target.FindFirstChild("HumanoidRootPart") as BasePart;
+		if (!root) return;
+
+		const direction = root.CFrame.LookVector;
+		const distance = block.value ?? 0;
+		root.CFrame = root.CFrame.add(direction.mul(distance));
+	},
 };
