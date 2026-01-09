@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "@rbxts/react";
+import React, { useState, useEffect, useMemo } from "@rbxts/react";
 import { AppState } from "client/ui/state/app-state";
 import { AbilityBar } from "../AbilityBar";
 import { useLobby } from "../hooks/useLobby";
@@ -9,6 +9,7 @@ import { AbilityController } from "client/controllers/AbilityController";
 export function Hud() {
 	const [health, setHealth] = useState(AppState.health);
 	const { state } = useLobby();
+	const abilityController = useMemo(() => Dependency<AbilityController>(), []);
 
 	useEffect(() => {
 		// Subscribe to AppState changes for proper React updates
@@ -40,7 +41,7 @@ export function Hud() {
 				/>
 			</frame>
 
-			<AbilityBar loadout={state.abilityLoadout} controller={Dependency<AbilityController>()} />
+			<AbilityBar loadout={state.abilityLoadout} controller={abilityController} />
 		</frame>
 	);
 }
