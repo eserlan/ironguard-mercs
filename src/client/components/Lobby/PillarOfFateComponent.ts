@@ -51,7 +51,7 @@ export class PillarOfFateComponent extends StationComponent<object, Model | Base
     private descriptionLabel?: TextLabel;
 
     constructor(lobbyController: LobbyController) {
-        super(lobbyController); // Cast for super if needed, or suppress
+        super(lobbyController);
     }
 
     onStart() {
