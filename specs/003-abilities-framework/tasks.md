@@ -63,9 +63,20 @@ description: "Task list for IronGuard Mercs: Abilities Framework (003)"
 
 ---
 
+## Phase 6: Refinement & Rebranding (Sacred/High-Fantasy)
+
+**Purpose**: Align Ability HUD and Selector with the Sanctuary of Valor theme.
+
+- [x] T022 Refactor `AbilityBar.tsx` to use Dual-Stacked layout with LMB/RMB keybind hints
+- [x] T023 Implement `AbilitySelector.tsx` with parchment aesthetic and technical variant detail panel
+- [x] T024 Sync cooldown visualization with high-resolution `os.clock()` in `AbilityColumn`
+- [x] T025 Rebrand UI strings ("Pledge Abilities", "Prophecy Panel", "Sacred Actions")
+- [x] T026 Comply with Constitution Standard XI (Avoid React Fragments) in all ability UI components
+
 ## Implementation Strategy
 
 1.  **Schema First**: T001-T004 ensures we know *what* we are building.
 2.  **Brain First**: T005-T008 builds the logic safely.
 3.  **Authority Second**: T010-T014 builds the server core.
 4.  **Feedback Last**: T015-T018 builds the UI/VFX.
+5.  **Immersion Final**: T022-T026 aligns the system with the high-fantasy vision.

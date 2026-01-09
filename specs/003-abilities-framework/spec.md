@@ -8,7 +8,7 @@
 
 ## Summary
 
-This feature defines the standard for how abilities are defined, structured, executed, and synced in IronGuard Mercs. It establishes a rigorous data model and execution pipeline to ensure abilities are consistent, testable, and performant over the network. The framework enforces a "Top/Bottom" behavior model to separate high-level logic from low-level execution.
+This feature defines the standard for how **Sacred Actions** (Abilities) are defined, structured, executed, and synced in the Sanctuary of Valor. It establishes a rigorous data model and execution pipeline to ensure every hero's skills are consistent, testable, and performant. The framework enforces a **Top/Bottom Variant** approach, presented diegetically via the **Tome of Whispers** and the **Sacred Bar**, separating heavenly server-side logic from earthly client-side execution.
 
 ## Problem / Why
 
@@ -16,9 +16,18 @@ Without a strict framework, abilities risk becoming "one-off snowflakes"—custo
 
 ## Proposal / What
 
-We will implement a data-driven framework where abilities are defined by strict schemas. The execution model follows a **Top/Bottom Variant** approach:
-*   **Top (Server)**: Authoritative state, validation, cooldowns, damage application. Uses the `top` variant configuration.
-*   **Bottom (Client)**: Input capture, visual prediction, feedback display. Uses the `bottom` variant configuration for local simulation.
+We will implement a data-driven framework where abilities are defined by strict schemas. The execution and interaction model follows a **Top/Bottom Variant** approach, presented through a diegetic high-fantasy lens:
+*   **Top (Heavenly/Authoritative)**: Authoritative state, validation, cooldowns. Executed via Primary Input (LMB/1).
+*   **Bottom (Earthy/Tactical)**: Visual prediction, quick feedback. Executed via Secondary Input (RMB/Shift).
+
+### The Tome of Whispers (Selection)
+Abilities are not "equipped" in menus; they are **Pledged** at the Tome of Whispers. The selection UI uses a parchment aesthetic with a detailed "Prophecy" panel showing variant names, technical lore, and cooldowns.
+
+### The Sacred Bar (HUD)
+The gameplay HUD features a **Dual-Stacked** layout for each slot:
+- One slot contains two distinct buttons (Top/Bottom).
+- Keybind hints are integrated diegetically (e.g., "[LMB] Top").
+- Cooldowns are visualized via a vertical red "eclipse" fill, synchronized via high-resolution client clock (Heartbeat).
 
 ### User Scenarios & Testing
 
@@ -35,10 +44,10 @@ We will implement a data-driven framework where abilities are defined by strict 
 #### Functional
 - **FR-001**: System MUST strictly separate Ability Data (Properties) from Execution Logic (Scripts).
 - **FR-002**: System MUST implement **Server Authority** for all state changes (Damage, Cooldowns).
-- **FR-003**: System MUST support **Top/Bottom Variant** configuration allowing asymmetric parameters for client and server.
-- **FR-004**: System MUST use a standardized networking protocol for ability intents including `slotIndex` and `action` type.
-- **FR-005**: All abilities MUST adhere to a strict Data Model (Schema).
-- **FR-006**: Logic MUST be composed of reusable **Components** (EffectBlocks) for >90% of abilities.
+- **FR-003**: System MUST support **Top/Bottom Variant** configuration allowing asymmetric parameters.
+- **FR-004**: System MUST use a standardized networking protocol for ability intents.
+- **FR-005**: The HUD MUST display 4 slots, each supporting dual-stacked interaction for variant execution.
+- **FR-006**: Ability selection MUST occur via the diegetic "Tome of Whispers" interface.
 
 #### Key Entities
 - **AbilityConfig**: Static definition containing `top` and `bottom` variants.

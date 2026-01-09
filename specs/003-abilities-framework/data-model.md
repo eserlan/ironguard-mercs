@@ -8,6 +8,7 @@
 Static definition of a skill.
 - `Id`: string
 - `Name`: string
+- `Description`: string (Lore/Thematic text)
 - `Category`: Enum (Mobility, Offense, Defense, Utility)
 - `ActivationType`: Enum (Instant, Targeted, Channel)
 - `Targeting`: Enum (Self, Point, Entity, Direction, Area)
@@ -17,6 +18,9 @@ Static definition of a skill.
 
 ### 2. AbilityVariantConfig
 Parameters for a specific execution context.
+- `Name`: string (Diegetic action name, e.g. "Holy Smite")
+- `Description`: string (Thematic flavor text)
+- `Technical`: string (Lore-accurate description of effects)
 - `Cooldown`: number
 - `EffectBlocks`: List<EffectBlock>
 - `Cost`: number (optional)
