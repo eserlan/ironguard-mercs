@@ -80,7 +80,9 @@ src/
 ### Phase 3: Client Experience
 - Implement `AbilityController` (Input & Intent).
 - Implement `VFXController` (Optimistic Cast + Authoritative Impact).
-- UI: Ability Bar & Cooldowns.
+- **UI: The Sacred Bar**: Implement dual-stacked HUD with LMB/RMB keybind hints.
+- **UI: Tome of Whispers**: Implement parchment-style selector with variant detail panel.
+- **VFX**: Pillar of light / Choral swells for "Pledging" actions.
 
 ### Phase 4: Content & Polish
 - Configure 3 Archetypes: Dash, Shield, Fireball.
