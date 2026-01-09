@@ -77,7 +77,7 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 					TextSize={20}
 				/>
 				{isHost && (
-					<React.Fragment>
+					<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1}>
 						<textbutton
 							Text="<"
 							Size={new UDim2(0.2, 0, 1, 0)}
@@ -106,7 +106,7 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 						>
 							<uicorner CornerRadius={new UDim(0, 6)} />
 						</textbutton>
-					</React.Fragment>
+					</frame>
 				)}
 			</frame>
 

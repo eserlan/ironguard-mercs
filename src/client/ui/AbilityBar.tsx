@@ -76,21 +76,19 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 				/>
 
 				{ability ? (
-					<React.Fragment>
-						{/* Variant Name */}
-						<textlabel
-							Text={variantData?.name?.upper() ?? props.variant}
-							Size={new UDim2(1, -10, 0.4, 0)}
-							Position={new UDim2(0, 5, 0, 5)}
-							BackgroundTransparency={1}
-							TextColor3={Color3.fromRGB(255, 255, 255)}
-							TextSize={props.variant === "Top" ? 11 : 12}
-							Font={Enum.Font.GothamBold}
-							TextWrapped={true}
-							TextXAlignment={Enum.TextXAlignment.Left}
-							TextYAlignment={Enum.TextYAlignment.Top}
-						/>
-					</React.Fragment>
+					/* Variant Name */
+					<textlabel
+						Text={variantData?.name?.upper() ?? props.variant}
+						Size={new UDim2(1, -10, 0.4, 0)}
+						Position={new UDim2(0, 5, 0, 5)}
+						BackgroundTransparency={1}
+						TextColor3={Color3.fromRGB(255, 255, 255)}
+						TextSize={props.variant === "Top" ? 11 : 12}
+						Font={Enum.Font.GothamBold}
+						TextWrapped={true}
+						TextXAlignment={Enum.TextXAlignment.Left}
+						TextYAlignment={Enum.TextYAlignment.Top}
+					/>
 				) : (
 					// Empty State
 					<textlabel
