@@ -42,7 +42,7 @@ const FACES: Enum.NormalId[] = [
 @Component({
     tag: "LobbyPillarOfFate",
 })
-export class PillarOfFateComponent extends StationComponent<{}, Model | BasePart> {
+export class PillarOfFateComponent extends StationComponent<object, Model | BasePart> {
     private crystal?: BasePart;
     private pillar?: BasePart;
     private pointLight?: PointLight;
