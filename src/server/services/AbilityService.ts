@@ -54,7 +54,8 @@ export class AbilityService implements OnStart {
 			this.handleIntent(player, intent);
 		});
 
-		// Assign default loadout to players on join
+		// Assign default loadout to players on join for testing
+		// TODO: Remove or gate behind dev flag before production
 		Players.PlayerAdded.Connect((player) => {
 			this.assignDefaultLoadout(player);
 		});
@@ -65,6 +66,11 @@ export class AbilityService implements OnStart {
 		}
 	}
 
+	/**
+	 * Assigns a default Shield Saint loadout to a player
+	 * NOTE: This is a testing convenience and bypasses the mercenary selection flow.
+	 * Should be removed or gated behind a development flag before production deployment.
+	 */
 	private assignDefaultLoadout(player: Player) {
 		const classId = "shield-saint";
 		this.loadoutService.setSessionLoadout(player.UserId, classId, DEFAULT_SHIELD_SAINT_LOADOUT);

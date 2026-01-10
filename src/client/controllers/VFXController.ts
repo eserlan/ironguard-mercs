@@ -114,6 +114,11 @@ export class VFXController implements OnStart {
 	public spawnPillarOfLight(position: Vector3) {
 		print(`[VFX] Spawning Pillar of Light at ${position}`);
 		// Visual only placeholder
+		if (!Workspace) {
+			warn("[VFX] Workspace unavailable for spawnPillarOfLight");
+			return;
+		}
+
 		const part = new Instance("Part");
 		part.Shape = Enum.PartType.Cylinder;
 		part.Size = new Vector3(20, 10, 10);
@@ -124,11 +129,26 @@ export class VFXController implements OnStart {
 		part.CanCollide = false;
 		part.Parent = Workspace;
 
-		task.delay(1, () => part.Destroy());
+		// Use a connection to ensure cleanup even if destroyed early
+		const conn = part.Destroying.Connect(() => {
+			// Cleanup logic if needed
+		});
+
+		task.delay(1, () => {
+			conn.Disconnect();
+			if (part && part.Parent) {
+				part.Destroy();
+			}
+		});
 	}
 
 	public spawnShieldBurst(position: Vector3) {
 		print(`[VFX] Spawning Shield Burst at ${position}`);
+		if (!Workspace) {
+			warn("[VFX] Workspace unavailable for spawnShieldBurst");
+			return;
+		}
+
 		const part = new Instance("Part");
 		part.Shape = Enum.PartType.Ball;
 		part.Size = new Vector3(15, 15, 15);
@@ -139,11 +159,25 @@ export class VFXController implements OnStart {
 		part.CanCollide = false;
 		part.Parent = Workspace;
 
-		task.delay(0.5, () => part.Destroy());
+		const conn = part.Destroying.Connect(() => {
+			// Cleanup logic if needed
+		});
+
+		task.delay(0.5, () => {
+			conn.Disconnect();
+			if (part && part.Parent) {
+				part.Destroy();
+			}
+		});
 	}
 
 	public spawnGreatOath(position: Vector3) {
 		print(`[VFX] Spawning Great Oath at ${position}`);
+		if (!Workspace) {
+			warn("[VFX] Workspace unavailable for spawnGreatOath");
+			return;
+		}
+
 		const part = new Instance("Part");
 		part.Size = new Vector3(1, 10, 1);
 		part.Position = position;
@@ -152,6 +186,15 @@ export class VFXController implements OnStart {
 		part.CanCollide = false;
 		part.Parent = Workspace;
 
-		task.delay(2, () => part.Destroy());
+		const conn = part.Destroying.Connect(() => {
+			// Cleanup logic if needed
+		});
+
+		task.delay(2, () => {
+			conn.Disconnect();
+			if (part && part.Parent) {
+				part.Destroy();
+			}
+		});
 	}
 }

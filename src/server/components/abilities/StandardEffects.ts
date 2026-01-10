@@ -4,6 +4,7 @@ import { CombatService } from "../../services/CombatService";
 import { Components } from "@flamework/components";
 import { resolveDamage } from "../../../shared/algorithms/combat/damage";
 import { CombatRNG } from "../../../shared/algorithms/combat/rng";
+import { calculateDashCFrame } from "../../../shared/algorithms/movement";
 
 // Pure-ish functions, but they interact with game state via injected dependencies
 export const StandardEffects = {
@@ -65,8 +66,8 @@ export const StandardEffects = {
 		const root = target.FindFirstChild("HumanoidRootPart") as BasePart;
 		if (!root) return;
 
-		const direction = root.CFrame.LookVector;
 		const distance = block.value ?? 0;
-		root.CFrame = root.CFrame.add(direction.mul(distance));
+		// Use pure calculation from shared/algorithms
+		root.CFrame = calculateDashCFrame(root.CFrame, distance);
 	},
 };

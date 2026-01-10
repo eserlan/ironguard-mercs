@@ -6,6 +6,7 @@ import { CombatService } from "./CombatService";
 import { ProjectileService } from "./ProjectileService";
 import { TargetingBiasService } from "./TargetingBiasService";
 import { Log } from "../../shared/utils/log";
+import { getStatusEffect } from "../../shared/domain/combat/status-effects-config";
 
 @Service({})
 export class EffectService {
@@ -54,33 +55,40 @@ export class EffectService {
 		}
 	}
 
-	private resolveAugment(target: Instance, block: EffectBlock, sourceId: string) {
+	private resolveAugment(_target: Instance, block: EffectBlock, _sourceId: string) {
+		// TODO: Implement augment system
 		const augmentId = block.params?.augmentId as string;
-		Log.info(`Applied Augment ${augmentId} (value: ${block.value}) to ${target.Name}`);
+		Log.info(`Applied Augment ${augmentId} (value: ${block.value}) to ${_target.Name}`);
 	}
 
-	private resolveMitigationMod(target: Instance, block: EffectBlock, sourceId: string) {
+	private resolveMitigationMod(_target: Instance, block: EffectBlock, _sourceId: string) {
+		// TODO: Implement mitigation modifier system
 		const duration = block.params?.duration as number;
-		Log.info(`Applied MitigationMod ${block.value}% to ${target.Name} for ${duration}s`);
+		Log.info(`Applied MitigationMod ${block.value}% to ${_target.Name} for ${duration}s`);
 	}
 
-	private resolveStatMod(target: Instance, block: EffectBlock, sourceId: string) {
-		// Real impl: register mod with StatService
+	private resolveStatMod(_target: Instance, block: EffectBlock, _sourceId: string) {
+		// TODO: Register mod with StatService when implemented
 		const statId = block.params?.statId as string;
 		const duration = block.params?.duration as number;
-		Log.info(`Applied StatMod ${statId} (x${block.value}) to ${target.Name} for ${duration}s`);
+		Log.info(`Applied StatMod ${statId} (x${block.value}) to ${_target.Name} for ${duration}s`);
 	}
 
 	private resolveStatusEffect(target: Instance, block: EffectBlock, sourceId: string) {
 		const effectId = block.params?.statusEffectId as string;
 		const duration = block.value ?? 0;
 
-		if (effectId === "marked") {
-			this.biasService.addBias(sourceId, 50, duration);
-		} else if (effectId === "marked_strong") {
-			this.biasService.addBias(sourceId, 150, duration);
-		} else if (effectId === "cleanse") {
+		const effectDef = getStatusEffect(effectId);
+		if (!effectDef) {
+			warn(`Unknown status effect: ${effectId}`);
+			return;
+		}
+
+		if (effectDef.biasMod !== undefined) {
+			this.biasService.addBias(sourceId, effectDef.biasMod, duration);
+		} else if (effectDef.isCleanse) {
 			// Real impl: remove debuffs from target
+			Log.info(`Cleansing debuffs from ${target.Name}`);
 		}
 	}
 }
