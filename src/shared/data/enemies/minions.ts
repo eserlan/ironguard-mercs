@@ -11,6 +11,16 @@ export const VOID_SWARM: EnemyArchetype = {
 	breakThreshold: 10,
 };
 
+export const IRON_SWARM: EnemyArchetype = {
+	id: "iron-swarm",
+	name: "Iron Swarm",
+	role: EnemyRole.Swarm,
+	tier: EnemyTier.Minion,
+	stats: { hp: 40, speed: 18, mitigation: 5, threatBiasMultiplier: 1 },
+	moves: [{ id: "pierce", cooldown: 1.5, telegraph: { type: "Circle", duration: 0.6, radius: 4 }, interruptible: true, breakable: false }],
+	breakThreshold: 15,
+};
+
 export const IRON_GRUNT: EnemyArchetype = {
 	id: "iron-grunt",
 	name: "Iron Grunt",
