@@ -1,5 +1,5 @@
 import { Controller, OnStart } from "@flamework/core";
-import { ContextActionService, UserInputService } from "@rbxts/services";
+import { UserInputService } from "@rbxts/services";
 import { Events } from "client/events";
 import { Log } from "shared/utils/log";
 

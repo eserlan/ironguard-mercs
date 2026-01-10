@@ -3,7 +3,6 @@ import { RunService } from "@rbxts/services";
 import { AbilityRegistry } from "shared/domain/abilities/config";
 import { useAbilityCooldowns } from "./hooks/useAbilityCooldowns";
 import type { AbilityController } from "client/controllers/AbilityController";
-import { Log } from "shared/utils/log";
 
 interface AbilityBarProps {
 	loadout: { slotIndex: number; abilityId: string }[];
@@ -178,22 +177,13 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 }
 
 export function AbilityBar({ loadout, controller }: AbilityBarProps) {
-	print(`[AbilityBar] Render loop started. Loadout pointer: ${loadout}`);
 	const cooldowns = useAbilityCooldowns();
 	const keyLabels = ["1", "2", "3", "4"];
 
 	useEffect(() => {
-		print(`[AbilityBar] Mount effect triggered`);
 	}, []);
 
 	useEffect(() => {
-		const loadoutArray = loadout as unknown as Array<{ slotIndex: number; abilityId: string }>;
-		const sz = typeOf(loadout) === "table" ? loadout.size() : 0;
-		print(`[AbilityBar] Loadout changed. size=${sz}`);
-		for (const [i, l] of pairs(loadout)) {
-			const entry = l as { slotIndex: number; abilityId: string };
-			print(` - [${i}] slot=${entry.slotIndex} id=${entry.abilityId}`);
-		}
 	}, [loadout]);
 
 	// hoveredInfo is only for the "pending" state or logic
@@ -206,17 +196,8 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	>(undefined);
 
 	useEffect(() => {
-		if (activeInfo) {
-			print(`[AbilityBar] activeInfo set to: ${activeInfo.name}`);
-		} else {
-			print("[AbilityBar] activeInfo cleared");
-		}
-	}, [activeInfo]);
-
-	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
 			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
-				print(`[AbilityBar] SUCCESS: 0.5s hovered! Setting activeInfo for: ${pendingHover.data.name}`);
 				setActiveInfo(pendingHover.data);
 				setPendingHover(undefined);
 			}
@@ -225,7 +206,6 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	}, [pendingHover]);
 
 	const closePanel = () => {
-		print("[AbilityBar] UI EVENT: Close button clicked");
 		setActiveInfo(undefined);
 	};
 
@@ -367,20 +347,17 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 							onHover={(variant) => {
 								if (!variant || !entry?.abilityId) {
 									if (pendingHover) {
-										print(`[AbilityBar] Hover Cleared (No variant or no abilityId for slot ${slotIndex})`);
 										setPendingHover(undefined);
 									}
 									return;
 								}
 								const ability = AbilityRegistry.get(entry.abilityId);
 								if (!ability) {
-									print(`[AbilityBar] Hover Warning: ${entry.abilityId} NOT in Registry`);
 									return;
 								}
 
 								const data = variant === "Top" ? ability.variants.top : ability.variants.bottom;
 								if (data) {
-									print(`[AbilityBar] Hovering valid variant: ${data.name}`);
 									if (pendingHover?.data.name === data.name) return;
 
 									const info = {

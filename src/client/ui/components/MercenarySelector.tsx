@@ -25,6 +25,7 @@ export function MercenarySelector({ selectedId, unlockedIds, onSelect }: Mercena
 					key={cls.id}
 					Text=""
 					BackgroundColor3={selectedId === cls.id ? Color3.fromRGB(50, 200, 50) : Color3.fromRGB(60, 60, 60)}
+					// Size controlled by parent UIGridLayout CellSize
 					ZIndex={10}
 					Event={{
 						Activated: () => onSelect(cls.id),
