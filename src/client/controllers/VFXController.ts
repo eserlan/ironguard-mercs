@@ -71,6 +71,12 @@ export class VFXController implements OnStart {
 			case "martyrs-promise":
 				this.spawnGreatOath(position);
 				break;
+			case "cinder-step":
+				this.spawnCinderDash(position);
+				break;
+			case "blaze-finisher":
+				this.spawnBlazeFinisher(position);
+				break;
 		}
 	}
 
@@ -113,11 +119,7 @@ export class VFXController implements OnStart {
 
 	public spawnPillarOfLight(position: Vector3) {
 		print(`[VFX] Spawning Pillar of Light at ${position}`);
-		// Visual only placeholder
-		if (!Workspace) {
-			warn("[VFX] Workspace unavailable for spawnPillarOfLight");
-			return;
-		}
+		if (!Workspace) return;
 
 		const part = new Instance("Part");
 		part.Shape = Enum.PartType.Cylinder;
@@ -129,25 +131,12 @@ export class VFXController implements OnStart {
 		part.CanCollide = false;
 		part.Parent = Workspace;
 
-		// Use a connection to ensure cleanup even if destroyed early
-		const conn = part.Destroying.Connect(() => {
-			// Cleanup logic if needed
-		});
-
-		task.delay(1, () => {
-			conn.Disconnect();
-			if (part && part.Parent) {
-				part.Destroy();
-			}
-		});
+		task.delay(1, () => part.Destroy());
 	}
 
 	public spawnShieldBurst(position: Vector3) {
 		print(`[VFX] Spawning Shield Burst at ${position}`);
-		if (!Workspace) {
-			warn("[VFX] Workspace unavailable for spawnShieldBurst");
-			return;
-		}
+		if (!Workspace) return;
 
 		const part = new Instance("Part");
 		part.Shape = Enum.PartType.Ball;
@@ -159,24 +148,12 @@ export class VFXController implements OnStart {
 		part.CanCollide = false;
 		part.Parent = Workspace;
 
-		const conn = part.Destroying.Connect(() => {
-			// Cleanup logic if needed
-		});
-
-		task.delay(0.5, () => {
-			conn.Disconnect();
-			if (part && part.Parent) {
-				part.Destroy();
-			}
-		});
+		task.delay(0.5, () => part.Destroy());
 	}
 
 	public spawnGreatOath(position: Vector3) {
 		print(`[VFX] Spawning Great Oath at ${position}`);
-		if (!Workspace) {
-			warn("[VFX] Workspace unavailable for spawnGreatOath");
-			return;
-		}
+		if (!Workspace) return;
 
 		const part = new Instance("Part");
 		part.Size = new Vector3(1, 10, 1);
@@ -186,15 +163,40 @@ export class VFXController implements OnStart {
 		part.CanCollide = false;
 		part.Parent = Workspace;
 
-		const conn = part.Destroying.Connect(() => {
-			// Cleanup logic if needed
-		});
+		task.delay(2, () => part.Destroy());
+	}
 
-		task.delay(2, () => {
-			conn.Disconnect();
-			if (part && part.Parent) {
-				part.Destroy();
-			}
-		});
+	public spawnCinderDash(position: Vector3) {
+		print(`[VFX] Spawning Cinder Dash at ${position}`);
+		if (!Workspace) return;
+
+		const part = new Instance("Part");
+		part.Size = new Vector3(4, 4, 4);
+		part.Position = position;
+		part.Color = Color3.fromRGB(50, 50, 50); // Dark grey/ash
+		part.Material = Enum.Material.Neon;
+		part.Anchored = true;
+		part.CanCollide = false;
+		part.Parent = Workspace;
+
+		task.delay(0.5, () => part.Destroy());
+	}
+
+	public spawnBlazeFinisher(position: Vector3) {
+		print(`[VFX] Spawning Blaze Finisher at ${position}`);
+		if (!Workspace) return;
+
+		const part = new Instance("Part");
+		part.Shape = Enum.PartType.Ball;
+		part.Size = new Vector3(10, 10, 10);
+		part.Position = position;
+		part.Color = Color3.fromRGB(255, 100, 0); // Bright orange/fire
+		part.Material = Enum.Material.Neon;
+		part.Transparency = 0.4;
+		part.Anchored = true;
+		part.CanCollide = false;
+		part.Parent = Workspace;
+
+		task.delay(0.8, () => part.Destroy());
 	}
 }

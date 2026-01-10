@@ -94,7 +94,8 @@ src/
 **Goal**: Deliver the high-speed, status-based striker kit.
 -   **Mobility**: Refine Dash logic to support precision positioning and backsteps.
 -   **Statuses**: Implement specialized debuffs (Scorch, Tether, Slow).
--   **Execution**: Handle conditional damage bonuses based on active statuses.
+-   **Untargetable**: Integrate with `TargetingBiasService` to temporarily drop aggro entirely.
+-   **Execution**: Handle conditional damage bonuses based on active statuses (e.g., Blaze Finisher consuming Scorch).
 -   **VFX**: Implement ember and ash thematic visuals (Smoke Trails, Fire Bursts).
 
 ## Complexity Tracking

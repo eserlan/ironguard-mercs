@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { resolveDamage } from './damage';
+import { calculateAoEMultiplier } from './aoe';
 import { WeaponType } from '../../domain/combat/config';
 import { CombatRNG } from './rng';
 import { CombatStats } from '../../domain/combat/types';
@@ -34,4 +35,26 @@ describe('resolveDamage', () => {
 		expect(result.amount).toBe(73);
 		expect(result.isFatal).toBe(false); // 73 < 80
 	});
+});
+
+describe('calculateAoEMultiplier', () => {
+    it('returns 0 if distance exceeds radius', () => {
+        expect(calculateAoEMultiplier(11, 10, false)).toBe(0);
+    });
+
+    it('returns 1 if within radius and no falloff', () => {
+        expect(calculateAoEMultiplier(5, 10, false)).toBe(1);
+    });
+
+    it('calculates linear falloff correctly', () => {
+        const radius = 10;
+        // At center (distance 0), multiplier should be 1
+        expect(calculateAoEMultiplier(0, radius, true)).toBe(1);
+        
+        // At half-way (distance 5), multiplier should be 1 - (0.5 * 0.75) = 0.625
+        expect(calculateAoEMultiplier(5, radius, true)).toBe(0.625);
+        
+        // At edge (distance 10), multiplier should be 1 - (1.0 * 0.75) = 0.25
+        expect(calculateAoEMultiplier(10, radius, true)).toBe(0.25);
+    });
 });
