@@ -4,6 +4,12 @@ import { AbilityRegistry } from "shared/domain/abilities/config";
 import { useAbilityCooldowns } from "./hooks/useAbilityCooldowns";
 import type { AbilityController } from "client/controllers/AbilityController";
 
+/**
+ * Delay in seconds before showing the ability tooltip on hover.
+ * This prevents tooltips from appearing too quickly during quick mouse movements.
+ */
+const TOOLTIP_HOVER_DELAY_SECONDS = 0.5;
+
 interface AbilityBarProps {
 	loadout: { slotIndex: number; abilityId: string }[];
 	controller: AbilityController;
@@ -180,12 +186,6 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	const cooldowns = useAbilityCooldowns();
 	const keyLabels = ["1", "2", "3", "4"];
 
-	useEffect(() => {
-	}, []);
-
-	useEffect(() => {
-	}, [loadout]);
-
 	// hoveredInfo is only for the "pending" state or logic
 	const [pendingHover, setPendingHover] = useState<
 		{ startTime: number; data: { name: string; description: string; technical: string; parentName: string } } | undefined
@@ -197,7 +197,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 
 	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
-			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
+			if (pendingHover && os.clock() - pendingHover.startTime >= TOOLTIP_HOVER_DELAY_SECONDS) {
 				setActiveInfo(pendingHover.data);
 				setPendingHover(undefined);
 			}

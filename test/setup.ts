@@ -11,6 +11,8 @@ global.math = {
         }
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
+    rad: (degrees: number) => degrees * (Math.PI / 180),
+    deg: (radians: number) => radians * (180 / Math.PI),
     min: Math.min,
     max: Math.max,
     floor: Math.floor,
@@ -93,3 +95,71 @@ if (!(String.prototype as any).sub) {
         configurable: true,
     });
 }
+
+// Minimal CFrame polyfill for testing pure movement logic
+class MockVector3 {
+    constructor(public X: number, public Y: number, public Z: number) {}
+    
+    add(other: MockVector3): MockVector3 {
+        return new MockVector3(this.X + other.X, this.Y + other.Y, this.Z + other.Z);
+    }
+    
+    sub(other: MockVector3): MockVector3 {
+        return new MockVector3(this.X - other.X, this.Y - other.Y, this.Z - other.Z);
+    }
+    
+    mul(scalar: number): MockVector3 {
+        return new MockVector3(this.X * scalar, this.Y * scalar, this.Z * scalar);
+    }
+    
+    get Magnitude(): number {
+        return Math.sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
+    }
+}
+
+class MockCFrame {
+    public Position: MockVector3;
+    public LookVector: MockVector3;
+    
+    constructor(x?: number | MockVector3, y?: number, z?: number) {
+        if (typeof x === 'object') {
+            // Called with a Vector3
+            this.Position = x;
+            this.LookVector = new MockVector3(0, 0, 1);
+        } else if (x !== undefined && y !== undefined && z !== undefined) {
+            // Called with x, y, z
+            this.Position = new MockVector3(x, y, z);
+            this.LookVector = new MockVector3(0, 0, 1);
+        } else {
+            this.Position = new MockVector3(0, 0, 0);
+            this.LookVector = new MockVector3(0, 0, 1);
+        }
+    }
+    
+    static Angles(rx: number, ry: number, rz: number): MockCFrame {
+        // Simple rotation around Y axis for testing
+        const cos = Math.cos(ry);
+        const sin = Math.sin(ry);
+        const cf = new MockCFrame(0, 0, 0);
+        cf.LookVector = new MockVector3(-sin, 0, cos); // Rotated look vector
+        return cf;
+    }
+    
+    add(offset: MockVector3): MockCFrame {
+        const cf = new MockCFrame();
+        cf.Position = this.Position.add(offset);
+        cf.LookVector = this.LookVector;
+        return cf;
+    }
+    
+    mul(other: MockCFrame): MockCFrame {
+        // Combine transformations (simplified for testing)
+        const cf = new MockCFrame();
+        cf.Position = this.Position.add(other.Position);
+        cf.LookVector = other.LookVector; // Use the rotation's look vector
+        return cf;
+    }
+}
+
+global.CFrame = MockCFrame as any;
+global.Vector3 = MockVector3 as any;

@@ -98,6 +98,11 @@ export const StandardEffects = {
 		}
 
 		hitCharacters.forEach((character) => {
+			// Avoid damaging the source character with their own AoE
+			if (character.Name === sourceId) {
+				return;
+			}
+
 			const health = components.getComponent<HealthComponent>(character);
 			if (!health) return;
 

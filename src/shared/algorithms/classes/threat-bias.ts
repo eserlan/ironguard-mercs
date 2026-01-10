@@ -3,6 +3,12 @@ export interface ThreatBias {
 	expiresAt: number;
 }
 
+/**
+ * Special bias value used to indicate a character is untargetable.
+ * This extremely negative value ensures the character won't be selected as a target.
+ */
+const UNTARGETABLE_BIAS_VALUE = -1000000;
+
 export class ThreatBiasModel {
 	private biases = new Map<string, ThreatBias>(); // key: casterId
 	private untargetableUntil = new Map<string, number>();
@@ -22,7 +28,7 @@ export class ThreatBiasModel {
 
 	public getBias(casterId: string, now: number): number {
 		const untargetableExpiry = this.untargetableUntil.get(casterId);
-		if (untargetableExpiry && now < untargetableExpiry) return -1000000;
+		if (untargetableExpiry && now < untargetableExpiry) return UNTARGETABLE_BIAS_VALUE;
 
 		const data = this.biases.get(casterId);
 		if (!data || now >= data.expiresAt) return 0;

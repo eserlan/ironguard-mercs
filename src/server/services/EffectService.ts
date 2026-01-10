@@ -26,22 +26,25 @@ export class EffectService {
 
 		switch (block.type) {
 			case EffectType.Damage:
+				// Create a local copy of the block for Scorch consumption to avoid mutating the original
+				let damageBlock = block;
 				if (consumeScorch) {
 					// Real impl: check if target has Scorch attribute/status
 					// For now, simulate bonus
 					const hasScorch = target.GetAttribute("HasScorch") === true;
 					if (hasScorch) {
 						Log.info(`Consuming Scorch on ${target.Name} for bonus damage!`);
-						block.value = (block.value ?? 0) * 2;
+						const adjustedDamage = (block.value ?? 0) * 2;
+						damageBlock = { ...block, value: adjustedDamage };
 						target.SetAttribute("HasScorch", false);
 					}
 				}
 
 				if (isAoE) {
 					const origin = typeIs(target, "Vector3") ? target : (target as Model).GetPivot().Position;
-					StandardEffects.applyAoEDamage(origin, block, sourceId, this.combatService, this.components, rng);
+					StandardEffects.applyAoEDamage(origin, damageBlock, sourceId, this.combatService, this.components, rng);
 				} else {
-					StandardEffects.applyDamage(target, block, sourceId, this.combatService, this.components, rng);
+					StandardEffects.applyDamage(target, damageBlock, sourceId, this.combatService, this.components, rng);
 				}
 				break;
 			case EffectType.Heal:
@@ -109,20 +112,47 @@ export class EffectService {
 			// Real impl: remove debuffs from target
 			Log.info(`Cleansing debuffs from ${target.Name}`);
 		} else {
-			// Handle other status types
-			if (effectId === "scorch") {
-				Log.info(`Applying Scorch to ${target.Name} for ${duration}s. (DoT: ${effectDef.damagePerTick})`);
-				target.SetAttribute("HasScorch", true);
-				// TODO: Register with a StatusManager that handles ticks
-			} else if (effectId === "untargetable") {
-				this.biasService.setUntargetable(sourceId, duration);
-				Log.info(`Applying Untargetable to ${target.Name} for ${duration}s.`);
-			} else if (effectId === "slow") {
-				Log.info(`Applying Slow to ${target.Name} for ${duration}s. (Speed: ${effectDef.speedMod}x)`);
-			} else if (effectId === "highlighted") {
-				Log.info(`Highlighting ${target.Name} for ${duration}s.`);
-			} else if (effectId === "tether") {
-				Log.info(`Tethering ${target.Name} for ${duration}s.`);
+			// Handle other status types via a handler registry
+			const statusEffectHandlers: Record<
+				string,
+				(params: {
+					target: Instance;
+					sourceId: string;
+					duration: number;
+					effectDef: typeof effectDef;
+				}) => void
+			> = {
+				scorch: ({ target: scorchTarget, duration: scorchDuration, effectDef: scorchDef }) => {
+					Log.info(
+						`Applying Scorch to ${scorchTarget.Name} for ${scorchDuration}s. (DoT: ${scorchDef.damagePerTick})`,
+					);
+					scorchTarget.SetAttribute("HasScorch", true);
+					// TODO: Register with a StatusManager that handles ticks
+				},
+				untargetable: ({ sourceId: untargetableSourceId, duration: untargetableDuration, target: untargetableTarget }) => {
+					this.biasService.setUntargetable(untargetableSourceId, untargetableDuration);
+					Log.info(
+						`Applying Untargetable to ${untargetableTarget.Name} for ${untargetableDuration}s.`,
+					);
+				},
+				slow: ({ target: slowTarget, duration: slowDuration, effectDef: slowDef }) => {
+					Log.info(
+						`Applying Slow to ${slowTarget.Name} for ${slowDuration}s. (Speed: ${slowDef.speedMod}x)`,
+					);
+				},
+				highlighted: ({ target: highlightedTarget, duration: highlightedDuration }) => {
+					Log.info(`Highlighting ${highlightedTarget.Name} for ${highlightedDuration}s.`);
+				},
+				tether: ({ target: tetherTarget, duration: tetherDuration }) => {
+					Log.info(`Tethering ${tetherTarget.Name} for ${tetherDuration}s.`);
+				},
+			};
+
+			const handler = statusEffectHandlers[effectId];
+			if (handler) {
+				handler({ target, sourceId, duration, effectDef });
+			} else {
+				warn(`No handler found for status effect: ${effectId}`);
 			}
 		}
 	}
