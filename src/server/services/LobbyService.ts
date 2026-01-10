@@ -17,6 +17,7 @@ export class LobbyService implements OnStart {
 	private playerRoomMap = new Map<string, string>(); // PlayerId -> RoomCode
 	private soloMercenarySelections = new Map<string, string>(); // PlayerId -> MercenaryId
 	private soloGearSelections = new Map<string, Record<string, string>>(); // PlayerId -> Loadout
+	private soloAbilitySelections = new Map<string, { slotIndex: number; abilityId: string }[]>(); // PlayerId -> AbilitySlots
 
 	constructor(
 		private runService: RunService,
@@ -35,6 +36,7 @@ export class LobbyService implements OnStart {
 		Events.StepOnPad.connect((player) => this.stepOnPad(player));
 		Events.StepOffPad.connect((player) => this.stepOffPad(player));
 		Events.LaunchMission.connect((player) => this.launchMission(player));
+		Events.SetLoadout.connect((player, slots) => this.setLoadout(player, slots));
 
 		Players.PlayerRemoving.Connect((player) => this.leaveParty(player));
 		Players.PlayerAdded.Connect((player) => {
@@ -149,6 +151,7 @@ export class LobbyService implements OnStart {
 			isOnPad: false,
 			selectedMercenaryId: this.soloMercenarySelections.get(playerId),
 			loadout: this.soloGearSelections.get(playerId),
+			abilityLoadout: this.soloAbilitySelections.get(playerId),
 		};
 
 		const room: PartyRoom = {
@@ -188,6 +191,7 @@ export class LobbyService implements OnStart {
 			isOnPad: false,
 			selectedMercenaryId: this.soloMercenarySelections.get(playerId),
 			loadout: this.soloGearSelections.get(playerId),
+			abilityLoadout: this.soloAbilitySelections.get(playerId),
 		};
 
 		room.members.push(member);
@@ -214,6 +218,9 @@ export class LobbyService implements OnStart {
 			}
 			if (member.loadout) {
 				this.soloGearSelections.set(playerId, member.loadout);
+			}
+			if (member.abilityLoadout) {
+				this.soloAbilitySelections.set(playerId, member.abilityLoadout);
 			}
 		}
 
@@ -373,6 +380,7 @@ export class LobbyService implements OnStart {
 				displayName: player.DisplayName,
 				selectedMercenaryId: mercId,
 				loadout: this.soloGearSelections.get(playerId),
+				abilityLoadout: this.soloAbilitySelections.get(playerId),
 				isReady: true,
 				isOnPad: true,
 			};
@@ -381,6 +389,7 @@ export class LobbyService implements OnStart {
 				Events.MissionLaunching.fire(player, seed);
 				this.soloMercenarySelections.delete(playerId);
 				this.soloGearSelections.delete(playerId);
+				this.soloAbilitySelections.delete(playerId);
 			}
 		}
 	}
@@ -411,6 +420,27 @@ export class LobbyService implements OnStart {
 			const memberPlayer = Players.GetPlayerByUserId(tonumber(member.playerId)!);
 			if (memberPlayer) {
 				Events.PartyUpdated.fire(memberPlayer, room);
+			}
+		}
+	}
+
+	private setLoadout(player: Player, slots: { slotIndex: number; abilityId: string }[]) {
+		const playerId = tostring(player.UserId);
+		const room = this.getRoom(player);
+		if (room) {
+			const member = this.getMember(room, player);
+			if (member) {
+				member.abilityLoadout = slots;
+				this.broadcastUpdate(room);
+				if (member.selectedMercenaryId) {
+					Events.LoadoutConfirmed.fire(player, member.selectedMercenaryId, slots);
+				}
+			}
+		} else {
+			this.soloAbilitySelections.set(playerId, slots);
+			const mercId = this.soloMercenarySelections.get(playerId);
+			if (mercId) {
+				Events.LoadoutConfirmed.fire(player, mercId, slots);
 			}
 		}
 	}

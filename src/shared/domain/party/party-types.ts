@@ -18,6 +18,7 @@ export interface PartyMember {
 	displayName: string;
 	selectedMercenaryId?: string;
 	loadout?: Record<string, string>; // EquipmentSlot -> gearId
+	abilityLoadout?: { slotIndex: number; abilityId: string }[];
 	isReady: boolean;
 	isOnPad: boolean;
 }

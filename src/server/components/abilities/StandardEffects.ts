@@ -4,6 +4,7 @@ import { CombatService } from "../../services/CombatService";
 import { Components } from "@flamework/components";
 import { resolveDamage } from "../../../shared/algorithms/combat/damage";
 import { CombatRNG } from "../../../shared/algorithms/combat/rng";
+import { calculateDashCFrame } from "../../../shared/algorithms/movement";
 
 // Pure-ish functions, but they interact with game state via injected dependencies
 export const StandardEffects = {
@@ -51,5 +52,22 @@ export const StandardEffects = {
 		if (!health) return;
 
 		health.heal(block.value ?? 0);
+	},
+
+	applyShield(target: Instance, block: EffectBlock, components: Components) {
+		const health = components.getComponent<HealthComponent>(target);
+		if (!health) return;
+
+		health.addShield(block.value ?? 0);
+	},
+
+	applyDash(target: Instance, block: EffectBlock) {
+		if (!target.IsA("Model")) return;
+		const root = target.FindFirstChild("HumanoidRootPart") as BasePart;
+		if (!root) return;
+
+		const distance = block.value ?? 0;
+		// Use pure calculation from shared/algorithms
+		root.CFrame = calculateDashCFrame(root.CFrame, distance);
 	},
 };

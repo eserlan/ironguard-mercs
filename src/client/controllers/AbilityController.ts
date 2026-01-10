@@ -1,5 +1,5 @@
 import { Controller, OnStart } from "@flamework/core";
-import { ContextActionService, UserInputService } from "@rbxts/services";
+import { UserInputService } from "@rbxts/services";
 import { Events } from "client/events";
 import { Log } from "shared/utils/log";
 
@@ -9,15 +9,19 @@ export class AbilityController implements OnStart {
 	onStart() {
 		Log.info("AbilityController started");
 
-		// Bind inputs
-		ContextActionService.BindAction("UseAbility1", (_, state) => this.handleInput(0, state), false, Enum.KeyCode.One);
-		ContextActionService.BindAction("UseAbility2", (_, state) => this.handleInput(1, state), false, Enum.KeyCode.Two);
-		ContextActionService.BindAction("UseAbility3", (_, state) => this.handleInput(2, state), false, Enum.KeyCode.Three);
-		ContextActionService.BindAction("UseAbility4", (_, state) => this.handleInput(3, state), false, Enum.KeyCode.Four);
+		// Bind inputs via UserInputService for more reliable combos
+		UserInputService.InputBegan.Connect((input, processed) => {
+			if (processed) return;
+
+			if (input.KeyCode === Enum.KeyCode.One) this.handleUisInput(0);
+			if (input.KeyCode === Enum.KeyCode.Two) this.handleUisInput(1);
+			if (input.KeyCode === Enum.KeyCode.Three) this.handleUisInput(2);
+			if (input.KeyCode === Enum.KeyCode.Four) this.handleUisInput(3);
+		});
 
 		// Listen for activation confirmations (for visuals/cooldowns)
 		Events.AbilityActivated.connect((sourceId, abilityId, slotIndex) => {
-			Log.info(`Ability Activated: ${abilityId} (Slot ${slotIndex}) by ${sourceId}`);
+			Log.info(`Ability Activated: ${abilityId} (Slot ${slotIndex}) by ${sourceId} `);
 		});
 	}
 
@@ -25,11 +29,10 @@ export class AbilityController implements OnStart {
 		this.performCast(slotIndex, action);
 	}
 
-	private handleInput(slotIndex: number, state: Enum.UserInputState): Enum.ContextActionResult {
-		if (state === Enum.UserInputState.Begin) {
-			this.performCast(slotIndex);
-		}
-		return Enum.ContextActionResult.Pass;
+	private handleUisInput(slotIndex: number) {
+		const isShift = UserInputService.IsKeyDown(Enum.KeyCode.LeftShift) || UserInputService.IsKeyDown(Enum.KeyCode.RightShift);
+		Log.info(`[AbilityController] UIS Hotkey: Slot ${slotIndex} | Shift: ${isShift} `);
+		this.performCast(slotIndex);
 	}
 
 	private performCast(slotIndex: number, overrideAction?: "Top" | "Bottom") {
