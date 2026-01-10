@@ -21,9 +21,28 @@ export class EffectService {
 		const rng = this.combatService.getRng();
 		if (!rng) return;
 
+		const isAoE = block.params?.radius !== undefined;
+		const consumeScorch = block.params?.consumeScorch as boolean;
+
 		switch (block.type) {
 			case EffectType.Damage:
-				StandardEffects.applyDamage(target, block, sourceId, this.combatService, this.components, rng);
+				if (consumeScorch) {
+					// Real impl: check if target has Scorch attribute/status
+					// For now, simulate bonus
+					const hasScorch = target.GetAttribute("HasScorch") === true;
+					if (hasScorch) {
+						Log.info(`Consuming Scorch on ${target.Name} for bonus damage!`);
+						block.value = (block.value ?? 0) * 2;
+						target.SetAttribute("HasScorch", false);
+					}
+				}
+
+				if (isAoE) {
+					const origin = typeIs(target, "Vector3") ? target : (target as Model).GetPivot().Position;
+					StandardEffects.applyAoEDamage(origin, block, sourceId, this.combatService, this.components, rng);
+				} else {
+					StandardEffects.applyDamage(target, block, sourceId, this.combatService, this.components, rng);
+				}
 				break;
 			case EffectType.Heal:
 				StandardEffects.applyHeal(target, block, this.components);
@@ -89,6 +108,22 @@ export class EffectService {
 		} else if (effectDef.isCleanse) {
 			// Real impl: remove debuffs from target
 			Log.info(`Cleansing debuffs from ${target.Name}`);
+		} else {
+			// Handle other status types
+			if (effectId === "scorch") {
+				Log.info(`Applying Scorch to ${target.Name} for ${duration}s. (DoT: ${effectDef.damagePerTick})`);
+				target.SetAttribute("HasScorch", true);
+				// TODO: Register with a StatusManager that handles ticks
+			} else if (effectId === "untargetable") {
+				this.biasService.setUntargetable(sourceId, duration);
+				Log.info(`Applying Untargetable to ${target.Name} for ${duration}s.`);
+			} else if (effectId === "slow") {
+				Log.info(`Applying Slow to ${target.Name} for ${duration}s. (Speed: ${effectDef.speedMod}x)`);
+			} else if (effectId === "highlighted") {
+				Log.info(`Highlighting ${target.Name} for ${duration}s.`);
+			} else if (effectId === "tether") {
+				Log.info(`Tethering ${target.Name} for ${duration}s.`);
+			}
 		}
 	}
 }

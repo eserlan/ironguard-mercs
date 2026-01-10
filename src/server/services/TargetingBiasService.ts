@@ -12,6 +12,10 @@ export class TargetingBiasService implements OnStart {
 		this.model.addBias(casterId, amount, duration, getClock());
 	}
 
+	public setUntargetable(casterId: string, duration: number) {
+		this.model.setUntargetable(casterId, duration, getClock());
+	}
+
 	public getBias(casterId: string): number {
 		return this.model.getBias(casterId, getClock());
 	}
