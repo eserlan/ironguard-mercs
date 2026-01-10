@@ -46,6 +46,43 @@ export const StatusEffectRegistry = new Map<string, StatusEffectDefinition>([
 			isCleanse: true,
 		},
 	],
+	[
+		"scorch",
+		{
+			id: "scorch",
+			name: "Scorch",
+			description: "Burn with mountain heat. Deals fire damage over time.",
+			damagePerTick: 10,
+			tickInterval: 1,
+		},
+	],
+	[
+		"slow",
+		{
+			id: "slow",
+			name: "Slow",
+			description: "Hindered movement. 50% speed reduction.",
+			speedMod: 0.5,
+		},
+	],
+	[
+		"highlighted",
+		{
+			id: "highlighted",
+			name: "Highlighted",
+			description: "Revealed to all allies. Reduced evasion.",
+			isVisual: true,
+		},
+	],
+	[
+		"tether",
+		{
+			id: "tether",
+			name: "Tether",
+			description: "Bound to a point. Cannot leave the radius.",
+			isRestriction: true,
+		},
+	],
 ]);
 
 /**

@@ -33,8 +33,29 @@ The player's active setup for a run.
   - `ClassId`: string
   - `EquippedSlots`: EquippedSlot[] (Array of slotIndex and abilityId)
 
-## Relationships
+## Class-Specific Effect Parameters
 
-- **LoadoutConfig** belongs to a **Player** for a specific run.
-- **LoadoutConfig** must reference **AbilityIds** that exist in the **ClassConfig**'s library.
-- **AbilityService** resolves **AbilityDefinition** based on the player's current **LoadoutConfig** and the **ActionSlot** (Top/Bottom) in the intent.
+These definitions specify the `params` schema for `EffectBlock` objects used by specialized class abilities.
+
+### 1. Scorch (Status)
+- `statusEffectId`: "scorch"
+- `damagePerTick`: number (Fire damage)
+- `interval`: number (Seconds between ticks)
+- `duration`: number (Total effect lifetime)
+
+### 2. Untargetable (Status)
+- `statusEffectId`: "untargetable"
+- `duration`: number (Seconds before character is targetable again)
+
+### 3. Tether (Logic)
+- `statusEffectId`: "tether"
+- `radius`: number (Max distance from origin before movement is blocked)
+- `duration`: number (Lifetime of the tether)
+
+### 4. Area of Effect (AoE)
+Applied to `Damage` or `Status` blocks.
+- `radius`: number (Studs from impact point)
+- `falloff`: boolean (If true, effect strength decreases at edge)
+
+## Relationships
+...
