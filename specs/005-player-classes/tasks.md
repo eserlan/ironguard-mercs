@@ -91,6 +91,34 @@ description: "Task list for IronGuard Mercs: Player Classes System (005)"
 
 ---
 
+## Phase 9: Shield Saint Kit Implementation (Completed)
+
+**Goal**: Fully realize the Protector kit through the Abilities Framework.
+
+- [x] T029 [P] Create unit tests for Shield and Mitigation resolution in `src/server/services/EffectService.spec.ts`
+- [x] T030 Implement `EffectType.Shield` in `src/server/services/EffectService.ts`
+- [x] T031 Implement `EffectType.MitigationMod` in `src/server/services/EffectService.ts`
+- [x] T032 Implement `EffectType.Status` (Cleanse, Marked, Interrupt) in `src/server/services/EffectService.ts`
+- [x] T033 Implement `EffectType.StatMod` (Speed, Redirect) in `src/server/services/EffectService.ts`
+- [x] T034 Implement "Pillar of Light" VFX for `SANCTUARY_STEP` (TOP) in `src/client/controllers/VFXController.ts`
+- [x] T035 Implement "Shield Burst" VFX for `AEGIS_PULSE` (TOP) in `src/client/controllers/VFXController.ts`
+- [x] T036 Implement "Great Oath" VFX for `MARTYRS_PROMISE` (TOP) in `src/client/controllers/VFXController.ts`
+- [x] T037 Verify Shield Saint solo play flow per SC-002 (Variant Cooldowns)
+- [x] T038 Verify Shield Saint co-op play flow per SC-004 (10s survival against 30 DPS)
+
+---
+
+## Phase 10: Ashblade Kit Implementation (In Progress)
+
+**Goal**: Fully realize the Striker kit with mobility, status effects, and burst damage.
+
+- [ ] T039 Implement `EffectType.Status` handlers for (Scorch, Untargetable, Slow, Highlighted, Tether)
+- [ ] T040 Implement AoE Damage support in `StandardEffects.applyDamage`
+- [ ] T041 Implement "Cinder Dash" VFX for `CINDER_STEP` (TOP) in `src/client/controllers/VFXController.ts`
+- [ ] T042 Implement "Blaze Finisher" VFX for `BLAZE_FINISHER` (TOP) in `src/client/controllers/VFXController.ts`
+- [ ] T043 Verify Ashblade mobility chain logic (SC-003)
+- [ ] T044 Final integration pass for all class abilities in `src/server/services/AbilityService.ts`
+
 ## Implementation Strategy
 
 1.  **Architecture First**: T001-T004 establishes the new dual-variant ability schema.

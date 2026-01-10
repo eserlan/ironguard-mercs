@@ -20,12 +20,16 @@ const mockProjectileService = {
     spawnProjectile: vi.fn(),
 } as any;
 
+const mockBiasService = {
+	addBias: vi.fn(),
+} as any;
+
 describe('EffectService', () => {
     let service: EffectService;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        service = new EffectService(mockCombatService, mockComponents, mockProjectileService);
+        service = new EffectService(mockCombatService, mockComponents, mockProjectileService, mockBiasService);
 
         // Spy on StandardEffects static methods
         vi.spyOn(StandardEffects, 'applyDamage').mockImplementation(() => { });

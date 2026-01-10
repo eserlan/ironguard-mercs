@@ -31,7 +31,7 @@ The container for TOP/BOTTOM actions.
 The player's active setup for a run.
 - **Properties**:
   - `ClassId`: string
-  - `Slots`: Map<number, AbilityId> (Index 1-4)
+  - `EquippedSlots`: EquippedSlot[] (Array of slotIndex and abilityId)
 
 ## Relationships
 
