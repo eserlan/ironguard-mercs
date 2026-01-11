@@ -36,7 +36,7 @@ export function Hud() {
 					Size={new UDim2(1, 0, 1, 0)}
 					BackgroundTransparency={1}
 					TextColor3={new Color3(1, 1, 1)}
-					Text={`Health: ${health}`}
+					Text={"Health: " + health}
 					TextSize={24}
 				/>
 			</frame>

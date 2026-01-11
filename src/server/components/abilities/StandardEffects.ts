@@ -2,10 +2,12 @@ import { EffectBlock } from "../../../shared/domain/abilities/types";
 import { HealthComponent } from "../../cmpts/HealthComponent";
 import { CombatService } from "../../services/CombatService";
 import { Components } from "@flamework/components";
+import { Players } from "@rbxts/services";
 import { resolveDamage } from "../../../shared/algorithms/combat/damage";
 import { calculateAoEMultiplier } from "../../../shared/algorithms/combat/aoe";
 import { CombatRNG } from "../../../shared/algorithms/combat/rng";
 import { calculateDashCFrame } from "../../../shared/algorithms/movement";
+import { Log } from "../../../shared/utils/log";
 
 // Pure-ish functions, but they interact with game state via injected dependencies
 export const StandardEffects = {
@@ -20,7 +22,8 @@ export const StandardEffects = {
 		const health = components.getComponent<HealthComponent>(target);
 		if (!health) return;
 
-		// In a real app, we'd fetch attacker stats here. For now using defaults/placeholders.
+		const healOnKill = block.params?.healOnKill as number | undefined;
+
 		const result = resolveDamage(
 			sourceId,
 			target.Name,
@@ -45,6 +48,18 @@ export const StandardEffects = {
 
 		if (result.amount > 0) {
 			combatService.applyDamage(target, result.amount, result.isCrit, result.isFatal, sourceId, "ability");
+
+			if (result.isFatal && healOnKill) {
+				const sourcePlayer = Players.GetPlayerByUserId(tonumber(sourceId) ?? 0);
+				const sourceChar = sourcePlayer?.Character;
+				if (sourceChar) {
+					const sourceHealth = components.getComponent<HealthComponent>(sourceChar);
+					if (sourceHealth) {
+						Log.info(`Heal on kill triggered for ${sourcePlayer?.Name}: +${healOnKill}`);
+						sourceHealth.heal(healOnKill);
+					}
+				}
+			}
 		}
 	},
 

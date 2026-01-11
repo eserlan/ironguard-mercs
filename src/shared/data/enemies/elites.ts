@@ -9,6 +9,7 @@ export const VOID_BINDER: EnemyArchetype = {
 	stats: { hp: 300, speed: 12, mitigation: 20, threatBiasMultiplier: 1 },
 	moves: [{ id: "shackle", cooldown: 8, telegraph: { type: "Circle", duration: 2.0, radius: 12 }, interruptible: true, breakable: false }],
 	breakThreshold: 80,
+	visual: { profileKey: "Guard", weaponKey: "VoidStaff" },
 };
 
 export const IRON_WARLOCK: EnemyArchetype = {
@@ -19,6 +20,7 @@ export const IRON_WARLOCK: EnemyArchetype = {
 	stats: { hp: 280, speed: 10, mitigation: 25, threatBiasMultiplier: 0.9 },
 	moves: [{ id: "magnetic-pulse", cooldown: 9, telegraph: { type: "Cone", duration: 2.2, angle: 90, radius: 15 }, interruptible: true, breakable: false }],
 	breakThreshold: 85,
+	visual: { profileKey: "Guard", weaponKey: "IronGauntlet" },
 };
 
 export const IRON_SENTRY: EnemyArchetype = {
@@ -29,6 +31,7 @@ export const IRON_SENTRY: EnemyArchetype = {
 	stats: { hp: 250, speed: 8, mitigation: 40, threatBiasMultiplier: 1 },
 	moves: [{ id: "volley", cooldown: 10, telegraph: { type: "Line", duration: 2.5, length: 100 }, interruptible: true, breakable: false }],
 	breakThreshold: 100,
+	visual: { profileKey: "Guard", weaponKey: "IronRifle" },
 };
 
 export const VOID_HOWLER: EnemyArchetype = {
@@ -39,6 +42,7 @@ export const VOID_HOWLER: EnemyArchetype = {
 	stats: { hp: 220, speed: 10, mitigation: 15, threatBiasMultiplier: 0.8 },
 	moves: [{ id: "dark-blast", cooldown: 8, telegraph: { type: "Circle", duration: 2.0, radius: 20 }, interruptible: true, breakable: false }],
 	breakThreshold: 90,
+	visual: { profileKey: "Slasher", weaponKey: "VoidOrb" },
 };
 
 export const VOID_BULWARK: EnemyArchetype = {
@@ -49,4 +53,5 @@ export const VOID_BULWARK: EnemyArchetype = {
 	stats: { hp: 450, speed: 8, mitigation: 50, threatBiasMultiplier: 1.8 },
 	moves: [{ id: "shield-slam", cooldown: 7, telegraph: { type: "Cone", duration: 1.8, angle: 45, radius: 10 }, interruptible: true, breakable: false }],
 	breakThreshold: 120,
+	visual: { profileKey: "Guard", weaponKey: "VoidShield" },
 };

@@ -1,5 +1,6 @@
 import { Service } from "@flamework/core";
 import { Components } from "@flamework/components";
+import { Players } from "@rbxts/services";
 import { EffectBlock, EffectType } from "../../shared/domain/abilities/types";
 import { StandardEffects } from "../components/abilities/StandardEffects";
 import { CombatService } from "./CombatService";
@@ -25,25 +26,26 @@ export class EffectService {
 		const consumeScorch = block.params?.consumeScorch as boolean;
 
 		switch (block.type) {
-			case EffectType.Damage:
+			case EffectType.Damage: {
+				let damageValue = block.value ?? 0;
 				if (consumeScorch) {
-					// Real impl: check if target has Scorch attribute/status
-					// For now, simulate bonus
 					const hasScorch = target.GetAttribute("HasScorch") === true;
 					if (hasScorch) {
 						Log.info(`Consuming Scorch on ${target.Name} for bonus damage!`);
-						block.value = (block.value ?? 0) * 2;
+						damageValue *= 2;
 						target.SetAttribute("HasScorch", false);
+						// TODO: Also remove the actual status effect if we have a status effect system
 					}
 				}
 
 				if (isAoE) {
 					const origin = typeIs(target, "Vector3") ? target : (target as Model).GetPivot().Position;
-					StandardEffects.applyAoEDamage(origin, block, sourceId, this.combatService, this.components, rng);
+					StandardEffects.applyAoEDamage(origin, { ...block, value: damageValue }, sourceId, this.combatService, this.components, rng);
 				} else {
-					StandardEffects.applyDamage(target, block, sourceId, this.combatService, this.components, rng);
+					StandardEffects.applyDamage(target, { ...block, value: damageValue }, sourceId, this.combatService, this.components, rng);
 				}
 				break;
+			}
 			case EffectType.Heal:
 				StandardEffects.applyHeal(target, block, this.components);
 				break;
@@ -59,11 +61,15 @@ export class EffectService {
 			case EffectType.StatMod:
 				this.resolveStatMod(target, block, sourceId);
 				break;
+			case EffectType.DamageMod:
+				this.resolveDamageMod(target, block, sourceId);
+				break;
+
+
+
+
 			case EffectType.MitigationMod:
 				this.resolveMitigationMod(target, block, sourceId);
-				break;
-			case EffectType.Dash:
-				StandardEffects.applyDash(target, block);
 				break;
 			case EffectType.Augment:
 				this.resolveAugment(target, block, sourceId);
@@ -86,14 +92,51 @@ export class EffectService {
 		Log.info(`Applied MitigationMod ${block.value}% to ${_target.Name} for ${duration}s`);
 	}
 
-	private resolveStatMod(_target: Instance, block: EffectBlock, _sourceId: string) {
-		// TODO: Register mod with StatService when implemented
+	private resolveStatMod(target: Instance, block: EffectBlock, sourceId: string) {
 		const statId = block.params?.statId as string;
 		const duration = block.params?.duration as number;
-		Log.info(`Applied StatMod ${statId} (x${block.value}) to ${_target.Name} for ${duration}s`);
+		const condition = block.params?.condition as string;
+
+		if (condition === "target_scorched") {
+			const hasScorch = target.GetAttribute("HasScorch") === true;
+			if (hasScorch) {
+				const sourcePlayer = Players.GetPlayerByUserId(tonumber(sourceId) ?? 0);
+				const sourceChar = sourcePlayer?.Character;
+				if (sourceChar) {
+					Log.info(`Target is scorched! Applying conditional ${statId} mod to ${sourcePlayer?.Name}`);
+					sourceChar.SetAttribute(`StatMod_${statId}`, block.value);
+					task.delay(duration, () => {
+						if (sourceChar.Parent) {
+							sourceChar.SetAttribute(`StatMod_${statId}`, undefined);
+						}
+					});
+				}
+			}
+			return;
+		}
+
+		Log.info(`Applied StatMod ${statId} (x${block.value}) to ${target.Name} for ${duration}s (Source: ${sourceId})`);
+		// Implementation would involve a StatService
+		target.SetAttribute(`StatMod_${statId}`, block.value);
+		task.delay(duration, () => {
+			if (target.Parent) {
+				target.SetAttribute(`StatMod_${statId}`, undefined);
+			}
+		});
 	}
 
-	private resolveStatusEffect(target: Instance, block: EffectBlock, sourceId: string) {
+	private resolveDamageMod(target: Instance, block: EffectBlock, sourceId: string) {
+		const duration = block.params?.duration as number;
+		Log.info(`Applied DamageMod x${block.value} to ${target.Name} for ${duration}s (Source: ${sourceId})`);
+		target.SetAttribute("DamageTakenMultiplier", block.value);
+		task.delay(duration, () => {
+			if (target.Parent) {
+				target.SetAttribute("DamageTakenMultiplier", undefined);
+			}
+		});
+	}
+
+	private resolveStatusEffect(target: Instance, block: EffectBlock, _sourceId: string) {
 		const effectId = block.params?.statusEffectId as string;
 		const duration = block.value ?? 0;
 
@@ -103,27 +146,27 @@ export class EffectService {
 			return;
 		}
 
-		if (effectDef.biasMod !== undefined) {
-			this.biasService.addBias(sourceId, effectDef.biasMod, duration);
-		} else if (effectDef.isCleanse) {
-			// Real impl: remove debuffs from target
-			Log.info(`Cleansing debuffs from ${target.Name}`);
-		} else {
-			// Handle other status types
-			if (effectId === "scorch") {
-				Log.info(`Applying Scorch to ${target.Name} for ${duration}s. (DoT: ${effectDef.damagePerTick})`);
-				target.SetAttribute("HasScorch", true);
-				// TODO: Register with a StatusManager that handles ticks
-			} else if (effectId === "untargetable") {
-				this.biasService.setUntargetable(sourceId, duration);
-				Log.info(`Applying Untargetable to ${target.Name} for ${duration}s.`);
-			} else if (effectId === "slow") {
-				Log.info(`Applying Slow to ${target.Name} for ${duration}s. (Speed: ${effectDef.speedMod}x)`);
-			} else if (effectId === "highlighted") {
-				Log.info(`Highlighting ${target.Name} for ${duration}s.`);
-			} else if (effectId === "tether") {
-				Log.info(`Tethering ${target.Name} for ${duration}s.`);
-			}
+		Log.info(`Applied Status Effect ${effectDef.name} to ${target.Name} for ${duration}s`);
+
+		if (effectId === "scorch") {
+			target.SetAttribute("HasScorch", true);
+			task.delay(duration, () => {
+				if (target.Parent) {
+					target.SetAttribute("HasScorch", false);
+				}
+			});
+		} else if (effectId === "untargetable") {
+			target.SetAttribute("Untargetable", true);
+			task.delay(duration, () => {
+				if (target.Parent) {
+					target.SetAttribute("Untargetable", false);
+				}
+			});
+		}
+
+		// Visual effect placeholder
+		if (effectDef.isVisual) {
+			Log.info(`Showing visual for ${effectDef.name} on ${target.Name}`);
 		}
 	}
 }

@@ -40,8 +40,14 @@ const AbilityButton = (props: {
 			AutoButtonColor={!!props.ability}
 			Event={{
 				Activated: () => props.ability && props.controller.requestCast(props.slotIndex, props.variant),
-				MouseEnter: () => props.onHover(props.variant),
-				MouseLeave: () => props.onHover(undefined),
+				MouseEnter: () => {
+					print("[AbilityBar] Hover Enter: " + (props.ability?.name ?? "None") + " (" + props.variant + ")");
+					props.onHover(props.variant);
+				},
+				MouseLeave: () => {
+					print(`[AbilityBar] Hover Leave: ${props.ability?.name ?? "None"}`);
+					props.onHover(undefined);
+				},
 			}}
 		>
 			<uicorner CornerRadius={new UDim(0, 4)} />
@@ -61,10 +67,11 @@ const AbilityButton = (props: {
 				TextSize={14}
 				Font={Enum.Font.GothamBlack}
 				TextXAlignment={Enum.TextXAlignment.Right}
+				Active={false}
 			/>
 
 			{props.ability ? (
-				<frame key="VariantNameFrame" Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1}>
+				<frame key="VariantNameFrame" Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1} Active={false}>
 					{/* Variant Name */}
 					<textlabel
 						Text={string.upper(variantData?.name ?? props.variant)}
@@ -77,6 +84,7 @@ const AbilityButton = (props: {
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
+						Active={false}
 					/>
 				</frame>
 			) : (
@@ -87,6 +95,7 @@ const AbilityButton = (props: {
 					TextColor3={Color3.fromRGB(50, 50, 50)}
 					TextSize={10}
 					Font={Enum.Font.GothamBold}
+					Active={false}
 				/>
 			)}
 		</textbutton>
@@ -123,7 +132,7 @@ function AbilityColumn({ slotIndex, abilityId, expiry, total, keyCode, controlle
 			<frame Size={new UDim2(1, 0, 0.5, 0)} BackgroundTransparency={1} LayoutOrder={1}>
 				<AbilityButton
 					variant="Top"
-					label={`S+${keyCode}`}
+					label={"S+" + keyCode}
 					height={new UDim(1, 0)}
 					color={Color3.fromRGB(60, 50, 40)}
 					ability={ability}
@@ -198,6 +207,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
 			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
+				print("[AbilityBar] Activating Info: " + pendingHover.data.name);
 				setActiveInfo(pendingHover.data);
 				setPendingHover(undefined);
 			}
@@ -206,6 +216,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	}, [pendingHover]);
 
 	const closePanel = () => {
+		print("[AbilityBar] Closing Info Panel");
 		setActiveInfo(undefined);
 	};
 
@@ -222,7 +233,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 				<frame
 					key="InfoPanel"
 					Size={new UDim2(0, 320, 0, 240)}
-					Position={new UDim2(0, 20, 0, -118)}
+					Position={new UDim2(0, 20, 0, -250)}
 					BackgroundColor3={Color3.fromRGB(30, 30, 35)}
 					ZIndex={200}
 					Visible={true}
@@ -232,38 +243,46 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={3} Color={Color3.fromRGB(200, 160, 40)} />
 
 					<uipadding
-						PaddingTop={new UDim(0, 20)}
-						PaddingBottom={new UDim(0, 20)}
-						PaddingLeft={new UDim(0, 25)}
-						PaddingRight={new UDim(0, 25)}
+						PaddingTop={new UDim(0, 15)}
+						PaddingBottom={new UDim(0, 15)}
+						PaddingLeft={new UDim(0, 15)}
+						PaddingRight={new UDim(0, 15)}
 					/>
 
-					{/* Close Button */}
+					<uilistlayout
+						FillDirection="Vertical"
+						Padding={new UDim(0, 8)}
+						SortOrder="LayoutOrder"
+					/>
+
+					{/* Close Button - Keep absolute */}
 					<textbutton
 						key="CloseBtn"
 						Text="X"
-						Size={new UDim2(0, 32, 0, 32)}
-						Position={new UDim2(1, -16, 0, -16)}
+						Size={new UDim2(0, 24, 0, 24)}
+						Position={new UDim2(1, 10, 0, -10)}
+						AnchorPoint={new Vector2(1, 0)}
 						BackgroundColor3={Color3.fromRGB(200, 50, 50)}
 						TextColor3={Color3.fromRGB(255, 255, 255)}
 						Font={Enum.Font.GothamBold}
-						TextSize={24}
+						TextSize={18}
 						ZIndex={210}
 						Event={{ Activated: closePanel }}
 					>
 						<uicorner CornerRadius={new UDim(1, 0)} />
-						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={2} Color={Color3.fromRGB(255, 255, 255)} />
+						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={1} Color={Color3.fromRGB(255, 255, 255)} />
 					</textbutton>
 
 					{/* Title */}
 					<textlabel
 						key="Title"
+						LayoutOrder={1}
 						Text={string.upper(activeInfo.name)}
 						Size={new UDim2(1, 0, 0, 25)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(255, 215, 0)}
 						Font={Enum.Font.GothamBlack}
-						TextSize={22}
+						TextSize={20}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						ZIndex={202}
 					/>
@@ -271,13 +290,13 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					{/* Parent Ability Context */}
 					<textlabel
 						key="ParentName"
-						Text={`[${string.upper(activeInfo.parentName)}]`}
+						LayoutOrder={2}
+						Text={string.upper(activeInfo.parentName)}
 						Size={new UDim2(1, 0, 0, 15)}
-						Position={new UDim2(0, 0, 0, 28)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(150, 150, 160)}
 						Font={Enum.Font.SourceSansItalic}
-						TextSize={14}
+						TextSize={12}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						ZIndex={202}
 					/>
@@ -285,13 +304,13 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					{/* Description */}
 					<textlabel
 						key="Desc"
+						LayoutOrder={3}
 						Text={activeInfo.description}
-						Size={new UDim2(1, 0, 0, 50)}
-						Position={new UDim2(0, 0, 0, 50)}
+						Size={new UDim2(1, 0, 0, 60)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(230, 230, 230)}
 						Font={Enum.Font.GothamMedium}
-						TextSize={15}
+						TextSize={14}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
@@ -301,18 +320,23 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					{/* Technical Info */}
 					<textlabel
 						key="Tech"
+						LayoutOrder={4}
 						Text={activeInfo.technical}
-						Size={new UDim2(1, 0, 0, 75)}
-						Position={new UDim2(0, 0, 1, -75)}
+						Size={new UDim2(1, 0, 0, 80)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(160, 200, 255)}
 						Font={Enum.Font.GothamBold}
-						TextSize={14}
+						TextSize={13}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Bottom}
 						ZIndex={202}
 					/>
+
+					{(() => {
+						print("[AbilityBar] Rendering InfoPanel: Name=" + activeInfo.name + ", DescLen=" + activeInfo.description.size());
+						return undefined;
+					})()}
 				</frame>
 			)}
 
