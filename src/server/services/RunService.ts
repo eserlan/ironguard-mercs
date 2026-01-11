@@ -6,8 +6,8 @@ import { Log } from "../../shared/utils/log";
 import { resolveMissionDeath } from "../../shared/algorithms/permadeath";
 import { RosterService } from "./RosterService";
 import { SpawnService } from "./SpawnService";
+import { DungeonService } from "./DungeonService";
 import { PartyMember } from "../../shared/domain/party/party-types";
-import { createWorldPlan } from "../../shared/algorithms/world-plan";
 
 @Service({})
 export class RunService implements OnStart, OnInit {
@@ -17,6 +17,7 @@ export class RunService implements OnStart, OnInit {
 	constructor(
 		private rosterService: RosterService,
 		private spawnService: SpawnService,
+		private dungeonService: DungeonService,
 	) { }
 
 	onInit() { }
@@ -46,8 +47,16 @@ export class RunService implements OnStart, OnInit {
 		if (this.fsm.transition(MatchPhase.Generating)) {
 			Log.info(`Match starting! Seed: ${config.seed} Mode: ${config.missionMode}`);
 
-			// 1. Generate World Plan
-			const worldPlan = createWorldPlan(config.seed);
+			// 1. Generate World
+			const worldResult = this.dungeonService.generate(config.seed);
+
+			// 2. Wrap result in WorldPlan for FSM
+			const worldPlan = {
+				layout: [], // Physical layout handled by DungeonService spawning
+				playerSpawns: worldResult.playerSpawns.map(p => ({ x: p.X, y: p.Y, z: p.Z })),
+				enemySpawns: worldResult.enemySpawns.map(p => ({ x: p.X, y: p.Y, z: p.Z }))
+			};
+
 			this.fsm.setWorldPlan(worldPlan);
 			this.broadcastState();
 

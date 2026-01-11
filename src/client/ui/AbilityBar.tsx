@@ -197,9 +197,13 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 
 	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
-			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
-				setActiveInfo(pendingHover.data);
-				setPendingHover(undefined);
+			if (pendingHover) {
+				const elapsed = os.clock() - pendingHover.startTime;
+				if (elapsed >= 0.5) {
+					print(`[AbilityBar] Reached threshold for ${pendingHover.data.name}, setting active info`);
+					setActiveInfo(pendingHover.data);
+					setPendingHover(undefined);
+				}
 			}
 		});
 		return () => conn.Disconnect();
@@ -254,18 +258,23 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					{/* Close Button */}
 					<textbutton
 						key="CloseBtn"
-						Text="×"
-						Size={new UDim2(0, 28, 0, 28)}
-						Position={new UDim2(1, -14, 0, -14)}
+						Text="[X]"
+						Size={new UDim2(0, 32, 0, 32)}
+						Position={new UDim2(1, -16, 0, -16)}
 						BackgroundColor3={Color3.fromRGB(200, 50, 50)}
-						TextColor3={Color3.fromRGB(255, 255, 255)}
+						TextColor3={Color3.fromRGB(240, 240, 240)}
 						Font={Enum.Font.GothamBold}
 						TextSize={20}
 						ZIndex={210}
-						Event={{ Activated: closePanel }}
+						Event={{
+							Activated: () => {
+								print("[AbilityBar] Close button clicked");
+								closePanel();
+							},
+						}}
 					>
 						<uicorner CornerRadius={new UDim(1, 0)} />
-						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={1.5} Color={Color3.fromRGB(255, 255, 255)} />
+						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={2} Color={Color3.fromRGB(255, 255, 255)} />
 					</textbutton>
 
 					<uilistlayout
@@ -306,7 +315,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					<textlabel
 						key="Desc"
 						Text={activeInfo.description}
-						Size={new UDim2(1, 0, 0, 50)}
+						Size={new UDim2(1, 0, 0, 60)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(220, 220, 220)}
 						Font={Enum.Font.GothamMedium}
@@ -322,7 +331,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 					<textlabel
 						key="Tech"
 						Text={activeInfo.technical}
-						Size={new UDim2(1, 0, 0, 80)}
+						Size={new UDim2(1, 0, 0, 90)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(150, 200, 255)}
 						Font={Enum.Font.GothamBold}
