@@ -1,6 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { EnemyRegistry, EnemyArchetype } from './config';
 import { EnemyRole, EnemyTier, MoveConfig } from './enemy-types';
+
+// Mock Color3 for Node environment
+(globalThis as any).Color3 = {
+    fromRGB: (r: number, g: number, b: number) => ({ r, g, b }),
+};
 
 describe('EnemyRegistry', () => {
     it('validates correct config', () => {
