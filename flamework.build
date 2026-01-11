@@ -86,7 +86,9 @@
 		"ironguard-mercs:out/shared/domain/gear/config@GearRegistry": "shared/domain/gear/config@GearRegistry",
 		"ironguard-mercs:out/shared/domain/progression/config@PerkRegistry": "shared/domain/progression/config@PerkRegistry",
 		"ironguard-mercs:out/shared/net@GlobalEvents": "shared/net@GlobalEvents",
-		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions"
+		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions",
+		"ironguard-mercs:out/client/components/Lobby/DungeonPortalComponent@TheGreatGateComponent": "client/components/Lobby/DungeonPortalComponent@TheGreatGateComponent",
+		"ironguard-mercs:out/client/components/Lobby/DungeonPortalComponent@DungeonPortalComponent": "client/components/Lobby/DungeonPortalComponent@DungeonPortalComponent"
 	},
 	"metadata": {}
 }

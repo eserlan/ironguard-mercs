@@ -320,13 +320,13 @@ export class LobbyService implements OnStart {
 		}
 	}
 
-	private launchMission(player: Player) {
-		const playerId = tostring(player.UserId);
-		const room = this.getRoom(player);
+        private launchMission(player: Player) {
+                const playerId = tostring(player.UserId);
+                const room = this.getRoom(player);
 
-		// Proximity check
-		const portals = CollectionService.GetTagged("LobbyDungeonPortal");
-		const character = player.Character;
+                // Proximity check
+                const portals = CollectionService.GetTagged("LobbyDungeonPortal");
+                const character = player.Character;
 		if (!character) return;
 
 		let nearPortal = false;
