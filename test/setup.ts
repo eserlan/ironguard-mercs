@@ -100,3 +100,49 @@ if (!(String.prototype as any).sub) {
     fromRGB: (r: number, g: number, b: number) => ({ R: r / 255, G: g / 255, B: b / 255 }),
     fromHSV: (h: number, s: number, v: number) => ({ R: 1, G: 1, B: 1 }), // Dummy
 };
+
+// Polyfill for Roblox Instance
+class MockInstance {
+    public Name: string;
+    private _parent: any = undefined;
+    public children: any[] = [];
+
+    constructor(public className: string) {
+        this.Name = className;
+    }
+
+    get Parent() { return this._parent; }
+    set Parent(p: any) {
+        if (this._parent) {
+            this._parent.children = this._parent.children.filter((c: any) => c !== this);
+        }
+        this._parent = p;
+        if (p) {
+            p.children.push(this);
+        }
+    }
+
+    public FindFirstChild(name: string) {
+        return this.children.find(c => c.Name === name);
+    }
+
+    public FindFirstChildOfClass(className: string) {
+        return this.children.find(c => c.className === className);
+    }
+
+    public Clone() {
+        return new MockInstance(this.className);
+    }
+
+    public IsA(className: string) {
+        return this.className === className;
+    }
+
+    public ApplyDescription() { } // Dummy for Humanoid
+}
+
+(global as any).Instance = MockInstance;
+
+(global as any).Enum = {
+    // Add any required enums here
+};
