@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { EnemyVisualService } from "server/services/EnemyVisualService";
-import { VisualProfiles } from "shared/domain/enemies/visual-profiles";
+import { VisualProfiles } from "server/data/enemy-visual-profiles";
 import { EnemyArchetype } from "shared/domain/enemies/config";
 import { EnemyRole, EnemyTier } from "shared/domain/enemies/enemy-types";
 

@@ -1,4 +1,4 @@
-import { EnemyVisualProfile } from "./visual-types";
+import { EnemyVisualProfile } from "shared/domain/enemies/visual-types";
 
 export const VisualProfiles: Record<string, EnemyVisualProfile> = {
 	Slasher: {

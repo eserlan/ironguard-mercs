@@ -41,11 +41,9 @@ const AbilityButton = (props: {
 			Event={{
 				Activated: () => props.ability && props.controller.requestCast(props.slotIndex, props.variant),
 				MouseEnter: () => {
-					print("[AbilityBar] Hover Enter: " + (props.ability?.name ?? "None") + " (" + props.variant + ")");
 					props.onHover(props.variant);
 				},
 				MouseLeave: () => {
-					print(`[AbilityBar] Hover Leave: ${props.ability?.name ?? "None"}`);
 					props.onHover(undefined);
 				},
 			}}
@@ -207,7 +205,6 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
 			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
-				print("[AbilityBar] Activating Info: " + pendingHover.data.name);
 				setActiveInfo(pendingHover.data);
 				setPendingHover(undefined);
 			}
@@ -216,7 +213,6 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 	}, [pendingHover]);
 
 	const closePanel = () => {
-		print("[AbilityBar] Closing Info Panel");
 		setActiveInfo(undefined);
 	};
 
@@ -332,12 +328,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						TextYAlignment={Enum.TextYAlignment.Bottom}
 						ZIndex={202}
 					/>
-
-					{(() => {
-						print("[AbilityBar] Rendering InfoPanel: Name=" + activeInfo.name + ", DescLen=" + activeInfo.description.size());
-						return undefined;
-					})()}
-				</frame>
+			</frame>
 			)}
 
 			{/* Ability Columns Container (Centered) */}

@@ -31,8 +31,8 @@ export class EnemySpawnService implements OnStart {
 
         const baseRig = enemyRigs.FindFirstChild("EnemyBaseR15") as Model;
         if (!baseRig) {
-             Log.error("ServerStorage/EnemyRigs/EnemyBaseR15 model missing");
-             return;
+            Log.error("ServerStorage/EnemyRigs/EnemyBaseR15 model missing");
+            return;
         }
 
         const rig = baseRig.Clone();

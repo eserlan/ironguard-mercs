@@ -1,7 +1,7 @@
 import { Service, OnStart } from "@flamework/core";
 import { Log } from "shared/utils/log";
 import { EnemyArchetype } from "shared/domain/enemies/config";
-import { VisualProfiles } from "shared/domain/enemies/visual-profiles";
+import { VisualProfiles } from "server/data/enemy-visual-profiles";
 import { EnemyVisualProfile } from "shared/domain/enemies/visual-types";
 import { ServerStorage } from "@rbxts/services";
 
@@ -101,9 +101,7 @@ export class EnemyVisualService implements OnStart {
             weld.Parent = handle;
 
             // Basic alignment if handle exists
-            if (handle.IsA("BasePart")) {
-                handle.CFrame = rightHand.CFrame;
-            }
+            handle.CFrame = rightHand.CFrame;
         } else {
             // If no handle, just parent it and hope for the best, or log error
             Log.warn(`Weapon model ${weaponKey} has no Handle part`);
