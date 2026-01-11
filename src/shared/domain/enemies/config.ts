@@ -1,4 +1,5 @@
 import { EnemyRole, EnemyTier, EnemyStats, MoveConfig } from "./enemy-types";
+import { EnemyVisualConfig } from "./visual-types";
 
 export interface EnemyArchetype {
 	id: string;
@@ -8,6 +9,7 @@ export interface EnemyArchetype {
 	stats: EnemyStats;
 	moves: MoveConfig[];
 	breakThreshold: number;
+	visual: EnemyVisualConfig;
 }
 
 export class EnemyRegistry {
