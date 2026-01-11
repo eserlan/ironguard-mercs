@@ -57,7 +57,10 @@
 		"ironguard-mercs:out/server/services/DifficultyBudgetService@DifficultyBudgetService": "server/services/DifficultyBudgetService@DifficultyBudgetService",
 		"ironguard-mercs:out/server/services/DungeonService@DungeonService": "server/services/DungeonService@DungeonService",
 		"ironguard-mercs:out/server/services/EnemyAIService@EnemyAIService": "server/services/EnemyAIService@EnemyAIService",
+		"ironguard-mercs:out/shared/domain/enemies/config@EnemyRegistry": "shared/domain/enemies/config@EnemyRegistry",
+		"ironguard-mercs:out/server/services/EnemyRegistrationService@EnemyRegistrationService": "server/services/EnemyRegistrationService@EnemyRegistrationService",
 		"ironguard-mercs:out/server/services/EnemyService@EnemyService": "server/services/EnemyService@EnemyService",
+		"ironguard-mercs:out/server/services/EnemyVisualService@EnemyVisualService": "server/services/EnemyVisualService@EnemyVisualService",
 		"ironguard-mercs:out/server/services/EnemySpawnService@EnemySpawnService": "server/services/EnemySpawnService@EnemySpawnService",
 		"ironguard-mercs:out/server/services/GearEffectService@GearEffectService": "server/services/GearEffectService@GearEffectService",
 		"ironguard-mercs:out/server/services/GearService@GearService": "server/services/GearService@GearService",
@@ -80,12 +83,10 @@
 		"ironguard-mercs:out/shared/algorithms/abilities/cooldowns@CooldownManager": "shared/algorithms/abilities/cooldowns@CooldownManager",
 		"ironguard-mercs:out/shared/algorithms/enemies/ai-state@EnemyAIStateMachine": "shared/algorithms/enemies/ai-state@EnemyAIStateMachine",
 		"ironguard-mercs:out/shared/algorithms/enemies/break-logic@BreakMeterLogic": "shared/algorithms/enemies/break-logic@BreakMeterLogic",
-		"ironguard-mercs:out/shared/domain/enemies/config@EnemyRegistry": "shared/domain/enemies/config@EnemyRegistry",
 		"ironguard-mercs:out/shared/domain/gear/config@GearRegistry": "shared/domain/gear/config@GearRegistry",
 		"ironguard-mercs:out/shared/domain/progression/config@PerkRegistry": "shared/domain/progression/config@PerkRegistry",
 		"ironguard-mercs:out/shared/net@GlobalEvents": "shared/net@GlobalEvents",
-		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions",
-		"ironguard-mercs:out/server/services/EnemyVisualService@EnemyVisualService": "server/services/EnemyVisualService@EnemyVisualService"
+		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions"
 	},
 	"metadata": {}
 }

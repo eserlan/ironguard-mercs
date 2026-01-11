@@ -11,7 +11,7 @@ This plan implements the Player Classes system, establishing the primary gamepla
 
 **Language/Version**: TypeScript (roblox-ts)
 **Architecture**: Flamework (DI, Services, Controllers)
-**Testing**: Vitest (pure logic), TestEZ (Roblox integration)
+**Testing**: Vitest (Unit)
 **Target Platform**: Roblox Client/Server
 **Constraints**: 
 - Server-authoritative validation for loadouts and casts.

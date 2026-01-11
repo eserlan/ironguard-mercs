@@ -12,7 +12,7 @@ This plan defines the implementation of the Progression & Level Up system. It es
 **Language/Version**: TypeScript (roblox-ts)
 **Architecture**: Flamework (DI, Services, Components)
 **State Management**: `typescript-rx` for XP streams and level-up notifications.
-**Testing**: Vitest (pure XP math and threshold logic), TestEZ (UI integration).
+**Testing**: Vitest (pure XP math and threshold logic, UI integration).
 **Target Platform**: Roblox Client/Server.
 **Performance Goals**: Level-up event replication < 100ms; persistent saving < 500ms.
 **Constraints**: 

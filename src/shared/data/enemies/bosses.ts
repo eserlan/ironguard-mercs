@@ -9,7 +9,7 @@ export const VOID_REAVER: EnemyArchetype = {
 	stats: { hp: 1200, speed: 18, mitigation: 30, threatBiasMultiplier: 1.5 },
 	moves: [{ id: "annihilate", cooldown: 15, telegraph: { type: "Circle", duration: 3.0, radius: 25 }, interruptible: false, breakable: true }],
 	breakThreshold: 200,
-	visual: { profileKey: "Slasher", weaponKey: "ReaverBlade" },
+	visual: { rigType: "R15", profileKey: "Slasher", weaponKey: "ReaverBlade" },
 };
 
 export const IRON_OVERSEER: EnemyArchetype = {
@@ -20,5 +20,5 @@ export const IRON_OVERSEER: EnemyArchetype = {
 	stats: { hp: 5000, speed: 10, mitigation: 50, threatBiasMultiplier: 2.0 },
 	moves: [{ id: "orbital-strike", cooldown: 20, telegraph: { type: "Circle", duration: 4.0, radius: 30 }, interruptible: false, breakable: true }],
 	breakThreshold: 500,
-	visual: { profileKey: "Guard", weaponKey: "OverseerConsole" },
+	visual: { rigType: "R15", profileKey: "Guard", weaponKey: "OverseerConsole" },
 };

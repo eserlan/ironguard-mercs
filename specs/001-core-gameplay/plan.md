@@ -13,7 +13,7 @@ This plan defines the first playable "vertical slice" of IronGuard Mercs. The go
 **Language/Version**: TypeScript (roblox-ts -> Luau).
 **Architecture**: Flamework (DI, Networking, Components).
 **State Management**: `typescript-rx` (Reactive Event Streams).
-**Testing**: **Vitest** (Node.js) for pure logic; TestEZ for Roblox integration.
+**Testing**: **Vitest** (Node.js) for pure logic; Vitest for Roblox integration.
 **Target Platform**: Roblox Client/Server.
 **Performance Goals**: Session start < 3s.
 **Constraints**: Deterministic seeded runs, Server-authoritative state.

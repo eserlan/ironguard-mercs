@@ -31,6 +31,14 @@
         "$path": "out/server"
       }
     },
+    "ServerStorage": {
+      "EnemyRigs": {
+        "$className": "Folder"
+      },
+      "Weapons": {
+        "$className": "Folder"
+      }
+    },
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "TS": {
