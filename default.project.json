@@ -37,6 +37,9 @@
       },
       "Weapons": {
         "$className": "Folder"
+      },
+      "Tiles": {
+        "$className": "Folder"
       }
     },
     "StarterPlayer": {
