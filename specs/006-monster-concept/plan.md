@@ -12,7 +12,7 @@ This plan outlines the implementation of the Monsters & Opponents system. It est
 **Language/Version**: TypeScript (roblox-ts)
 **Architecture**: Flamework (DI, Services, Components)
 **Reactive Flow**: `typescript-rx` for telemetry and state observation.
-**Testing**: Vitest (pure scoring and state logic), TestEZ (combat integration).
+**Testing**: Vitest (pure scoring and state logic), Vitest (combat integration).
 **Target Platform**: Roblox Client/Server.
 **Performance Goals**: Support for 50+ active enemies with minimal AI overhead.
 **Constraints**: 

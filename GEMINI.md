@@ -12,8 +12,10 @@ Auto-generated from all feature plans. Last updated: 2026-01-06
 - **Git Hooks**: Husky (pre-push) for Linting and TDD.
 - TypeScript (roblox-ts -> Luau) + `@rbxts/react`, `@rbxts/react-roblox`, `@flamework/core` (000-ui-tech-spec)
 - N/A (Client-side ephemeral UI state) (000-ui-tech-spec)
+- TypeScript (roblox-ts 2.3+) -> Luau + @flamework/core, @rbxts/services (010-enemy-visuals)
+- ServerStorage (for Assets), ModuleScripts (for Data Profiles) (010-enemy-visuals)
 
-- Luau (Roblox) + Roblox Engine API (`Workspace`, `ServerStorage`, `CFrame`), TestEZ (for unit testing). (004-dungeon-generation)
+- Luau (Roblox) + Roblox Engine API (`Workspace`, `ServerStorage`, `CFrame`), Vitest (for unit testing). (004-dungeon-generation)
 
 ## Project Structure
 
@@ -31,9 +33,9 @@ tests/
 Luau (Roblox): Follow standard conventions
 
 ## Recent Changes
+- 010-enemy-visuals: Added TypeScript (roblox-ts 2.3+) -> Luau + @flamework/core, @rbxts/services
 - 000-ui-tech-spec: Added TypeScript (roblox-ts -> Luau) + `@rbxts/react`, `@rbxts/react-roblox`, `@flamework/core`
 - 001-core-gameplay: Refined vision to Real-Time Tactical Co-op; added Roster Management and Ironman Mode (Permadeath).
-- 009-lobby-system: Implemented Sanctuary of Valor immersive lobby, party system, and loadout editors.
 
 
 <!-- MANUAL ADDITIONS START -->
@@ -43,8 +45,4 @@ Luau (Roblox): Follow standard conventions
 The core architectural principles and immutable development rules for this project are defined in the [CONSTITUTION.md](file:///home/espen/proj/ironguard-mercs/.specify/memory/constitution.md). 
 
 All developers must strictly adhere to the standards defined there, particularly regarding:
-- **Test-Driven Development (TDD)**
-- **Decoupled Architecture (@Service/@Controller)**
-- **UI Safety (Avoid React Fragments)**
-- **Pure Functional Logic in Shared**
 <!-- MANUAL ADDITIONS END -->

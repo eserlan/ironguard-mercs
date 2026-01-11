@@ -12,7 +12,7 @@ This plan defines the implementation of the Gear & Equipment system—a set of e
 **Language/Version**: TypeScript (roblox-ts)
 **Architecture**: Flamework (DI, Services, Components)
 **Primary Dependencies**: Combat (002) for trigger hooks, Abilities (003) for cooldown integration, Progression (007) for meta unlocks.
-**Testing**: Vitest (pure gear logic), TestEZ (UI integration).
+**Testing**: Vitest (Unit/Integration)
 **Target Platform**: Roblox Client/Server.
 **Performance Goals**: Gear effect application < 1 frame (16ms).
 **Constraints**: 
