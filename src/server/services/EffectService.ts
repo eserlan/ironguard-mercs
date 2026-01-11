@@ -64,10 +64,6 @@ export class EffectService {
 			case EffectType.DamageMod:
 				this.resolveDamageMod(target, block, sourceId);
 				break;
-
-
-
-
 			case EffectType.MitigationMod:
 				this.resolveMitigationMod(target, block, sourceId);
 				break;
