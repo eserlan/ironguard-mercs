@@ -1,11 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { EnemyRegistry, EnemyArchetype } from './config';
 import { EnemyRole, EnemyTier, MoveConfig } from './enemy-types';
-
-// Mock Color3 for Node environment
-(globalThis as any).Color3 = {
-    fromRGB: (r: number, g: number, b: number) => ({ r, g, b }),
-};
 
 describe('EnemyRegistry', () => {
     it('validates correct config', () => {
@@ -17,6 +12,7 @@ describe('EnemyRegistry', () => {
             stats: { hp: 100, speed: 16, mitigation: 0, threatBiasMultiplier: 1 },
             moves: [{ id: 'swipe', cooldown: 2 } as unknown as MoveConfig],
             breakThreshold: 50,
+            visual: { rigType: 'R15', profileKey: 'Slasher' },
         } as unknown as EnemyArchetype;
         expect(EnemyRegistry.validate(config)).toBe(true);
     });

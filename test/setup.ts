@@ -93,3 +93,10 @@ if (!(String.prototype as any).sub) {
         configurable: true,
     });
 }
+
+// Polyfill for Roblox Color3
+(global as any).Color3 = {
+    new: (r: number, g: number, b: number) => ({ R: r, G: g, B: b }),
+    fromRGB: (r: number, g: number, b: number) => ({ R: r / 255, G: g / 255, B: b / 255 }),
+    fromHSV: (h: number, s: number, v: number) => ({ R: 1, G: 1, B: 1 }), // Dummy
+};
