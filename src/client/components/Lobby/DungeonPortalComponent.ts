@@ -8,9 +8,9 @@ import { Log } from "shared/utils/log";
 const LAUNCH_DEBOUNCE_SECONDS = 2;
 
 @Component({
-    tag: "LobbyTheGreatGate",
+    tag: "LobbyDungeonPortal",
 })
-export class TheGreatGateComponent extends BaseComponent<object, BasePart> implements OnStart {
+export class DungeonPortalComponent extends BaseComponent<object, BasePart> implements OnStart {
     private active = false;
     private lastLaunchTime = 0;
 
@@ -19,7 +19,7 @@ export class TheGreatGateComponent extends BaseComponent<object, BasePart> imple
     }
 
     onStart() {
-        Log.info(`[Lobby] TheGreatGate component started on: ${this.instance.GetFullName()}`);
+        Log.info(`[Lobby] DungeonPortal component started on: ${this.instance.GetFullName()}`);
 
         this.instance.Touched.Connect((otherPart) => {
             if (!this.active) {
@@ -35,7 +35,7 @@ export class TheGreatGateComponent extends BaseComponent<object, BasePart> imple
 
             const player = Players.GetPlayerFromCharacter(character);
             if (player === Players.LocalPlayer) {
-                Log.info("[Lobby] TheGreatGate - local player touched the ivory doors, launching mission!");
+                Log.info("[Lobby] DungeonPortal - local player touched the portal, launching mission!");
                 this.lastLaunchTime = now;
                 this.lobbyController.launchMission();
             }
@@ -58,7 +58,7 @@ export class TheGreatGateComponent extends BaseComponent<object, BasePart> imple
         this.active = active;
         // Visually, the Great Gate opens or becomes celestial when ready
         this.instance.Transparency = active ? 0.3 : 0.95;
-        this.instance.CanCollide = false;
+        this.instance.CanCollide = !active;
 
         // VFX: Toggle all particle emitters (Holy/Celestial effects)
         this.instance.GetDescendants().forEach((child) => {
