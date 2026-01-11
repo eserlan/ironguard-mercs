@@ -3,6 +3,7 @@ import { Log } from "shared/utils/log";
 import { EnemyArchetype } from "shared/domain/enemies/config";
 import { VisualProfiles } from "shared/domain/enemies/visual-profiles";
 import { EnemyVisualProfile } from "shared/domain/enemies/visual-types";
+import { ServerStorage } from "@rbxts/services";
 
 @Service({})
 export class EnemyVisualService implements OnStart {
@@ -26,6 +27,7 @@ export class EnemyVisualService implements OnStart {
             return;
         }
 
+        Log.info(`Setting up visuals for ${rig.Name} using profile: ${archetype.visual.profileKey}`);
         this.applyVisualProfile(humanoid, profile);
         this.attachWeapon(rig, archetype.visual.weaponKey);
     }
@@ -64,12 +66,49 @@ export class EnemyVisualService implements OnStart {
 
         // Apply synchronously on server for predictability
         humanoid.ApplyDescription(description);
-        Log.debug(`Applied visual profile to humanoid`);
+        Log.debug(`Applied visual profile (assets: ${profile.assetIds.size()}, scale: ${profile.scale ? "yes" : "no"}) to ${humanoid.Parent?.Name}`);
     }
 
     private attachWeapon(rig: Model, weaponKey?: string) {
         if (!weaponKey) return;
-        Log.info(`Attaching weapon ${weaponKey} to rig ${rig.Name} (Stub)`);
-        // TODO: Implement weapon model spawning and welding to RightHand
+
+        const weaponsFolder = ServerStorage.FindFirstChild("Weapons");
+        if (!weaponsFolder) {
+            Log.warn("ServerStorage/Weapons folder not found");
+            return;
+        }
+
+        const weaponModel = weaponsFolder.FindFirstChild(weaponKey) as Model;
+        if (!weaponModel) {
+            Log.warn(`Weapon model ${weaponKey} not found in ServerStorage/Weapons`);
+            return;
+        }
+
+        const rightHand = rig.FindFirstChild("RightHand") as BasePart;
+        if (!rightHand) {
+            Log.warn(`Rig ${rig.Name} has no RightHand to attach weapon to`);
+            return;
+        }
+
+        const clonedWeapon = weaponModel.Clone();
+        clonedWeapon.Parent = rig;
+
+        const handle = clonedWeapon.FindFirstChild("Handle") as BasePart;
+        if (handle) {
+            const weld = new Instance("WeldConstraint");
+            weld.Part0 = rightHand;
+            weld.Part1 = handle;
+            weld.Parent = handle;
+
+            // Basic alignment if handle exists
+            if (handle.IsA("BasePart")) {
+                handle.CFrame = rightHand.CFrame;
+            }
+        } else {
+            // If no handle, just parent it and hope for the best, or log error
+            Log.warn(`Weapon model ${weaponKey} has no Handle part`);
+        }
+
+        Log.info(`Attached weapon ${weaponKey} to rig ${rig.Name}`);
     }
 }

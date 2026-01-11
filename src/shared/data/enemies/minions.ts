@@ -9,7 +9,7 @@ export const VOID_SWARM: EnemyArchetype = {
 	stats: { hp: 30, speed: 22, mitigation: 0, threatBiasMultiplier: 1 },
 	moves: [{ id: "nibble", cooldown: 1, telegraph: { type: "Circle", duration: 0.5, radius: 4 }, interruptible: true, breakable: false }],
 	breakThreshold: 10,
-	visual: { profileKey: "Slasher" },
+	visual: { rigType: "R15", profileKey: "Slasher" },
 };
 
 export const IRON_SWARM: EnemyArchetype = {
@@ -20,7 +20,7 @@ export const IRON_SWARM: EnemyArchetype = {
 	stats: { hp: 40, speed: 18, mitigation: 5, threatBiasMultiplier: 1 },
 	moves: [{ id: "pierce", cooldown: 1.5, telegraph: { type: "Circle", duration: 0.6, radius: 4 }, interruptible: true, breakable: false }],
 	breakThreshold: 15,
-	visual: { profileKey: "Slasher" },
+	visual: { rigType: "R15", profileKey: "Slasher" },
 };
 
 export const IRON_GRUNT: EnemyArchetype = {
@@ -31,5 +31,16 @@ export const IRON_GRUNT: EnemyArchetype = {
 	stats: { hp: 120, speed: 14, mitigation: 10, threatBiasMultiplier: 1.2 },
 	moves: [{ id: "heavy-swing", cooldown: 3, telegraph: { type: "Cone", duration: 1.2, angle: 60, radius: 8 }, interruptible: true, breakable: false }],
 	breakThreshold: 40,
-	visual: { profileKey: "Slasher", weaponKey: "IronMace" },
+	visual: { rigType: "R15", profileKey: "Slasher", weaponKey: "IronMace" },
+};
+
+export const IRON_GIANT: EnemyArchetype = {
+	id: "iron-giant",
+	name: "Iron Giant",
+	role: EnemyRole.Tank,
+	tier: EnemyTier.Elite,
+	stats: { hp: 300, speed: 10, mitigation: 20, threatBiasMultiplier: 1.5 },
+	moves: [{ id: "giant-stomp", cooldown: 5, telegraph: { type: "Circle", duration: 1.5, radius: 12 }, interruptible: true, breakable: false }],
+	breakThreshold: 100,
+	visual: { rigType: "R15", profileKey: "Giant" },
 };
