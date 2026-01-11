@@ -8,13 +8,10 @@ import { ServerStorage, Workspace } from "@rbxts/services";
 export class DungeonService implements OnStart {
     private tileAssets: TileAsset[] = [];
     private tileModels = new Map<string, Model>();
+    private lastResult?: { playerSpawns: Vector3[], enemySpawns: Vector3[] };
 
     onStart() {
         this.loadTiles();
-        // Auto-generate for testing
-        task.delay(5, () => {
-            this.generate(math.random(1, 1000000));
-        });
     }
 
     private loadTiles() {
@@ -79,20 +76,41 @@ export class DungeonService implements OnStart {
     }
 
     public generate(seed: number) {
-        Log.info(`Generating dungeon with seed ${seed}`);
-        
-        // Use a reasonable count
-        const nodes = generateGraph(seed, this.tileAssets, 15);
-        
-        const dungeonFolder = new Instance("Folder");
-        dungeonFolder.Name = "Dungeon";
-        dungeonFolder.Parent = Workspace;
+        Log.info(`[DungeonService] Generating dungeon with seed: ${seed}`);
+        const graph = generateGraph(seed);
+        Log.info(`[DungeonService] Graph generated with ${graph.nodes.size()} nodes`);
 
-        for (const node of nodes) {
-            this.spawnNode(node, dungeonFolder);
-        }
-        
-        Log.info(`Spawned ${nodes.size()} rooms.`);
+        const playerSpawns: Vector3[] = [];
+        const enemySpawns: Vector3[] = [];
+
+        // Simple placement for now: place tiles based on graph
+        // This is a placeholder for a more complex layout algorithm
+        let currentPos = new Vector3(0, 500, 0); // Elevation to avoid lobby
+
+        graph.nodes.forEach((node, index) => {
+            const assetStyle = index === 0 ? "Room40x40" : (index === graph.nodes.size() - 1 ? "EndRoom" : "Hallway40");
+            const model = this.tileModels.get(assetStyle);
+
+            if (model) {
+                const clone = model.Clone();
+                clone.Parent = Workspace;
+                clone.PivotTo(new CFrame(currentPos));
+
+                // Collect spawns
+                for (const desc of clone.GetDescendants()) {
+                    if (desc.IsA("BasePart")) {
+                        if (desc.Name === "PlayerSpawn") playerSpawns.push(desc.Position);
+                        if (desc.Name === "EnemySpawn") enemySpawns.push(desc.Position);
+                    }
+                }
+
+                currentPos = currentPos.add(new Vector3(0, 0, 60)); // Simple linear layout for now
+            }
+        });
+
+        Log.info(`[DungeonService] Generated ${playerSpawns.size()} player spawns and ${enemySpawns.size()} enemy spawns`);
+        this.lastResult = { playerSpawns, enemySpawns };
+        return this.lastResult;
     }
 
     private spawnNode(node: GraphNode, parent: Instance) {
@@ -118,9 +136,16 @@ export class DungeonService implements OnStart {
 
     private extractMetadata(model: Model) {
         for (const desc of model.GetDescendants()) {
-            if (desc.IsA("BasePart") && desc.Name === "EnemySpawn") {
-                // Log for now, or fire event
-                // Log.info(`Found EnemySpawn at ${desc.Position}`);
+            if (desc.IsA("BasePart")) {
+                if (desc.Name === "EnemySpawn") {
+                    this.lastResult?.enemySpawns.push(desc.Position);
+                    desc.Transparency = 1;
+                    desc.CanCollide = false;
+                } else if (desc.Name === "PlayerSpawn") {
+                    this.lastResult?.playerSpawns.push(desc.Position);
+                    desc.Transparency = 1;
+                    desc.CanCollide = false;
+                }
             }
         }
     }

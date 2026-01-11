@@ -204,9 +204,13 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 
 	useEffect(() => {
 		const conn = RunService.Heartbeat.Connect(() => {
-			if (pendingHover && os.clock() - pendingHover.startTime >= 0.5) {
-				setActiveInfo(pendingHover.data);
-				setPendingHover(undefined);
+			if (pendingHover) {
+				const elapsed = os.clock() - pendingHover.startTime;
+				if (elapsed >= 0.5) {
+					print(`[AbilityBar] Reached threshold for ${pendingHover.data.name}, setting active info`);
+					setActiveInfo(pendingHover.data);
+					setPendingHover(undefined);
+				}
 			}
 		});
 		return () => conn.Disconnect();
@@ -275,7 +279,12 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						Font={Enum.Font.GothamBold}
 						TextSize={20}
 						ZIndex={210}
-						Event={{ Activated: closePanel }}
+						Event={{
+							Activated: () => {
+								print("[AbilityBar] Close button clicked");
+								closePanel();
+							},
+						}}
 					>
 						<uicorner CornerRadius={new UDim(1, 0)} />
 						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={1} Color={Color3.fromRGB(255, 255, 255)} />
@@ -341,7 +350,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						key="Tech"
 						LayoutOrder={4}
 						Text={activeInfo.technical}
-						Size={new UDim2(1, 0, 0, 80)}
+						Size={new UDim2(1, 0, 0, 90)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(150, 200, 255)}
 						Font={Enum.Font.GothamBold}
