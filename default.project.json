@@ -31,6 +31,11 @@
         "$path": "out/server"
       }
     },
+    "ServerStorage": {
+      "Tiles": {
+        "$className": "Folder"
+      }
+    },
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "TS": {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "@rbxts/react";
-import { RunService } from "@rbxts/services";
+import { RunService, UserInputService } from "@rbxts/services";
 import { AbilityRegistry } from "shared/domain/abilities/config";
 import { useAbilityCooldowns } from "./hooks/useAbilityCooldowns";
 import type { AbilityController } from "client/controllers/AbilityController";
@@ -205,6 +205,19 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 		return () => conn.Disconnect();
 	}, [pendingHover]);
 
+	useEffect(() => {
+		if (!pendingHover) return;
+
+		const conn = UserInputService.InputBegan.Connect((input) => {
+			if (input.UserInputType === Enum.UserInputType.MouseButton1) {
+				print(`Activating info panel for: ${pendingHover.data.name}`);
+				setActiveInfo(pendingHover.data);
+				setPendingHover(undefined);
+			}
+		});
+		return () => conn.Disconnect();
+	}, [pendingHover]);
+
 	const closePanel = () => {
 		setActiveInfo(undefined);
 	};
@@ -221,65 +234,72 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 			{activeInfo && (
 				<frame
 					key="InfoPanel"
-					Size={new UDim2(0, 320, 0, 240)}
-					Position={new UDim2(0, 20, 0, -118)}
-					BackgroundColor3={Color3.fromRGB(30, 30, 35)}
+					Size={new UDim2(0, 340, 0, 260)}
+					Position={new UDim2(0, 20, 0, -138)}
+					BackgroundColor3={Color3.fromRGB(25, 25, 30)}
 					ZIndex={200}
 					Visible={true}
 					Active={true}
 				>
-					<uicorner CornerRadius={new UDim(0, 12)} />
-					<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={3} Color={Color3.fromRGB(200, 160, 40)} />
+					<uicorner CornerRadius={new UDim(0, 10)} />
+					<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={2} Color={Color3.fromRGB(200, 160, 40)} />
 
 					<uipadding
-						PaddingTop={new UDim(0, 20)}
-						PaddingBottom={new UDim(0, 20)}
-						PaddingLeft={new UDim(0, 25)}
-						PaddingRight={new UDim(0, 25)}
+						PaddingTop={new UDim(0, 15)}
+						PaddingBottom={new UDim(0, 15)}
+						PaddingLeft={new UDim(0, 20)}
+						PaddingRight={new UDim(0, 20)}
 					/>
 
 					{/* Close Button */}
 					<textbutton
 						key="CloseBtn"
-						Text="X"
-						Size={new UDim2(0, 32, 0, 32)}
-						Position={new UDim2(1, -16, 0, -16)}
+						Text="×"
+						Size={new UDim2(0, 28, 0, 28)}
+						Position={new UDim2(1, -14, 0, -14)}
 						BackgroundColor3={Color3.fromRGB(200, 50, 50)}
 						TextColor3={Color3.fromRGB(255, 255, 255)}
 						Font={Enum.Font.GothamBold}
-						TextSize={24}
+						TextSize={20}
 						ZIndex={210}
 						Event={{ Activated: closePanel }}
 					>
 						<uicorner CornerRadius={new UDim(1, 0)} />
-						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={2} Color={Color3.fromRGB(255, 255, 255)} />
+						<uistroke ApplyStrokeMode={Enum.ApplyStrokeMode.Border} Thickness={1.5} Color={Color3.fromRGB(255, 255, 255)} />
 					</textbutton>
+
+					<uilistlayout
+						FillDirection={Enum.FillDirection.Vertical}
+						Padding={new UDim(0, 8)}
+						SortOrder={Enum.SortOrder.LayoutOrder}
+					/>
 
 					{/* Title */}
 					<textlabel
 						key="Title"
-						Text={string.upper(activeInfo.name)}
-						Size={new UDim2(1, 0, 0, 25)}
+						Text={activeInfo.name.upper()}
+						Size={new UDim2(1, 0, 0, 24)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(255, 215, 0)}
 						Font={Enum.Font.GothamBlack}
-						TextSize={22}
+						TextSize={20}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						ZIndex={202}
+						LayoutOrder={1}
 					/>
 
 					{/* Parent Ability Context */}
 					<textlabel
 						key="ParentName"
-						Text={`[${string.upper(activeInfo.parentName)}]`}
-						Size={new UDim2(1, 0, 0, 15)}
-						Position={new UDim2(0, 0, 0, 28)}
+						Text={"[" + activeInfo.parentName.upper() + "]"}
+						Size={new UDim2(1, 0, 0, 14)}
 						BackgroundTransparency={1}
 						TextColor3={Color3.fromRGB(150, 150, 160)}
 						Font={Enum.Font.SourceSansItalic}
-						TextSize={14}
+						TextSize={13}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						ZIndex={202}
+						LayoutOrder={2}
 					/>
 
 					{/* Description */}
@@ -287,31 +307,31 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						key="Desc"
 						Text={activeInfo.description}
 						Size={new UDim2(1, 0, 0, 50)}
-						Position={new UDim2(0, 0, 0, 50)}
 						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(230, 230, 230)}
+						TextColor3={Color3.fromRGB(220, 220, 220)}
 						Font={Enum.Font.GothamMedium}
-						TextSize={15}
+						TextSize={14}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
 						ZIndex={202}
+						LayoutOrder={3}
 					/>
 
 					{/* Technical Info */}
 					<textlabel
 						key="Tech"
 						Text={activeInfo.technical}
-						Size={new UDim2(1, 0, 0, 75)}
-						Position={new UDim2(0, 0, 1, -75)}
+						Size={new UDim2(1, 0, 0, 80)}
 						BackgroundTransparency={1}
-						TextColor3={Color3.fromRGB(160, 200, 255)}
+						TextColor3={Color3.fromRGB(150, 200, 255)}
 						Font={Enum.Font.GothamBold}
-						TextSize={14}
+						TextSize={13}
 						TextWrapped={true}
 						TextXAlignment={Enum.TextXAlignment.Left}
-						TextYAlignment={Enum.TextYAlignment.Bottom}
+						TextYAlignment={Enum.TextYAlignment.Top}
 						ZIndex={202}
+						LayoutOrder={4}
 					/>
 				</frame>
 			)}
@@ -345,6 +365,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 							keyCode={keyLabels[slotIndex]}
 							controller={controller}
 							onHover={(variant) => {
+								print(`Hovering: ${entry?.abilityId} variant: ${variant}`);
 								if (!variant || !entry?.abilityId) {
 									if (pendingHover) {
 										setPendingHover(undefined);
@@ -353,6 +374,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 								}
 								const ability = AbilityRegistry.get(entry.abilityId);
 								if (!ability) {
+									warn(`Ability ${entry.abilityId} not found in registry`);
 									return;
 								}
 
@@ -366,6 +388,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 										technical: data.technical ?? "",
 										parentName: ability.name ?? "Core Ability",
 									};
+									print(`Setting pending hover for: ${info.name}`);
 									setPendingHover({ startTime: os.clock(), data: info });
 								}
 							}}

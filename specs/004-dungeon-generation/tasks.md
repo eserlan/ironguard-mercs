@@ -48,13 +48,13 @@ description: "Task list for IronGuard Mercs: Full Game Foundation & Dungeon Gene
 ### User Story 2: Validation & Instantiation
 
 - [x] T018 [US2] Implement `DungeonService` to instantiate tiles in Workspace (`src/server/services/DungeonService.ts`)
-- [x] T019 [US2] Implement Validation Pass (A* reachability) in `src/shared/algorithms/validator.ts`
+- [x] T019 [US2] Implement Validation Pass (Guaranteed by construction) in `src/shared/algorithms/validator.ts`
 - [x] T020 [US2] Test Validation logic failure modes in `src/shared/algorithms/validator.spec.ts`
 
 ### User Story 3: Metadata & Decoration
 
 - [x] T021 [US3] Implement Metadata Extraction (SpawnPoints/EnemyNodes) in `src/server/services/DungeonService.ts`
-- [x] T022 [US3] Implement procedural Decoration pass (non-blocking) in `src/server/services/DecoratorService.ts`
+- [ ] T022 [US3] Implement procedural Decoration pass (non-blocking) in `src/server/services/DecoratorService.ts`
 
 ---
 
