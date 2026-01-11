@@ -14,6 +14,8 @@ interface PartyPanelProps {
 
 export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onSetMode, onSetDifficulty, onLeave }: PartyPanelProps) {
 	const localMember = room.members.find((m) => m.playerId === localPlayerId);
+	const hasSelectedMerc = localMember?.selectedMercenaryId !== undefined;
+	const canReady = hasSelectedMerc;
 	const canLaunch = isHost && room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
 
 	return (
@@ -153,15 +155,18 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 			{/* Actions */}
 			<frame Size={new UDim2(1, 0, 0, 120)} Position={new UDim2(0, 0, 1, -120)} BackgroundTransparency={1}>
 				<textbutton
-					Text={localMember?.isReady ? "NOT READY" : "READY"}
+					Text={localMember?.isReady ? "NOT READY" : (hasSelectedMerc ? "READY" : "SELECT MERC")}
 					Size={new UDim2(0.45, 0, 0, 50)}
 					BackgroundColor3={
-						localMember?.isReady ? Color3.fromRGB(200, 100, 100) : Color3.fromRGB(100, 200, 100)
+						localMember?.isReady
+							? Color3.fromRGB(200, 100, 100)
+							: (hasSelectedMerc ? Color3.fromRGB(100, 200, 100) : Color3.fromRGB(100, 100, 100))
 					}
 					TextColor3={Color3.fromRGB(255, 255, 255)}
 					Font={Enum.Font.GothamBold}
 					TextSize={22}
-					Event={{ Activated: () => onReady(!localMember?.isReady) }}
+					AutoButtonColor={canReady}
+					Event={{ Activated: () => canReady && onReady(!localMember?.isReady) }}
 				>
 					<uicorner CornerRadius={new UDim(0, 8)} />
 				</textbutton>
