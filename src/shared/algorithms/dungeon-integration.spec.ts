@@ -1,20 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { generateDungeonGraph, DungeonGraph, GraphNode } from "./dungeon-gen";
+import { generateDungeonGraph } from "./dungeon-gen";
 import { TileRegistry } from "../domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../domain/dungeon/manifest";
 import { ConnectorDirection } from "../domain/TileDefs";
-
-// Helper to simulate DungeonService.rotateDirection
-function rotateDirection(dir: ConnectorDirection, rotations: number): ConnectorDirection {
-    const dirs = [
-        ConnectorDirection.North,
-        ConnectorDirection.East,
-        ConnectorDirection.South,
-        ConnectorDirection.West
-    ];
-    const idx = dirs.indexOf(dir);
-    return dirs[(idx + rotations) % 4];
-}
 
 describe("Dungeon Integration Logic", () => {
     initializeTileRegistry();
@@ -37,39 +25,14 @@ describe("Dungeon Integration Logic", () => {
 
                 if (!fromNode || !toNode) continue;
 
-                // 1. Verify FROM node has the exit marked as used
-                // The edge store 'fromDirection' relative to the tile's original orientation?
-                // OR relative to the placed node?
-                // Let's check dungeon-gen.ts: 
-                //    fromDirection: sourceConn.direction 
-                // sourceConn comes from frontierConnectors which has 'direction: rDir' (rotated direction)
-                // So edge.fromDirection is ALREADY rotated to world space (relative to the node's rotation? No, it's just the direction).
-
-                // Wait, let's look at dungeon-gen.ts lines 103:
-                // const rDir = rotateDirection(chosenConnector.direction, 0); 
-                // frontierConnectors store 'direction' as the ROTATED direction.
-
-                // And lines 194:
-                // sourceNode.usedConnectorDirections.push(sourceConn.direction);
-
-                // And lines 201:
-                // fromDirection: sourceConn.direction
-
-                // So edge.fromDirection SHOULD be exactly what is in usedConnectorDirections.
-
+                // 1. FROM node: every outgoing edge direction must be recorded as a used connector.
                 const fromIsUsed = fromNode.usedConnectorDirections.includes(edge.fromDirection);
                 if (!fromIsUsed) {
                     console.error(`Edge ${edge.from} -> ${edge.to} uses direction ${edge.fromDirection}, but node ${edge.from} only has [${fromNode.usedConnectorDirections.join(", ")}]`);
                 }
                 expect(fromIsUsed, `Seed ${seed}: Node ${fromNode.id} should have marked direction ${edge.fromDirection} as used`).toBe(true);
 
-                // 2. Verify TO node has the entry marked as used
-                // edge.toDirection is calculated as:
-                // const usedDirOnNewTile = rotateDirection(usedConnector.direction, pick.rotation);
-                // toDirection: usedDirOnNewTile
-
-                // And newNode.usedConnectorDirections: [usedDirOnNewTile] (initially)
-
+                // 2. TO node: every incoming edge direction must also be recorded as a used connector.
                 const toIsUsed = toNode.usedConnectorDirections.includes(edge.toDirection);
                 if (!toIsUsed) {
                     console.error(`Edge ${edge.from} -> ${edge.to} connects to ${edge.toDirection}, but node ${edge.to} only has [${toNode.usedConnectorDirections.join(", ")}]`);
@@ -79,11 +42,7 @@ describe("Dungeon Integration Logic", () => {
         }
     });
 
-    it("should ensure every 'used' connector has a corresponding edge (except Start/End/Leafs?)", () => {
-        // This is less critical for "path blocked" but good for "wall missing"
-        // Logic: If a connector is "used", there MUST be an edge connected to it.
-        // Or it must be the "open" side of a Start/End if we treat them specially (we don't really, they just have 1 connection).
-
+    it("should ensure every 'used' connector has a corresponding edge", () => {
         const seeds = [1, 42];
         for (const seed of seeds) {
             const graph = generateDungeonGraph(seed, tileset);
@@ -108,11 +67,6 @@ describe("Dungeon Integration Logic", () => {
     });
 
     it("should emulate DungeonService Check for all nodes on main path", () => {
-        // This emulates the exact check DungeonService does:
-        // for (const dir of allDirections) { if (used) open else block }
-        // We want to verify that for every connection between A and B, 
-        // A's 'dir' is USED (open) and B's 'dir' is USED (open).
-
         const seeds = [555, 777];
         for (const seed of seeds) {
             const graph = generateDungeonGraph(seed, tileset, { minPathLength: 6 });

@@ -74,7 +74,6 @@ export function generateDungeonGraph(
 
     // Prefer hallways/corridors for the main path (2 connectors = linear)
     const linearTiles = pathTiles.filter((t) => t.connectors.size() === 2);
-    const branchTiles = pathTiles.filter((t) => t.connectors.size() >= 3);
 
     // === PHASE 1: Build the main linear path ===
 
@@ -245,7 +244,7 @@ export function generateDungeonGraph(
     if (endTile && frontierConnectors.size() > 0) {
         // Sort frontier connectors by distance - place boss at farthest point on main path
         const sortedConnectors = [...frontierConnectors].sort((a, b) => {
-            return b.distanceFromStart > a.distanceFromStart;
+            return b.distanceFromStart - a.distanceFromStart;
         });
 
         for (const sourceConn of sortedConnectors) {
@@ -301,7 +300,7 @@ export function generateDungeonGraph(
     // Fallback: if boss wasn't placed and we have branch connectors, try those
     if (!endNodeId && endTile && branchConnectors.size() > 0) {
         const sortedBranch = [...branchConnectors].sort((a, b) => {
-            return b.distanceFromStart > a.distanceFromStart;
+            return b.distanceFromStart - a.distanceFromStart;
         });
 
         for (const sourceConn of sortedBranch) {

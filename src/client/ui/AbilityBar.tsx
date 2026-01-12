@@ -268,7 +268,6 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						ZIndex={210}
 						Event={{
 							Activated: () => {
-								print("[AbilityBar] Close button clicked");
 								closePanel();
 							},
 						}}

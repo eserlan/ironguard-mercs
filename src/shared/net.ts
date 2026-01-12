@@ -38,6 +38,14 @@ interface ServerToClientEvents {
 	PartyLeft(): void;
 	MissionLaunching(seed: number): void;
 	UnlockedClassesUpdated(classIds: string[]): void;
+	/**
+	 * Notifies the client about a mission launch-related alert.
+	 *
+	 * Fired when the server needs to inform clients about important mission launch status or issues,
+	 * such as countdown messages, readiness checks, or validation errors.
+	 *
+	 * @param message A human-readable description of the launch alert.
+	 */
 	LaunchAlert(message: string): void;
 }
 

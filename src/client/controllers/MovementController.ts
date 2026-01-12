@@ -1,5 +1,5 @@
 import { Controller, OnStart } from "@flamework/core";
-import { Players, UserInputService, RunService } from "@rbxts/services";
+import { Players, UserInputService } from "@rbxts/services";
 
 const WALK_SPEED = 16;
 const RUN_SPEED = 28;
