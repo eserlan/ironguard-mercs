@@ -1,0 +1,150 @@
+{
+  "className": "Model",
+  "children": [
+    {
+      "name": "Floor",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": true,
+        "Size": [60, 1, 60],
+        "Position": [0, -0.5, 0],
+        "Material": "Slate",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "CornerNE",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [4, 8, 4],
+        "Position": [28, 4, -28],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "CornerNW",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [4, 8, 4],
+        "Position": [-28, 4, -28],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "CornerSE",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [4, 8, 4],
+        "Position": [28, 4, 28],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "CornerSW",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [4, 8, 4],
+        "Position": [-28, 4, 28],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallNorthLeft",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [18, 8, 2],
+        "Position": [-21, 4, -29],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallNorthRight",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [18, 8, 2],
+        "Position": [21, 4, -29],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallSouthLeft",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [18, 8, 2],
+        "Position": [-21, 4, 29],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallSouthRight",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [18, 8, 2],
+        "Position": [21, 4, 29],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallEastTop",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 8, 18],
+        "Position": [29, 4, -21],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallEastBottom",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 8, 18],
+        "Position": [29, 4, 21],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallWestTop",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 8, 18],
+        "Position": [-29, 4, -21],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    },
+    {
+      "name": "WallWestBottom",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 8, 18],
+        "Position": [-29, 4, 21],
+        "Material": "Brick",
+        "Color": [0.384, 0.373, 0.38]
+      }
+    }
+  ]
+}
+

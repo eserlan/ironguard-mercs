@@ -39,7 +39,7 @@
         "$className": "Folder"
       },
       "Tiles": {
-        "$className": "Folder"
+        "$path": "assets/tiles"
       }
     },
     "StarterPlayer": {

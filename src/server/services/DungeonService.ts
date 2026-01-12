@@ -1,6 +1,6 @@
 import { Service, OnStart } from "@flamework/core";
 import { Log } from "../../shared/utils/log";
-import { generateDungeonGraph, DungeonGraph, GraphNode, validateDungeon, countRoutes, getShortestPathLength } from "../../shared/algorithms/dungeon-gen";
+import { generateDungeonGraph, DungeonGraph, GraphNode, validateDungeon, countRoutes, getShortestPathLength, sortNodesDescending } from "../../shared/algorithms/dungeon-gen";
 import { TileAsset, ConnectorDirection, Connector } from "../../shared/domain/TileDefs";
 import { TileRegistry } from "../../shared/domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../../shared/domain/dungeon/manifest";
@@ -25,12 +25,12 @@ export class DungeonService implements OnStart {
 
     // Wall dimensions
     private static readonly WALL_WIDTH = 12;
-    private static readonly WALL_HEIGHT = 8;
+    private static readonly WALL_HEIGHT = 16;
     private static readonly WALL_THICKNESS = 2;
 
     // Door frame dimensions
     private static readonly DOOR_WIDTH = 8;
-    private static readonly DOOR_HEIGHT = 7;
+    private static readonly DOOR_HEIGHT = 10;
     private static readonly FRAME_THICKNESS = 1;
     private static readonly FRAME_DEPTH = 2;
     private static readonly PILLAR_WIDTH = 2;
@@ -99,15 +99,15 @@ export class DungeonService implements OnStart {
 
         do {
             const rng = new Random(currentSeed);
-            const minPathLength = rng.NextInteger(6, 10); // Reduced from 8-12 for better success rate
-            const maxBranches = rng.NextInteger(0, 2); // Allow 0-2 small side branches
+            const minPathLength = rng.NextInteger(12, 18); // Longer dungeons for more exploration
+            const maxBranches = rng.NextInteger(2, 4); // More side branches for variety
 
             Log.info(`[DungeonService] Attempt ${attempts + 1}: Config minPath=${minPathLength}, maxBranches=${maxBranches}`);
 
             graph = generateDungeonGraph(currentSeed, this.tileAssets, {
                 minPathLength,
                 maxBranches,
-                targetSize: minPathLength + maxBranches + 2
+                targetSize: minPathLength + maxBranches + 4
             });
             validation = validateDungeon(graph);
 
@@ -123,7 +123,7 @@ export class DungeonService implements OnStart {
 
         // Log the tile path sequence for debugging
         const mainPathNodes = graph.nodes.filter(n => n.tags.includes("MainPath"));
-        const sortedPath = [...mainPathNodes].sort((a, b) => a.distanceFromStart < b.distanceFromStart);
+        const sortedPath = sortNodesDescending([...mainPathNodes]);
         const pathSequence = sortedPath.map(n => {
             const asset = TileRegistry.get(n.tileId);
             const connectorCount = asset?.connectors.size() ?? 0;
@@ -196,11 +196,37 @@ export class DungeonService implements OnStart {
         const cf = new CFrame(node.position.x, node.position.y + yOffset, node.position.z)
             .mul(CFrame.Angles(0, rotRad, 0));
 
-        clone.PivotTo(cf);
+        // Find the floor part to calculate pivot offset
+        // This ensures all tiles align at floor level regardless of model height
+        let floorPart: BasePart | undefined;
+        for (const desc of clone.GetDescendants()) {
+            if (desc.IsA("BasePart") && (desc.Name === "Floor" || desc.Name === "FloorCenter")) {
+                floorPart = desc;
+                break;
+            }
+        }
+
+        if (floorPart) {
+            // Calculate offset from model pivot to floor surface (top of floor part)
+            const modelPivot = clone.GetPivot();
+            const floorTop = floorPart.Position.Y + floorPart.Size.Y / 2;
+            const pivotY = modelPivot.Y;
+            const yCorrection = pivotY - floorTop;
+
+            // Adjust the target CFrame to compensate for pivot offset
+            const adjustedCf = new CFrame(node.position.x, node.position.y + yOffset + yCorrection, node.position.z)
+                .mul(CFrame.Angles(0, rotRad, 0));
+            clone.PivotTo(adjustedCf);
+        } else {
+            clone.PivotTo(cf);
+        }
         clone.Parent = parent;
 
         // Block unused connector directions with walls
         this.blockUnusedExits(clone, node, asset, cf);
+
+        // Add roof to enclose the space
+        this.addRoof(clone, asset, cf);
 
         // Add visual indicators based on node tags
         if (node.tags.includes("StartRoom")) {
@@ -215,9 +241,6 @@ export class DungeonService implements OnStart {
     }
 
     private blockUnusedExits(model: Model, node: GraphNode, asset: TileAsset, cf: CFrame) {
-        // Determine tile type
-        const isCorridor = asset.connectors.size() === 2;
-
         const cardinalDirs = [
             ConnectorDirection.North,
             ConnectorDirection.East,
@@ -227,6 +250,13 @@ export class DungeonService implements OnStart {
 
         // Process ALL 4 cardinal directions
         for (const localDir of cardinalDirs) {
+            // Determine the width of this face for wall calculation
+            // If facing North/South, the face width is the X size
+            // If facing East/West, the face width is the Z size
+            const faceWidth = (localDir === ConnectorDirection.North || localDir === ConnectorDirection.South)
+                ? asset.size.x
+                : asset.size.z;
+
             // Find if there's a connector defined for this LOCAL direction
             const connector = asset.connectors.find(c => c.direction === localDir);
 
@@ -240,19 +270,18 @@ export class DungeonService implements OnStart {
 
                 if (!isUsed) {
                     // Defined connector but NOT used -> BLOCK IT
-                    this.addBlockingWall(model, connector, worldDir, cf);
-                } else if (isCorridor) {
+                    this.addBlockingWall(model, connector, faceWidth, worldDir, cf);
+                } else if (asset.connectors.size() === 2) {
                     // Used corridor connector -> OPEN (no frame)
                 } else {
-                    // Used room connector -> DOOR FRAME
-                    this.addDoorFrame(model, connector, worldDir, cf);
+                    // Used room connector -> DOOR FRAME + WING WALLS
+                    this.addDoorFrame(model, connector, faceWidth, worldDir, cf);
                 }
             } else {
                 // CASE 2: No Connector Defined
                 // Implicit wall -> ALWAYS BLOCK
-                // We must fabricate a "default" connector definition for placement
                 const defaultConnector = this.createDefaultConnector(localDir, asset.size);
-                this.addBlockingWall(model, defaultConnector, worldDir, cf);
+                this.addBlockingWall(model, defaultConnector, faceWidth, worldDir, cf);
             }
         }
     }
@@ -290,7 +319,7 @@ export class DungeonService implements OnStart {
         return dirs[(idx + rotations) % 4];
     }
 
-    private addBlockingWall(model: Model, connector: Connector, worldDir: ConnectorDirection, cf: CFrame) {
+    private addBlockingWall(model: Model, connector: Connector, faceWidth: number, worldDir: ConnectorDirection, cf: CFrame) {
         // SOLID WALL - completely blocks the exit
         const wall = new Instance("Part");
         wall.Name = `BlockedExit_${worldDir}`;
@@ -299,34 +328,29 @@ export class DungeonService implements OnStart {
         wall.Material = Enum.Material.Brick;
         wall.BrickColor = new BrickColor("Dark taupe");
 
-        const wallWidth = DungeonService.WALL_WIDTH;
         const wallHeight = DungeonService.WALL_HEIGHT;
         const wallThickness = DungeonService.WALL_THICKNESS;
 
-        // Use local position from connector definition
-        // We assume the connector is centered on the wall face
         const localPos = connector.localPosition;
 
         // Orientation depends on LOCAL direction
         let wallSize: Vector3;
         if (connector.direction === ConnectorDirection.North || connector.direction === ConnectorDirection.South) {
             // Wall runs along X
-            wallSize = new Vector3(wallWidth, wallHeight, wallThickness);
+            wallSize = new Vector3(faceWidth, wallHeight, wallThickness);
         } else {
             // Wall runs along Z (East/West)
-            wallSize = new Vector3(wallThickness, wallHeight, wallWidth);
+            wallSize = new Vector3(wallThickness, wallHeight, faceWidth);
         }
 
-        // Offset Y to be above floor (assuming floor at 0 and wall bottom at 0)
-        // Original code used Y=4 for center?
-        const finalLocalPos = new Vector3(localPos.x, 4, localPos.z);
+        const finalLocalPos = new Vector3(localPos.x, wallHeight / 2, localPos.z);
 
         wall.Size = wallSize;
         wall.CFrame = cf.mul(new CFrame(finalLocalPos));
         wall.Parent = model;
     }
 
-    private addDoorFrame(model: Model, connector: Connector, worldDir: ConnectorDirection, cf: CFrame) {
+    private addDoorFrame(model: Model, connector: Connector, faceWidth: number, worldDir: ConnectorDirection, cf: CFrame) {
         // DOOR FRAME
         const doorWidth = DungeonService.DOOR_WIDTH;
         const doorHeight = DungeonService.DOOR_HEIGHT;
@@ -337,12 +361,7 @@ export class DungeonService implements OnStart {
         const localPos = connector.localPosition;
         const basePos = new Vector3(localPos.x, 0, localPos.z);
 
-        let isNorthSouth: boolean;
-        if (connector.direction === ConnectorDirection.North || connector.direction === ConnectorDirection.South) {
-            isNorthSouth = true;
-        } else {
-            isNorthSouth = false;
-        }
+        const isNorthSouth = connector.direction === ConnectorDirection.North || connector.direction === ConnectorDirection.South;
 
         // Left pillar
         const leftPillar = new Instance("Part");
@@ -391,6 +410,62 @@ export class DungeonService implements OnStart {
             topBeam.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight + frameThickness / 2, 0))));
         }
         topBeam.Parent = model;
+
+        // WING WALLS - fill original gaps on sides of door
+        const wingWallWidth = (faceWidth - (doorWidth + pillarWidth * 2)) / 2;
+        const wallHeight = DungeonService.WALL_HEIGHT;
+        const wallThickness = DungeonService.WALL_THICKNESS;
+
+        if (wingWallWidth > 0) {
+            // Left Wing
+            const leftWing = new Instance("Part");
+            leftWing.Name = `WingWall_${worldDir}_Left`;
+            leftWing.Anchored = true;
+            leftWing.Material = Enum.Material.Brick;
+            leftWing.BrickColor = new BrickColor("Dark taupe");
+            if (isNorthSouth) {
+                leftWing.Size = new Vector3(wingWallWidth, wallHeight, wallThickness);
+                leftWing.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(-(doorWidth / 2 + pillarWidth) - wingWallWidth / 2, wallHeight / 2, 0))));
+            } else {
+                leftWing.Size = new Vector3(wallThickness, wallHeight, wingWallWidth);
+                leftWing.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, wallHeight / 2, -(doorWidth / 2 + pillarWidth) - wingWallWidth / 2))));
+            }
+            leftWing.Parent = model;
+
+            // Right Wing
+            const rightWing = new Instance("Part");
+            rightWing.Name = `WingWall_${worldDir}_Right`;
+            rightWing.Anchored = true;
+            rightWing.Material = Enum.Material.Brick;
+            rightWing.BrickColor = new BrickColor("Dark taupe");
+            if (isNorthSouth) {
+                rightWing.Size = new Vector3(wingWallWidth, wallHeight, wallThickness);
+                rightWing.CFrame = cf.mul(new CFrame(basePos.add(new Vector3((doorWidth / 2 + pillarWidth) + wingWallWidth / 2, wallHeight / 2, 0))));
+            } else {
+                rightWing.Size = new Vector3(wallThickness, wallHeight, wingWallWidth);
+                rightWing.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, wallHeight / 2, (doorWidth / 2 + pillarWidth) + wingWallWidth / 2))));
+            }
+            rightWing.Parent = model;
+        }
+
+        // HEAD WALL - fill gap above door frame up to roof
+        const headWallHeight = wallHeight - (doorHeight + frameThickness);
+        if (headWallHeight > 0) {
+            const headWall = new Instance("Part");
+            headWall.Name = `HeadWall_${worldDir}`;
+            headWall.Anchored = true;
+            headWall.Material = Enum.Material.Brick;
+            headWall.BrickColor = new BrickColor("Dark taupe");
+
+            if (isNorthSouth) {
+                headWall.Size = new Vector3(doorWidth + pillarWidth * 2, headWallHeight, wallThickness);
+                headWall.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight + frameThickness + headWallHeight / 2, 0))));
+            } else {
+                headWall.Size = new Vector3(wallThickness, headWallHeight, doorWidth + pillarWidth * 2);
+                headWall.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight + frameThickness + headWallHeight / 2, 0))));
+            }
+            headWall.Parent = model;
+        }
 
         // The actual door
         const door = new Instance("Part");
@@ -475,6 +550,22 @@ export class DungeonService implements OnStart {
         ring.Parent = model;
 
         Log.info(`[DungeonService] Added Boss room visual indicator`);
+    }
+
+    private addRoof(model: Model, asset: TileAsset, cf: CFrame) {
+        // CEILING - encloses the room from above
+        const ceiling = new Instance("Part");
+        ceiling.Name = "Ceiling";
+        ceiling.Size = new Vector3(asset.size.x, 1, asset.size.z);
+        ceiling.Anchored = true;
+        ceiling.CanCollide = true;
+        ceiling.Material = Enum.Material.Concrete;
+        ceiling.BrickColor = new BrickColor("Medium stone grey");
+
+        // Positioned at WAL_HEIGHT above floor level
+        const wallHeight = DungeonService.WALL_HEIGHT;
+        ceiling.CFrame = cf.mul(new CFrame(0, wallHeight + 0.5, 0));
+        ceiling.Parent = model;
     }
 
     private extractMetadata(model: Model) {

@@ -64,12 +64,12 @@ const TILES = [
     },
     // L-shaped corner corridor (South + East openings)
     {
-        id: "CornerCorridor40",
-        size: { x: 40, y: 20, z: 40 },
+        id: "CornerCorridor20",
+        size: { x: 20, y: 20, z: 20 },
         tags: ["Corridor", "Corner"],
         connectors: [
-            { direction: ConnectorDirection.South, type: "Hall", localPosition: { x: 0, y: 0, z: 20 } },
-            { direction: ConnectorDirection.East, type: "Hall", localPosition: { x: 20, y: 0, z: 0 } },
+            { direction: ConnectorDirection.South, type: "Hall", localPosition: { x: 0, y: 0, z: 10 } },
+            { direction: ConnectorDirection.East, type: "Hall", localPosition: { x: 10, y: 0, z: 0 } },
         ]
     }
 ];
