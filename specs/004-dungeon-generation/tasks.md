@@ -15,6 +15,20 @@ description: "Task list for IronGuard Mercs: Full Game Foundation & Dungeon Gene
 - [x] T002 Add Flamework bootstrap (server + client)
 - [x] T003 Configure Vitest + coverage (CI-ready)
 - [x] T004 Shared lint/format + build scripts (`package.json` config)
+- [x] Scale Dungeon Generation [x]
+    - [x] Increase targetSize in DungeonService.ts call
+    - [x] Fix DungeonService.ts to use graph positions instead of linear stack
+    - [x] Add diagnostic logging to DungeonService for tile loading and graph growth
+    - [x] Update generator to use actual tile IDs from tileset instead of hardcoded names
+- [x] Update PartyPanel UI [x]
+    - [x] Modify PartyPanel.tsx to display member.selectedMercenaryId
+    - [x] Add ZIndex to PartyPanel to ensure visibility
+- [x] Improve member list visuals [x]
+    - [x] Add "YOU" tag for local player
+    - [x] Add "HOST" tag for party host
+- [x] Verify fix
+    - [x] Run build [x]
+    - [ ] Manual verification
 
 ---
 

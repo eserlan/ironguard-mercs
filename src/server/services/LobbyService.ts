@@ -7,6 +7,7 @@ import { RunService } from "./RunService";
 import { RunConfig } from "shared/domain/run";
 import { ClassService } from "./ClassService";
 import { getTime } from "shared/utils/time";
+import { Log } from "shared/utils/log";
 
 const PORTAL_PROXIMITY_THRESHOLD = 15;
 const MAX_SEED_VALUE = 1000000;
@@ -57,9 +58,11 @@ export class LobbyService implements OnStart {
 
 	private stepOnPad(player: Player) {
 		const playerId = tostring(player.UserId);
+		Log.info(`[LobbyService] StepOnPad received for ${player.Name} (${playerId})`);
 		const existingCode = this.playerRoomMap.get(playerId);
 
 		if (existingCode) {
+			Log.info(`[LobbyService] Player ${player.Name} already in room ${existingCode}`);
 			const room = this.rooms.get(existingCode);
 			const member = room?.members.find((m) => m.playerId === playerId);
 			if (member) {
@@ -80,6 +83,7 @@ export class LobbyService implements OnStart {
 		}
 
 		if (targetRoom) {
+			Log.info(`[LobbyService] Player ${player.Name} joining existing room ${targetRoom.code}`);
 			this.joinParty(player, targetRoom.code);
 
 			// Verify join succeeded before mutating
@@ -99,6 +103,7 @@ export class LobbyService implements OnStart {
 				this.broadcastUpdate(updatedRoom);
 			}
 		} else {
+			Log.info(`[LobbyService] Player ${player.Name} creating new room`);
 			this.createParty(player);
 
 			// Verify party was created before proceeding
@@ -320,14 +325,17 @@ export class LobbyService implements OnStart {
 		}
 	}
 
-        private launchMission(player: Player) {
-                const playerId = tostring(player.UserId);
-                const room = this.getRoom(player);
+	private launchMission(player: Player) {
+		const playerId = tostring(player.UserId);
+		const room = this.getRoom(player);
 
-                // Proximity check
-                const portals = CollectionService.GetTagged("LobbyDungeonPortal");
-                const character = player.Character;
-		if (!character) return;
+		// Proximity check
+		const portals = CollectionService.GetTagged("LobbyDungeonPortal");
+		const character = player.Character;
+		if (!character) {
+			Events.LaunchAlert.fire(player, "You need a character to launch!");
+			return;
+		}
 
 		let nearPortal = false;
 		for (const portal of portals) {
@@ -341,15 +349,54 @@ export class LobbyService implements OnStart {
 
 		if (!nearPortal) {
 			warn(`Player ${player.Name} tried to launch but was not near a portal.`);
+			Events.LaunchAlert.fire(player, "You must be near the dungeon portal to launch!");
 			return;
 		}
 
 		if (room) {
-			if (room.hostId !== playerId) return;
+			if (room.hostId !== playerId) {
+				Events.LaunchAlert.fire(player, "Only the party host can launch the mission!");
+				return;
+			}
 
 			// Validate all ready
 			const allReady = room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
-			if (!allReady) return;
+			if (!allReady) {
+				// Find who isn't ready
+				const notReady = room.members.filter((m) => !m.isReady || m.selectedMercenaryId === undefined);
+				const names = notReady.map((m) => m.displayName).join(", ");
+				Events.LaunchAlert.fire(player, `Not everyone is ready! Waiting on: ${names}`);
+				return;
+			}
+
+			// Check if all members are near portal
+			const membersNotNearPortal: string[] = [];
+			for (const member of room.members) {
+				const memberPlayer = game.GetService("Players").GetPlayerByUserId(tonumber(member.playerId) ?? 0);
+				if (memberPlayer) {
+					const memberChar = memberPlayer.Character;
+					if (memberChar) {
+						let memberNearPortal = false;
+						for (const portal of portals) {
+							if (portal.IsA("BasePart")) {
+								if (memberChar.GetPivot().Position.sub(portal.Position).Magnitude < PORTAL_PROXIMITY_THRESHOLD) {
+									memberNearPortal = true;
+									break;
+								}
+							}
+						}
+						if (!memberNearPortal) {
+							membersNotNearPortal.push(member.displayName);
+						}
+					}
+				}
+			}
+
+			if (membersNotNearPortal.size() > 0) {
+				const names = membersNotNearPortal.join(", ");
+				Events.LaunchAlert.fire(player, `Some party members are not at the portal: ${names}`);
+				return;
+			}
 
 			const seed = math.random() * MAX_SEED_VALUE;
 			const config: RunConfig = {
@@ -365,7 +412,10 @@ export class LobbyService implements OnStart {
 		} else {
 			// Solo launch
 			const mercId = this.soloMercenarySelections.get(playerId);
-			if (!mercId) return;
+			if (!mercId) {
+				Events.LaunchAlert.fire(player, "Select a mercenary before launching!");
+				return;
+			}
 
 			const seed = math.random() * MAX_SEED_VALUE;
 			const config: RunConfig = {

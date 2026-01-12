@@ -1,10 +1,13 @@
 # Dungeon Generation
 
-**Status**: Draft
-**Owner**: Gemini Agent
-**Created**: 2026-01-06
-**Feature Branch**: `004-dungeon-generation`
+**Status**: Implemented  
+**Owner**: Gemini Agent  
+**Created**: 2026-01-06  
+**Updated**: 2026-01-11  
+**Feature Branch**: `004-dungeon-generation`  
 **Input**: "Defines how tile-based procedural dungeons are assembled, validated, and tuned."
+
+> **📖 See Also**: [algorithm.md](./algorithm.md) - Detailed implementation documentation of the generation algorithm, data structures, and placement logic.
 
 ## Summary
 
