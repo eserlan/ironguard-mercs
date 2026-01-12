@@ -17,11 +17,21 @@ export function Lobby() {
 	const [tempSelectedClass, setTempSelectedClass] = useState<string | undefined>();
 
 	useEffect(() => {
-		setPads(CollectionService.GetTagged("LobbyPartyPad") as BasePart[]);
-		const sub = CollectionService.GetInstanceAddedSignal("LobbyPartyPad").Connect((inst) => {
-			if (inst.IsA("BasePart")) setPads((prev) => [...prev, inst]);
-		});
-		return () => sub.Disconnect();
+		const updatePads = () => {
+			const unityPads = CollectionService.GetTagged("LobbyCircleOfUnity") as BasePart[];
+			const partyPads = CollectionService.GetTagged("LobbyPartyPad") as BasePart[];
+			setPads([...unityPads, ...partyPads]);
+		};
+
+		updatePads();
+
+		const sub1 = CollectionService.GetInstanceAddedSignal("LobbyCircleOfUnity").Connect(updatePads);
+		const sub2 = CollectionService.GetInstanceAddedSignal("LobbyPartyPad").Connect(updatePads);
+
+		return () => {
+			sub1.Disconnect();
+			sub2.Disconnect();
+		};
 	}, []);
 
 	const abilityController = useMemo(() => Dependency<AbilityController>(), []);
@@ -30,7 +40,7 @@ export function Lobby() {
 
 	if (state.status === LobbyState.Launching) {
 		return (
-			<screengui IgnoreGuiInset>
+			<frame Size={new UDim2(1, 0, 1, 0)} BackgroundColor3={Color3.fromRGB(0, 0, 0)} ZIndex={100}>
 				<textlabel
 					Text="LAUNCHING MISSION..."
 					Size={new UDim2(1, 0, 1, 0)}
@@ -39,11 +49,11 @@ export function Lobby() {
 					TextSize={48}
 					Font={Enum.Font.GothamBlack}
 				/>
-			</screengui>
+			</frame>
 		);
 	}
 
-	const isInParty = (state.status === LobbyState.InParty || state.status === LobbyState.Ready) && state.room !== undefined;
+	const isInParty = state.room !== undefined;
 	const isAtStation = state.status === LobbyState.AtStation;
 
 	const localMember = state.room?.members.find((m) => m.playerId === localPlayerId);
@@ -51,7 +61,8 @@ export function Lobby() {
 	const currentLoadout = localMember?.loadout;
 
 	return (
-		<screengui IgnoreGuiInset ResetOnSpawn={false}>
+		<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1} key="LobbyRoot">
+
 			{/* Billboard UIs for Pads */}
 			{state.room && pads.map((pad) => (
 				<LobbyBillboard key={pad.GetFullName()} room={state.room!} adornee={pad} />
@@ -159,20 +170,23 @@ export function Lobby() {
 
 			{/* Party HUD (Shown if in a party) */}
 			{isInParty && (
-				<PartyPanel
-					room={state.room!}
-					isHost={state.room!.hostId === localPlayerId}
-					localPlayerId={localPlayerId}
-					onReady={(r) => controller.setReady(r)}
-					onLaunch={() => controller.launchMission()}
-					onSetMode={(m) => controller.setMissionMode(m)}
-					onSetDifficulty={(d) => controller.setDifficulty(d)}
-					onLeave={() => controller.leaveParty()}
-				/>
+				<frame Size={new UDim2(1, 0, 1, 0)} BackgroundTransparency={1} ZIndex={10}>
+					<PartyPanel
+						room={state.room!}
+						isHost={state.room!.hostId === localPlayerId}
+						localPlayerId={localPlayerId}
+						onReady={(r) => controller.setReady(r)}
+						onLaunch={() => controller.launchMission()}
+						onSetMode={(m) => controller.setMissionMode(m)}
+						onSetDifficulty={(d) => controller.setDifficulty(d)}
+						onLeave={() => controller.leaveParty()}
+						onSelectMerc={() => controller.setStation(LobbyState.AtStation, "Roster Altar")}
+					/>
+				</frame>
 			)}
 
 			{/* Ability HUD (Always visible in Lobby for testing) */}
 			<AbilityBar loadout={state.abilityLoadout} controller={abilityController} />
-		</screengui>
+		</frame>
 	);
 }

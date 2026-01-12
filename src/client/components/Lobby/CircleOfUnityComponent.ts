@@ -26,7 +26,11 @@ export class CircleOfUnityComponent extends BaseComponent<object, BasePart> impl
     }
 
     private updateDetection() {
-        const parts = game.Workspace.GetPartsInPart(this.instance);
+        const platform = this.instance;
+        const size = platform.Size.add(new Vector3(0, 5, 0)); // Extend detection box upwards
+        const cf = platform.CFrame.add(new Vector3(0, 2.5, 0)); // Shift box upwards
+
+        const parts = game.Workspace.GetPartBoundsInBox(cf, size);
         const currentPlayers = new Set<Player>();
 
         for (const part of parts) {
