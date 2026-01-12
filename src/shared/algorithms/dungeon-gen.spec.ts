@@ -6,8 +6,7 @@ import {
     findAllPaths,
     countRoutes,
     getShortestPathLength,
-    getMainPathNodes,
-    DungeonGraph
+    getMainPathNodes
 } from "./dungeon-gen";
 import { TileRegistry } from "../domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../domain/dungeon/manifest";
@@ -351,17 +350,6 @@ describe("Dungeon Generation Algorithm", () => {
     });
 
     describe("Path Connectivity and Door Openability", () => {
-        // Helper to get opposite direction
-        function getOppositeDirection(dir: string): string {
-            const opposites: Record<string, string> = {
-                "North": "South",
-                "South": "North",
-                "East": "West",
-                "West": "East"
-            };
-            return opposites[dir] ?? dir;
-        }
-
         it("should have edges connecting all adjacent main path nodes", () => {
             const testSeeds = [1, 42, 100, 777, 1234];
 

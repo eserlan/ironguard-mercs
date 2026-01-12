@@ -20,6 +20,21 @@ export interface DungeonResult {
 
 @Service({})
 export class DungeonService implements OnStart {
+    // Dungeon placement constants
+    private static readonly DUNGEON_Y_OFFSET = 500; // Offset to avoid Z-fighting with lobby
+
+    // Wall dimensions
+    private static readonly WALL_WIDTH = 12;
+    private static readonly WALL_HEIGHT = 8;
+    private static readonly WALL_THICKNESS = 2;
+
+    // Door frame dimensions
+    private static readonly DOOR_WIDTH = 8;
+    private static readonly DOOR_HEIGHT = 7;
+    private static readonly FRAME_THICKNESS = 1;
+    private static readonly FRAME_DEPTH = 2;
+    private static readonly PILLAR_WIDTH = 2;
+
     private tileAssets: TileAsset[] = [];
     private tileModels = new Map<string, Model>();
     private lastResult?: DungeonResult;
@@ -108,7 +123,7 @@ export class DungeonService implements OnStart {
 
         // Log the tile path sequence for debugging
         const mainPathNodes = graph.nodes.filter(n => n.tags.includes("MainPath"));
-        const sortedPath = [...mainPathNodes].sort((a, b) => a.distanceFromStart < b.distanceFromStart);
+        const sortedPath = [...mainPathNodes].sort((a, b) => a.distanceFromStart - b.distanceFromStart);
         const pathSequence = sortedPath.map(n => {
             const asset = TileRegistry.get(n.tileId);
             const connectorCount = asset?.connectors.size() ?? 0;
@@ -177,7 +192,7 @@ export class DungeonService implements OnStart {
         const rotRad = -node.rotation * (math.pi / 2);
 
         // Adjust Y to avoid Z-fighting/clipping with lobby at origin
-        const yOffset = 500;
+        const yOffset = DungeonService.DUNGEON_Y_OFFSET;
         const cf = new CFrame(node.position.x, node.position.y + yOffset, node.position.z)
             .mul(CFrame.Angles(0, rotRad, 0));
 
@@ -284,9 +299,9 @@ export class DungeonService implements OnStart {
         wall.Material = Enum.Material.Brick;
         wall.BrickColor = new BrickColor("Dark taupe");
 
-        const wallWidth = 12;
-        const wallHeight = 8;
-        const wallThickness = 2;
+        const wallWidth = DungeonService.WALL_WIDTH;
+        const wallHeight = DungeonService.WALL_HEIGHT;
+        const wallThickness = DungeonService.WALL_THICKNESS;
 
         // Use local position from connector definition
         // We assume the connector is centered on the wall face
@@ -313,11 +328,11 @@ export class DungeonService implements OnStart {
 
     private addDoorFrame(model: Model, connector: Connector, worldDir: ConnectorDirection, cf: CFrame) {
         // DOOR FRAME
-        const doorWidth = 8;
-        const doorHeight = 7;
-        const frameThickness = 1;
-        const frameDepth = 2;
-        const pillarWidth = 2;
+        const doorWidth = DungeonService.DOOR_WIDTH;
+        const doorHeight = DungeonService.DOOR_HEIGHT;
+        const frameThickness = DungeonService.FRAME_THICKNESS;
+        const frameDepth = DungeonService.FRAME_DEPTH;
+        const pillarWidth = DungeonService.PILLAR_WIDTH;
 
         const localPos = connector.localPosition;
         const basePos = new Vector3(localPos.x, 0, localPos.z);

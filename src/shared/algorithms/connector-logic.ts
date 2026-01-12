@@ -76,22 +76,22 @@ function isOpposite(d1: ConnectorDirection, d2: ConnectorDirection): boolean {
     return false;
 }
 
+/**
+ * Rotates a 3D vector around the Y-axis by the specified number of 90-degree clockwise rotations.
+ * 
+ * This uses the rotation formula: (x, z) -> (-z, x) for each 90-degree clockwise rotation when
+ * viewed from above (looking down the Y-axis), where North is -Z and East is +X.
+ * 
+ * @param v - The 3D vector to rotate (x, y, z coordinates)
+ * @param rotations - Number of 90-degree clockwise rotations to apply (0-3)
+ * @returns A new vector with rotated x and z coordinates, y coordinate unchanged
+ */
 function rotateVec3(v: Vec3, rotations: number): Vec3 {
     let x = v.x;
     let z = v.z;
     
     for (let i = 0; i < rotations; i++) {
-        // Rotate 90 degrees clockwise: (x, z) -> (z, -x)
-        // Wait, standard math: (x, y) -> (y, -x) for -90 deg?
-        // Let's assume North is -Z. East is +X.
-        // North(0, -1) -> East(1, 0).
-        // If x=0, z=-1. New x=1, z=0.
-        // Formula: newX = -z, newZ = x?
-        // Let's test: 0, -1 -> 1, 0 (East). Correct.
-        // 1, 0 -> 0, 1 (South). Correct.
-        // 0, 1 -> -1, 0 (West). Correct.
-        // -1, 0 -> 0, -1 (North). Correct.
-        
+        // Rotate 90 degrees clockwise: (x, z) -> (-z, x)
         const oldX = x;
         x = -z;
         z = oldX;
