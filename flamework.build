@@ -44,7 +44,7 @@
 		"ironguard-mercs:out/server/cmpts/HealthComponent@HealthComponent": "server/cmpts/HealthComponent@HealthComponent",
 		"ironguard-mercs:out/server/components/DungeonDoor@DungeonDoor": "server/components/DungeonDoor@DungeonDoor",
 		"ironguard-mercs:out/server/components/PackContext@PackContext": "server/components/PackContext@PackContext",
-		"ironguard-mercs:out/shared/utils/ModelPool@ModelPool": "shared/utils/ModelPool@ModelPool",
+		"ironguard-mercs:out/server/utils/ModelPool@ModelPool": "server/utils/ModelPool@ModelPool",
 		"ironguard-mercs:out/server/components/EncounterZone@EncounterZone": "server/components/EncounterZone@EncounterZone",
 		"ironguard-mercs:out/shared/algorithms/combat/rng@CombatRNG": "shared/algorithms/combat/rng@CombatRNG",
 		"ironguard-mercs:out/server/services/CombatValidation@CombatValidation": "server/services/CombatValidation@CombatValidation",
