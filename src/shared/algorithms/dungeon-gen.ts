@@ -244,7 +244,7 @@ export function generateDungeonGraph(
     if (endTile && frontierConnectors.size() > 0) {
         // Sort frontier connectors by distance - place boss at farthest point on main path
         const sortedConnectors = [...frontierConnectors].sort((a, b) => {
-            return a.distanceFromStart > b.distanceFromStart;
+            return b.distanceFromStart - a.distanceFromStart;
         });
 
         for (const sourceConn of sortedConnectors) {
@@ -300,7 +300,7 @@ export function generateDungeonGraph(
     // Fallback: if boss wasn't placed and we have branch connectors, try those
     if (!endNodeId && endTile && branchConnectors.size() > 0) {
         const sortedBranch = [...branchConnectors].sort((a, b) => {
-            return a.distanceFromStart > b.distanceFromStart;
+            return b.distanceFromStart - a.distanceFromStart;
         });
 
         for (const sourceConn of sortedBranch) {
