@@ -10,9 +10,10 @@ interface PartyPanelProps {
 	onSetMode: (mode: MissionMode) => void;
 	onSetDifficulty: (diff: number) => void;
 	onLeave: () => void;
+	onSelectMerc: () => void;
 }
 
-export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onSetMode, onSetDifficulty, onLeave }: PartyPanelProps) {
+export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onSetMode, onSetDifficulty, onLeave, onSelectMerc }: PartyPanelProps) {
 	const localMember = room.members.find((m) => m.playerId === localPlayerId);
 	const hasSelectedMerc = localMember?.selectedMercenaryId !== undefined;
 	const canReady = hasSelectedMerc;
@@ -24,6 +25,7 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 			Position={new UDim2(1, -300, 0, 0)}
 			BackgroundColor3={Color3.fromRGB(40, 40, 40)}
 			BorderSizePixel={0}
+			ZIndex={10}
 		>
 			<uipadding PaddingTop={new UDim(0, 20)} PaddingLeft={new UDim(0, 20)} PaddingRight={new UDim(0, 20)} PaddingBottom={new UDim(0, 20)} />
 
@@ -130,13 +132,24 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 						<uipadding PaddingLeft={new UDim(0, 10)} PaddingRight={new UDim(0, 10)} />
 
 						<textlabel
-							Text={member.displayName}
-							Size={new UDim2(0.7, 0, 1, 0)}
+							Text={`${member.displayName}${member.playerId === localPlayerId ? " (YOU)" : ""}${room.hostId === member.playerId ? " [HOST]" : ""}`}
+							Size={new UDim2(0.7, 0, 0.6, 0)}
 							TextXAlignment="Left"
 							BackgroundTransparency={1}
 							TextColor3={Color3.fromRGB(255, 255, 255)}
+							Font={Enum.Font.GothamBold}
+							TextSize={18}
+						/>
+
+						<textlabel
+							Text={member.selectedMercenaryId ? member.selectedMercenaryId.upper() : "PENDING..."}
+							Size={new UDim2(0.7, 0, 0.4, 0)}
+							Position={new UDim2(0, 0, 0.6, 0)}
+							TextXAlignment="Left"
+							BackgroundTransparency={1}
+							TextColor3={member.selectedMercenaryId ? Color3.fromRGB(150, 200, 255) : Color3.fromRGB(150, 150, 150)}
 							Font={Enum.Font.Gotham}
-							TextSize={20}
+							TextSize={14}
 						/>
 
 						<frame
@@ -160,13 +173,21 @@ export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onS
 					BackgroundColor3={
 						localMember?.isReady
 							? Color3.fromRGB(200, 100, 100)
-							: (hasSelectedMerc ? Color3.fromRGB(100, 200, 100) : Color3.fromRGB(100, 100, 100))
+							: (hasSelectedMerc ? Color3.fromRGB(100, 200, 100) : Color3.fromRGB(255, 180, 50))
 					}
 					TextColor3={Color3.fromRGB(255, 255, 255)}
 					Font={Enum.Font.GothamBold}
 					TextSize={22}
-					AutoButtonColor={canReady}
-					Event={{ Activated: () => canReady && onReady(!localMember?.isReady) }}
+					AutoButtonColor={true}
+					Event={{
+						Activated: () => {
+							if (!hasSelectedMerc) {
+								onSelectMerc();
+							} else {
+								onReady(!localMember?.isReady);
+							}
+						}
+					}}
 				>
 					<uicorner CornerRadius={new UDim(0, 8)} />
 				</textbutton>

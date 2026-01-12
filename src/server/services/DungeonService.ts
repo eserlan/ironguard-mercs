@@ -1,137 +1,465 @@
 import { Service, OnStart } from "@flamework/core";
 import { Log } from "../../shared/utils/log";
-import { generateGraph, GraphNode } from "../../shared/algorithms/dungeon-gen";
-import { TileAsset, Connector, ConnectorDirection } from "../../shared/domain/TileDefs";
-import { ServerStorage, Workspace } from "@rbxts/services";
+import { generateDungeonGraph, DungeonGraph, GraphNode, validateDungeon, countRoutes, getShortestPathLength } from "../../shared/algorithms/dungeon-gen";
+import { TileAsset, ConnectorDirection, Connector } from "../../shared/domain/TileDefs";
+import { TileRegistry } from "../../shared/domain/dungeon/TileRegistry";
+import { initializeTileRegistry } from "../../shared/domain/dungeon/manifest";
+import { ServerStorage, Workspace, CollectionService } from "@rbxts/services";
+import { Vec3 } from "../../shared/domain/world";
+import { Tags } from "../../shared/domain/tags";
+
+export interface DungeonResult {
+    playerSpawns: Vector3[];
+    enemySpawns: Vector3[];
+    bossSpawn?: Vector3;
+    lootSpawn?: Vector3;
+    graph: DungeonGraph;
+    routeCount: number;
+    shortestPath: number;
+}
 
 @Service({})
 export class DungeonService implements OnStart {
     private tileAssets: TileAsset[] = [];
     private tileModels = new Map<string, Model>();
-    private lastResult?: { playerSpawns: Vector3[], enemySpawns: Vector3[] };
+    private lastResult?: DungeonResult;
 
     onStart() {
+        initializeTileRegistry();
         this.loadTiles();
     }
 
     private loadTiles() {
         const folder = ServerStorage.FindFirstChild("Tiles");
         if (!folder) {
-            Log.warn("ServerStorage/Tiles not found");
+            Log.error("ServerStorage/Tiles not found! Critical for Dungeon generation.");
             return;
         }
-        
-        for (const child of folder.GetChildren()) {
-            if (child.IsA("Model")) {
-                const asset = this.parseTileModel(child);
-                if (asset) {
-                    this.tileAssets.push(asset);
-                    this.tileModels.set(asset.id, child);
-                }
-            }
-        }
-        Log.info(`Loaded ${this.tileAssets.size()} tiles.`);
-    }
 
-    private parseTileModel(model: Model): TileAsset | undefined {
-        const primary = model.PrimaryPart;
-        if (!primary) {
-            Log.warn(`Tile ${model.Name} has no PrimaryPart`);
-            return undefined;
-        }
+        const registeredTiles = TileRegistry.getAll();
+        Log.info(`[DungeonService] Matching models for ${registeredTiles.size()} registered tiles...`);
 
-        const size = model.GetExtentsSize();
-        const connectors: Connector[] = [];
-        
-        for (const desc of model.GetDescendants()) {
-            if (desc.IsA("Attachment") && desc.Name === "Connector") {
-                const dirStr = desc.GetAttribute("Direction") as string;
-                const connectorType = desc.GetAttribute("Type") as string || "Hall";
-                
-                // Validate Direction
-                // In a real app, strict check. Here, loose cast.
-                if (dirStr) {
-                    connectors.push({
-                        direction: dirStr as ConnectorDirection,
-                        type: connectorType,
-                        localPosition: {
-                            x: desc.Position.X,
-                            y: desc.Position.Y,
-                            z: desc.Position.Z
-                        }
-                    });
-                }
-            }
-        }
+        const folderChildren = folder.GetChildren();
+        const availableNames = folderChildren.map((c) => c.Name);
 
-        const tagsAttribute = model.GetAttribute("Tags") as string;
-        const tags = tagsAttribute ? tagsAttribute.split(",") : [];
+        for (const asset of registeredTiles) {
+            // Robust matching: exact match
+            const model = folderChildren.find((c) => c.Name === asset.id);
 
-        return {
-            id: model.Name,
-            size: { x: size.X, y: size.Y, z: size.Z },
-            connectors: connectors,
-            tags: tags
-        };
-    }
+            if (model && model.IsA("Model")) {
+                this.tileAssets.push(asset);
+                this.tileModels.set(asset.id, model);
 
-    public generate(seed: number) {
-        Log.info(`[DungeonService] Generating dungeon with seed: ${seed}`);
-        const graph = generateGraph(seed);
-        Log.info(`[DungeonService] Graph generated with ${graph.nodes.size()} nodes`);
+                const size = model.GetExtentsSize();
+                const primary = model.PrimaryPart ? model.PrimaryPart.Name : "NONE";
 
-        const playerSpawns: Vector3[] = [];
-        const enemySpawns: Vector3[] = [];
-
-        // Simple placement for now: place tiles based on graph
-        // This is a placeholder for a more complex layout algorithm
-        let currentPos = new Vector3(0, 500, 0); // Elevation to avoid lobby
-
-        graph.nodes.forEach((node, index) => {
-            const assetStyle = index === 0 ? "Room40x40" : (index === graph.nodes.size() - 1 ? "EndRoom" : "Hallway40");
-            const model = this.tileModels.get(assetStyle);
-
-            if (model) {
-                const clone = model.Clone();
-                clone.Parent = Workspace;
-                clone.PivotTo(new CFrame(currentPos));
-
-                // Collect spawns
-                for (const desc of clone.GetDescendants()) {
-                    if (desc.IsA("BasePart")) {
-                        if (desc.Name === "PlayerSpawn") playerSpawns.push(desc.Position);
-                        if (desc.Name === "EnemySpawn") enemySpawns.push(desc.Position);
+                // Try to find a floor part to see its size
+                let floorInfo = "No Floor part found";
+                for (const desc of model.GetDescendants()) {
+                    if (desc.IsA("BasePart") && (desc.Name === "Floor" || desc.Name === "FloorBase")) {
+                        floorInfo = `Floor size: ${desc.Size.X}, ${desc.Size.Z}`;
+                        break;
                     }
                 }
 
-                currentPos = currentPos.add(new Vector3(0, 0, 60)); // Simple linear layout for now
+                Log.info(`  [OK] ${asset.id} | Bounding: ${math.floor(size.X)}x${math.floor(size.Z)} | Primary: ${primary} | ${floorInfo}`);
+            } else {
+                Log.warn(`  [MISSING] No model found for ${asset.id}. Available in folder: ${availableNames.join(", ")}`);
             }
+        }
+
+        Log.info(`[DungeonService] Ready with ${this.tileAssets.size()} active tiles.`);
+    }
+
+    public generate(seed: number): DungeonResult {
+        Log.info(`[DungeonService] Generating dungeon with seed: ${seed}`);
+        Log.info(`[DungeonService] Tileset has ${this.tileAssets.size()} active tiles.`);
+
+        // Try to generate a valid dungeon, retry with different seeds if needed
+        let graph;
+        let validation;
+        let currentSeed = seed;
+        let attempts = 0;
+        const maxAttempts = 5;
+
+        do {
+            const rng = new Random(currentSeed);
+            const minPathLength = rng.NextInteger(6, 10); // Reduced from 8-12 for better success rate
+            const maxBranches = rng.NextInteger(0, 2); // Allow 0-2 small side branches
+
+            Log.info(`[DungeonService] Attempt ${attempts + 1}: Config minPath=${minPathLength}, maxBranches=${maxBranches}`);
+
+            graph = generateDungeonGraph(currentSeed, this.tileAssets, {
+                minPathLength,
+                maxBranches,
+                targetSize: minPathLength + maxBranches + 2
+            });
+            validation = validateDungeon(graph);
+
+            if (!validation.valid) {
+                Log.warn(`[DungeonService] Attempt ${attempts + 1} failed: ${validation.reason}`);
+                currentSeed = seed + attempts + 1; // Try a different seed
+            }
+            attempts++;
+        } while (!validation.valid && attempts < maxAttempts);
+
+        Log.info(`[DungeonService] Graph generated with ${graph.nodes.size()} nodes, ${graph.edges.size()} edges`);
+        Log.info(`[DungeonService] Main path length: ${graph.mainPathLength} rooms`);
+
+        // Log the tile path sequence for debugging
+        const mainPathNodes = graph.nodes.filter(n => n.tags.includes("MainPath"));
+        const sortedPath = [...mainPathNodes].sort((a, b) => a.distanceFromStart < b.distanceFromStart);
+        const pathSequence = sortedPath.map(n => {
+            const asset = TileRegistry.get(n.tileId);
+            const connectorCount = asset?.connectors.size() ?? 0;
+            const tileType = connectorCount === 2 ? "C" : "R"; // C=Corridor, R=Room
+            return `${n.id}(${n.tileId}:${tileType}:d${n.distanceFromStart})`;
+        }).join(" → ");
+        Log.info(`[DungeonService] Path: ${pathSequence}`);
+
+        if (!validation.valid) {
+            Log.error(`[DungeonService] Failed to generate valid dungeon after ${maxAttempts} attempts!`);
+        }
+
+        const routeCount = countRoutes(graph);
+        const shortestPath = getShortestPathLength(graph);
+        Log.info(`[DungeonService] Routes to boss: ${routeCount}, Shortest path: ${shortestPath} nodes`);
+
+        const playerSpawns: Vector3[] = [];
+        const enemySpawns: Vector3[] = [];
+        this.lastResult = {
+            playerSpawns,
+            enemySpawns,
+            graph,
+            routeCount,
+            shortestPath
+        };
+
+        const dungeonFolder = new Instance("Folder");
+        dungeonFolder.Name = "GeneratedDungeon";
+        dungeonFolder.Parent = Workspace;
+
+        graph.nodes.forEach((node) => {
+            this.spawnNode(node, dungeonFolder);
         });
 
         Log.info(`[DungeonService] Generated ${playerSpawns.size()} player spawns and ${enemySpawns.size()} enemy spawns`);
-        this.lastResult = { playerSpawns, enemySpawns };
+        if (this.lastResult?.bossSpawn) {
+            Log.info(`[DungeonService] Boss room placed with boss at ${this.lastResult.bossSpawn}`);
+        } else {
+            Log.warn(`[DungeonService] No BossSpawn found in generated dungeon!`);
+        }
         return this.lastResult;
     }
 
     private spawnNode(node: GraphNode, parent: Instance) {
         const modelTemplate = this.tileModels.get(node.tileId);
-        if (!modelTemplate) return;
+        const asset = TileRegistry.get(node.tileId);
+        if (!modelTemplate || !asset) return;
 
         const clone = modelTemplate.Clone();
         clone.Name = node.id;
-        
+
+        // Dynamic Server-Side Scaling
+        // We compare the physical model size to the intended manifest size
+        const currentSize = modelTemplate.GetExtentsSize();
+        const scaleFactor = asset.size.x / currentSize.X;
+
+        if (math.abs(scaleFactor - 1) > 0.01) {
+            clone.ScaleTo(scaleFactor);
+            // Log once for root or if it's a significant scale shift
+            if (node.id === "Start") {
+                Log.info(`[DungeonService] Scaling nodes to intended ${asset.size.x} studs wide (Factor: ${scaleFactor})`);
+            }
+        }
+
         // Rotation: 0=0, 1=90 CW, 2=180, 3=270 CW
-        // CFrame.Angles is radians. 90 deg = pi/2.
-        // Negative for Clockwise around Y axis.
         const rotRad = -node.rotation * (math.pi / 2);
-        
-        const cf = new CFrame(node.position.x, node.position.y, node.position.z)
+
+        // Adjust Y to avoid Z-fighting/clipping with lobby at origin
+        const yOffset = 500;
+        const cf = new CFrame(node.position.x, node.position.y + yOffset, node.position.z)
             .mul(CFrame.Angles(0, rotRad, 0));
-        
-        clone.SetPrimaryPartCFrame(cf);
+
+        clone.PivotTo(cf);
         clone.Parent = parent;
-        
+
+        // Block unused connector directions with walls
+        this.blockUnusedExits(clone, node, asset, cf);
+
+        // Add visual indicators based on node tags
+        if (node.tags.includes("StartRoom")) {
+            this.addStartRoomIndicator(clone, cf);
+        }
+
+        if (node.tags.includes("BossRoom")) {
+            this.addBossRoomIndicator(clone, cf);
+        }
+
         this.extractMetadata(clone);
+    }
+
+    private blockUnusedExits(model: Model, node: GraphNode, asset: TileAsset, cf: CFrame) {
+        // Determine tile type
+        const isCorridor = asset.connectors.size() === 2;
+
+        const cardinalDirs = [
+            ConnectorDirection.North,
+            ConnectorDirection.East,
+            ConnectorDirection.South,
+            ConnectorDirection.West
+        ];
+
+        // Process ALL 4 cardinal directions
+        for (const localDir of cardinalDirs) {
+            // Find if there's a connector defined for this LOCAL direction
+            const connector = asset.connectors.find(c => c.direction === localDir);
+
+            // Calculate the World Direction given the node's rotation
+            const worldDir = this.rotateDirection(localDir, node.rotation);
+
+            if (connector) {
+                // CASE 1: Connector Exists
+                // Check if it's used in the graph
+                const isUsed = node.usedConnectorDirections.includes(worldDir);
+
+                if (!isUsed) {
+                    // Defined connector but NOT used -> BLOCK IT
+                    this.addBlockingWall(model, connector, worldDir, cf);
+                } else if (isCorridor) {
+                    // Used corridor connector -> OPEN (no frame)
+                } else {
+                    // Used room connector -> DOOR FRAME
+                    this.addDoorFrame(model, connector, worldDir, cf);
+                }
+            } else {
+                // CASE 2: No Connector Defined
+                // Implicit wall -> ALWAYS BLOCK
+                // We must fabricate a "default" connector definition for placement
+                const defaultConnector = this.createDefaultConnector(localDir, asset.size);
+                this.addBlockingWall(model, defaultConnector, worldDir, cf);
+            }
+        }
+    }
+
+    private createDefaultConnector(dir: ConnectorDirection, size: Vec3): Connector {
+        // Calculate default position at the edge of the tile
+        let localPos = { x: 0, y: 0, z: 0 };
+
+        // Assuming origin is center
+        if (dir === ConnectorDirection.North) {
+            localPos = { x: 0, y: 0, z: -size.z / 2 };
+        } else if (dir === ConnectorDirection.South) {
+            localPos = { x: 0, y: 0, z: size.z / 2 };
+        } else if (dir === ConnectorDirection.East) {
+            localPos = { x: size.x / 2, y: 0, z: 0 };
+        } else if (dir === ConnectorDirection.West) {
+            localPos = { x: -size.x / 2, y: 0, z: 0 };
+        }
+
+        return {
+            direction: dir,
+            type: "Wall", // Dummy type
+            localPosition: localPos
+        };
+    }
+
+    private rotateDirection(dir: ConnectorDirection, rotations: number): ConnectorDirection {
+        const dirs = [
+            ConnectorDirection.North,
+            ConnectorDirection.East,
+            ConnectorDirection.South,
+            ConnectorDirection.West
+        ];
+        const idx = dirs.indexOf(dir);
+        return dirs[(idx + rotations) % 4];
+    }
+
+    private addBlockingWall(model: Model, connector: Connector, worldDir: ConnectorDirection, cf: CFrame) {
+        // SOLID WALL - completely blocks the exit
+        const wall = new Instance("Part");
+        wall.Name = `BlockedExit_${worldDir}`;
+        wall.Anchored = true;
+        wall.CanCollide = true;
+        wall.Material = Enum.Material.Brick;
+        wall.BrickColor = new BrickColor("Dark taupe");
+
+        const wallWidth = 12;
+        const wallHeight = 8;
+        const wallThickness = 2;
+
+        // Use local position from connector definition
+        // We assume the connector is centered on the wall face
+        const localPos = connector.localPosition;
+
+        // Orientation depends on LOCAL direction
+        let wallSize: Vector3;
+        if (connector.direction === ConnectorDirection.North || connector.direction === ConnectorDirection.South) {
+            // Wall runs along X
+            wallSize = new Vector3(wallWidth, wallHeight, wallThickness);
+        } else {
+            // Wall runs along Z (East/West)
+            wallSize = new Vector3(wallThickness, wallHeight, wallWidth);
+        }
+
+        // Offset Y to be above floor (assuming floor at 0 and wall bottom at 0)
+        // Original code used Y=4 for center?
+        const finalLocalPos = new Vector3(localPos.x, 4, localPos.z);
+
+        wall.Size = wallSize;
+        wall.CFrame = cf.mul(new CFrame(finalLocalPos));
+        wall.Parent = model;
+    }
+
+    private addDoorFrame(model: Model, connector: Connector, worldDir: ConnectorDirection, cf: CFrame) {
+        // DOOR FRAME
+        const doorWidth = 8;
+        const doorHeight = 7;
+        const frameThickness = 1;
+        const frameDepth = 2;
+        const pillarWidth = 2;
+
+        const localPos = connector.localPosition;
+        const basePos = new Vector3(localPos.x, 0, localPos.z);
+
+        let isNorthSouth: boolean;
+        if (connector.direction === ConnectorDirection.North || connector.direction === ConnectorDirection.South) {
+            isNorthSouth = true;
+        } else {
+            isNorthSouth = false;
+        }
+
+        // Left pillar
+        const leftPillar = new Instance("Part");
+        leftPillar.Name = `DoorFrame_${worldDir}_Left`;
+        leftPillar.Anchored = true;
+        leftPillar.CanCollide = true;
+        leftPillar.Material = Enum.Material.SmoothPlastic;
+        leftPillar.BrickColor = new BrickColor("Brown");
+        if (isNorthSouth) {
+            leftPillar.Size = new Vector3(pillarWidth, doorHeight, frameDepth);
+            leftPillar.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(-doorWidth / 2 - pillarWidth / 2, doorHeight / 2, 0))));
+        } else {
+            leftPillar.Size = new Vector3(frameDepth, doorHeight, pillarWidth);
+            leftPillar.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight / 2, -doorWidth / 2 - pillarWidth / 2))));
+        }
+        leftPillar.Parent = model;
+
+        // Right pillar
+        const rightPillar = new Instance("Part");
+        rightPillar.Name = `DoorFrame_${worldDir}_Right`;
+        rightPillar.Anchored = true;
+        rightPillar.CanCollide = true;
+        rightPillar.Material = Enum.Material.SmoothPlastic;
+        rightPillar.BrickColor = new BrickColor("Brown");
+        if (isNorthSouth) {
+            rightPillar.Size = new Vector3(pillarWidth, doorHeight, frameDepth);
+            rightPillar.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(doorWidth / 2 + pillarWidth / 2, doorHeight / 2, 0))));
+        } else {
+            rightPillar.Size = new Vector3(frameDepth, doorHeight, pillarWidth);
+            rightPillar.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight / 2, doorWidth / 2 + pillarWidth / 2))));
+        }
+        rightPillar.Parent = model;
+
+        // Top beam
+        const topBeam = new Instance("Part");
+        topBeam.Name = `DoorFrame_${worldDir}_Top`;
+        topBeam.Anchored = true;
+        topBeam.CanCollide = true;
+        topBeam.Material = Enum.Material.SmoothPlastic;
+        topBeam.BrickColor = new BrickColor("Brown");
+        if (isNorthSouth) {
+            topBeam.Size = new Vector3(doorWidth + pillarWidth * 2, frameThickness, frameDepth);
+            topBeam.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight + frameThickness / 2, 0))));
+        } else {
+            topBeam.Size = new Vector3(frameDepth, frameThickness, doorWidth + pillarWidth * 2);
+            topBeam.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight + frameThickness / 2, 0))));
+        }
+        topBeam.Parent = model;
+
+        // The actual door
+        const door = new Instance("Part");
+        door.Name = `Door_${worldDir}`;
+        door.Anchored = true;
+        door.CanCollide = true; // Closed by default
+        door.Material = Enum.Material.Wood;
+        door.BrickColor = new BrickColor("Reddish brown");
+        door.Transparency = 0; // Solid
+
+        // Configure for interaction
+        door.SetAttribute("IsOpen", false);
+        CollectionService.AddTag(door, Tags.DungeonDoor);
+
+        if (isNorthSouth) {
+            door.Size = new Vector3(doorWidth, doorHeight, 0.5);
+            // Pivot at -X (Left side)
+            door.PivotOffset = new CFrame(-doorWidth / 2, 0, 0);
+            door.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight / 2, 0))));
+        } else {
+            door.Size = new Vector3(0.5, doorHeight, doorWidth);
+            // Pivot at -Z (Left side in local Z)
+            door.PivotOffset = new CFrame(0, 0, -doorWidth / 2);
+            door.CFrame = cf.mul(new CFrame(basePos.add(new Vector3(0, doorHeight / 2, 0))));
+        }
+        door.Parent = model;
+    }
+
+    private addStartRoomIndicator(model: Model, cf: CFrame) {
+        // Create a green glowing beacon above the start room
+        const beacon = new Instance("Part");
+        beacon.Name = "StartBeacon";
+        beacon.Size = new Vector3(4, 20, 4);
+        beacon.Anchored = true;
+        beacon.CanCollide = false;
+        beacon.Material = Enum.Material.Neon;
+        beacon.BrickColor = new BrickColor("Lime green");
+        beacon.Transparency = 0.3;
+        beacon.CFrame = cf.add(new Vector3(0, 15, 0));
+        beacon.Parent = model;
+
+        // Add a flat ring on the floor
+        const ring = new Instance("Part");
+        ring.Name = "StartRing";
+        ring.Shape = Enum.PartType.Cylinder;
+        ring.Size = new Vector3(1, 30, 30);
+        ring.Anchored = true;
+        ring.CanCollide = false;
+        ring.Material = Enum.Material.Neon;
+        ring.BrickColor = new BrickColor("Lime green");
+        ring.Transparency = 0.5;
+        ring.CFrame = cf.add(new Vector3(0, 0.6, 0)).mul(CFrame.Angles(0, 0, math.rad(90)));
+        ring.Parent = model;
+
+        Log.info(`[DungeonService] Added Start room visual indicator`);
+    }
+
+    private addBossRoomIndicator(model: Model, cf: CFrame) {
+        // Create a red glowing beacon above the boss room
+        const beacon = new Instance("Part");
+        beacon.Name = "BossBeacon";
+        beacon.Size = new Vector3(6, 30, 6);
+        beacon.Anchored = true;
+        beacon.CanCollide = false;
+        beacon.Material = Enum.Material.Neon;
+        beacon.BrickColor = new BrickColor("Really red");
+        beacon.Transparency = 0.3;
+        beacon.CFrame = cf.add(new Vector3(0, 20, 0));
+        beacon.Parent = model;
+
+        // Add a skull-like ring pattern on the floor
+        const ring = new Instance("Part");
+        ring.Name = "BossRing";
+        ring.Shape = Enum.PartType.Cylinder;
+        ring.Size = new Vector3(1, 35, 35);
+        ring.Anchored = true;
+        ring.CanCollide = false;
+        ring.Material = Enum.Material.Neon;
+        ring.BrickColor = new BrickColor("Really red");
+        ring.Transparency = 0.5;
+        ring.CFrame = cf.add(new Vector3(0, 0.6, 0)).mul(CFrame.Angles(0, 0, math.rad(90)));
+        ring.Parent = model;
+
+        Log.info(`[DungeonService] Added Boss room visual indicator`);
     }
 
     private extractMetadata(model: Model) {
@@ -145,6 +473,20 @@ export class DungeonService implements OnStart {
                     this.lastResult?.playerSpawns.push(desc.Position);
                     desc.Transparency = 1;
                     desc.CanCollide = false;
+                } else if (desc.Name === "BossSpawn") {
+                    if (this.lastResult) {
+                        this.lastResult.bossSpawn = desc.Position;
+                    }
+                    desc.Transparency = 1;
+                    desc.CanCollide = false;
+                    Log.info(`[DungeonService] Found BossSpawn at ${desc.Position}`);
+                } else if (desc.Name === "LootSpawn") {
+                    if (this.lastResult) {
+                        this.lastResult.lootSpawn = desc.Position;
+                    }
+                    desc.Transparency = 1;
+                    desc.CanCollide = false;
+                    Log.info(`[DungeonService] Found LootSpawn at ${desc.Position}`);
                 }
             }
         }

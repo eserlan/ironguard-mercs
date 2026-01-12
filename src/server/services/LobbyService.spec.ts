@@ -31,7 +31,8 @@ vi.mock("server/events", () => ({
         PartyUpdated: { fire: vi.fn() },
         PartyLeft: { fire: vi.fn() },
         MissionLaunching: { fire: vi.fn() },
-        UnlockedClassesUpdated: { fire: vi.fn() }
+        UnlockedClassesUpdated: { fire: vi.fn() },
+        LaunchAlert: { fire: vi.fn() }
     }
 }));
 
@@ -49,8 +50,19 @@ describe("LobbyService", () => {
     let lobbyService: LobbyService;
     let mockRunService: any;
     let mockClassService: any;
+    let mockGetPlayerByUserId: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
+        mockGetPlayerByUserId = vi.fn();
+        (globalThis as any).game = {
+            GetService: (serviceName: string) => {
+                if (serviceName === "Players") {
+                    return { GetPlayerByUserId: mockGetPlayerByUserId };
+                }
+                return {};
+            }
+        };
+
         mockRunService = {
             startMatch: vi.fn().mockReturnValue(true)
         };
@@ -69,13 +81,20 @@ describe("LobbyService", () => {
         };
         vi.mocked(CollectionService.GetTagged).mockReturnValue([mockPortal as any]);
 
+        const mockCharacter = {
+            GetPivot: () => ({ Position: { sub: () => ({ Magnitude: 5 }) } })
+        };
         const mockPlayer = {
             UserId: 1,
             DisplayName: "Player1",
-            Character: {
-                GetPivot: () => ({ Position: { sub: () => ({ Magnitude: 5 }) } })
-            }
+            Character: mockCharacter
         } as unknown as Player;
+
+        // Mock game.GetService("Players").GetPlayerByUserId
+        mockGetPlayerByUserId.mockImplementation((userId: number) => {
+            if (userId === 1) return mockPlayer;
+            return undefined;
+        });
 
         // 1. Create party
         (lobbyService as any).createParty(mockPlayer);
@@ -93,7 +112,26 @@ describe("LobbyService", () => {
     });
 
     it("should NOT allow launch if mercenary is NOT selected", () => {
-        const mockPlayer = { UserId: 1, DisplayName: "Player1" } as Player;
+        // Mock portal for proximity check
+        const mockPortal = {
+            IsA: () => true,
+            Position: { sub: () => ({ Magnitude: 5 }) }
+        };
+        vi.mocked(CollectionService.GetTagged).mockReturnValue([mockPortal as any]);
+
+        const mockCharacter = {
+            GetPivot: () => ({ Position: { sub: () => ({ Magnitude: 5 }) } })
+        };
+        const mockPlayer = {
+            UserId: 1,
+            DisplayName: "Player1",
+            Character: mockCharacter
+        } as unknown as Player;
+
+        mockGetPlayerByUserId.mockImplementation((userId: number) => {
+            if (userId === 1) return mockPlayer;
+            return undefined;
+        });
 
         (lobbyService as any).createParty(mockPlayer);
         (lobbyService as any).setReady(mockPlayer, true);
@@ -163,6 +201,13 @@ describe("LobbyService", () => {
         };
         const mockHost = { UserId: 1, DisplayName: "Host", Character: mockCharacter } as unknown as Player;
         const mockGuest = { UserId: 2, DisplayName: "Guest", Character: mockCharacter } as unknown as Player;
+
+        // Mock game.GetService("Players").GetPlayerByUserId
+        mockGetPlayerByUserId.mockImplementation((userId: number) => {
+            if (userId === 1) return mockHost;
+            if (userId === 2) return mockGuest;
+            return undefined;
+        });
 
         (lobbyService as any).createParty(mockHost);
         (lobbyService as any).joinParty(mockGuest, "ABCDEF");

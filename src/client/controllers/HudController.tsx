@@ -16,6 +16,7 @@ export class HudController implements OnStart {
 		appUi.ResetOnSpawn = false;
 		appUi.IgnoreGuiInset = true;
 		appUi.DisplayOrder = 10;
+		appUi.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 		appUi.Parent = playerGui;
 
 		const root = createRoot(appUi);

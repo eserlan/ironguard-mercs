@@ -38,6 +38,7 @@ interface ServerToClientEvents {
 	PartyLeft(): void;
 	MissionLaunching(seed: number): void;
 	UnlockedClassesUpdated(classIds: string[]): void;
+	LaunchAlert(message: string): void;
 }
 
 export const GlobalEvents = Networking.createEvent<ClientToServerEvents, ServerToClientEvents>();
