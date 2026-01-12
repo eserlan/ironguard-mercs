@@ -173,8 +173,12 @@ export class LobbyController implements OnStart {
 	}
 
 	private updateState(partial: Partial<LobbyUiState>) {
-		const updatedKeys = Object.keys(partial as Record<string, unknown>).join(", ");
-		Log.info(`[LobbyController] Updating state fields: ${updatedKeys}`);
+		const updatedKeys: string[] = [];
+		for (const [k] of pairs(partial as unknown as object)) {
+			updatedKeys.push(k as string);
+		}
+		const keysStr = updatedKeys.join(", ");
+		Log.info(`[LobbyController] Updating state fields: ${keysStr}`);
 		this.state = { ...this.state, ...partial };
 		for (const listener of this.listeners) {
 			listener(this.state);

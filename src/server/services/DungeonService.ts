@@ -123,7 +123,7 @@ export class DungeonService implements OnStart {
 
         // Log the tile path sequence for debugging
         const mainPathNodes = graph.nodes.filter(n => n.tags.includes("MainPath"));
-        const sortedPath = [...mainPathNodes].sort((a, b) => a.distanceFromStart - b.distanceFromStart);
+        const sortedPath = [...mainPathNodes].sort((a, b) => a.distanceFromStart < b.distanceFromStart);
         const pathSequence = sortedPath.map(n => {
             const asset = TileRegistry.get(n.tileId);
             const connectorCount = asset?.connectors.size() ?? 0;
