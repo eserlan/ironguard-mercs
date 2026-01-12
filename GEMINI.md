@@ -14,6 +14,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-06
 - N/A (Client-side ephemeral UI state) (000-ui-tech-spec)
 - TypeScript (roblox-ts 2.3+) -> Luau + @flamework/core, @rbxts/services (010-enemy-visuals)
 - ServerStorage (for Assets), ModuleScripts (for Data Profiles) (010-enemy-visuals)
+- Luau (Roblox) + Flamework (Service/Controller), @rbxts/services, @rbxts/react (for UI hooks if needed) (011-monster-spawning)
+- N/A (Runtime state only) (011-monster-spawning)
 
 - Luau (Roblox) + Roblox Engine API (`Workspace`, `ServerStorage`, `CFrame`), Vitest (for unit testing). (004-dungeon-generation)
 
@@ -33,9 +35,9 @@ tests/
 Luau (Roblox): Follow standard conventions
 
 ## Recent Changes
-- 010-enemy-visuals: Added TypeScript (roblox-ts 2.3+) -> Luau + @flamework/core, @rbxts/services
-- 000-ui-tech-spec: Added TypeScript (roblox-ts -> Luau) + `@rbxts/react`, `@rbxts/react-roblox`, `@flamework/core`
-- 001-core-gameplay: Refined vision to Real-Time Tactical Co-op; added Roster Management and Ironman Mode (Permadeath).
+- 011-monster-spawning: Added Luau (Roblox) + Flamework (Service/Controller), @rbxts/services, @rbxts/react (for UI hooks if needed)
+- 011-monster-spawning: Added Luau (Roblox) + Flamework (Service/Controller), @rbxts/services, @rbxts/react (for UI hooks if needed)
+- 011-monster-spawning: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
 
 <!-- MANUAL ADDITIONS START -->
