@@ -73,6 +73,7 @@ export class LobbyService implements OnStart {
 		}
 
 		// Not in a room, try to join an existing one or create new
+		Log.info(`[LobbyService] Player ${player.Name} not in a room, looking for room to join or creating new`);
 		// Simplified: Join the first room that isn't full
 		let targetRoom: PartyRoom | undefined;
 		for (const [, room] of this.rooms) {
