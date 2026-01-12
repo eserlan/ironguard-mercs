@@ -16,7 +16,6 @@ interface PartyPanelProps {
 export function PartyPanel({ room, isHost, localPlayerId, onReady, onLaunch, onSetMode, onSetDifficulty, onLeave, onSelectMerc }: PartyPanelProps) {
 	const localMember = room.members.find((m) => m.playerId === localPlayerId);
 	const hasSelectedMerc = localMember?.selectedMercenaryId !== undefined;
-	const canReady = hasSelectedMerc;
 	const canLaunch = isHost && room.members.every((m) => m.isReady && m.selectedMercenaryId !== undefined);
 
 	return (

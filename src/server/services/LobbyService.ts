@@ -369,26 +369,34 @@ export class LobbyService implements OnStart {
 				return;
 			}
 
+			// Helper function to check if a member is near any portal
+			const isMemberNearPortal = (member: PartyMember): boolean => {
+				const memberPlayer = game.GetService("Players").GetPlayerByUserId(tonumber(member.playerId) ?? 0);
+				if (!memberPlayer) {
+					return false;
+				}
+
+				const memberChar = memberPlayer.Character;
+				if (!memberChar) {
+					return false;
+				}
+
+				for (const portal of portals) {
+					if (portal.IsA("BasePart")) {
+						if (memberChar.GetPivot().Position.sub(portal.Position).Magnitude < PORTAL_PROXIMITY_THRESHOLD) {
+							return true;
+						}
+					}
+				}
+
+				return false;
+			};
+
 			// Check if all members are near portal
 			const membersNotNearPortal: string[] = [];
 			for (const member of room.members) {
-				const memberPlayer = game.GetService("Players").GetPlayerByUserId(tonumber(member.playerId) ?? 0);
-				if (memberPlayer) {
-					const memberChar = memberPlayer.Character;
-					if (memberChar) {
-						let memberNearPortal = false;
-						for (const portal of portals) {
-							if (portal.IsA("BasePart")) {
-								if (memberChar.GetPivot().Position.sub(portal.Position).Magnitude < PORTAL_PROXIMITY_THRESHOLD) {
-									memberNearPortal = true;
-									break;
-								}
-							}
-						}
-						if (!memberNearPortal) {
-							membersNotNearPortal.push(member.displayName);
-						}
-					}
+				if (!isMemberNearPortal(member)) {
+					membersNotNearPortal.push(member.displayName);
 				}
 			}
 
