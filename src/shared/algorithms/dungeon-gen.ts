@@ -12,6 +12,8 @@ export interface GraphNode {
     tags: string[];
     distanceFromStart: number; // How many steps from start on the main path
     usedConnectorDirections: ConnectorDirection[]; // Which directions have connections (after rotation)
+    encounterPackId?: string; // ID of the monster pack assigned to this room
+    monsterBudget?: number;   // Spawning budget for this room
 }
 
 export interface GraphEdge {

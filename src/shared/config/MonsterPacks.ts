@@ -1,14 +1,14 @@
 import { MonsterPackDef } from "../types/SpawningTypes";
 
-export const ForestWolfPack: MonsterPackDef = {
-	id: "forest_wolves_01",
-	budgetCost: 15,
+export const IronVanguardPack: MonsterPackDef = {
+	id: "iron_vanguard_01",
+	budgetCost: 20,
 	minSize: 3,
-	biomeTags: ["Forest"],
+	biomeTags: ["Forest", "Dungeon"],
 	members: [
-		{ enemyId: "Wolf_Alpha", role: "Elite", count: { Min: 1, Max: 1 } },
-		{ enemyId: "Wolf_Pup", role: "Minion", count: { Min: 2, Max: 4 } }
+		{ enemyId: "iron-giant", role: "Elite", count: { Min: 1, Max: 1 } },
+		{ enemyId: "iron-grunt", role: "Minion", count: { Min: 3, Max: 5 } }
 	]
 };
 
-export const AllPacks: MonsterPackDef[] = [ForestWolfPack];
+export const AllPacks: MonsterPackDef[] = [IronVanguardPack];

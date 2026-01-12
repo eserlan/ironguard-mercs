@@ -94,6 +94,19 @@ if (!(String.prototype as any).sub) {
     });
 }
 
+// Polyfill for Luau string.find(pattern)
+if (!(String.prototype as any).find) {
+    Object.defineProperty(String.prototype, "find", {
+        value: function (pattern: string) {
+            const index = this.indexOf(pattern);
+            if (index === -1) return [undefined];
+            return [index + 1, index + pattern.length];
+        },
+        writable: true,
+        configurable: true,
+    });
+}
+
 // Polyfill for Roblox Color3
 (global as any).Color3 = {
     new: (r: number, g: number, b: number) => ({ R: r, G: g, B: b }),
@@ -136,6 +149,10 @@ class MockInstance {
 
     public IsA(className: string) {
         return this.className === className;
+    }
+
+    public GetChildren() {
+        return this.children;
     }
 
     public ApplyDescription() { } // Dummy for Humanoid

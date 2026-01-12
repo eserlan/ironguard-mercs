@@ -1,6 +1,7 @@
 import { Service, OnStart } from "@flamework/core";
 import { Log } from "../../shared/utils/log";
 import { generateDungeonGraph, DungeonGraph, GraphNode, validateDungeon, countRoutes, getShortestPathLength, sortNodesDescending } from "../../shared/algorithms/dungeon-gen";
+import { SpawnDirector } from "./SpawnDirector";
 import { TileAsset, ConnectorDirection, Connector } from "../../shared/domain/TileDefs";
 import { TileRegistry } from "../../shared/domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../../shared/domain/dungeon/manifest";
@@ -38,6 +39,8 @@ export class DungeonService implements OnStart {
     private tileAssets: TileAsset[] = [];
     private tileModels = new Map<string, Model>();
     private lastResult?: DungeonResult;
+
+    constructor(private spawnDirector: SpawnDirector) { }
 
     onStart() {
         initializeTileRegistry();
@@ -109,6 +112,7 @@ export class DungeonService implements OnStart {
                 maxBranches,
                 targetSize: minPathLength + maxBranches + 4
             });
+            this.spawnDirector.populateDungeon(graph, currentSeed); // Call populateDungeon after graph generation
             validation = validateDungeon(graph);
 
             if (!validation.valid) {
@@ -237,6 +241,8 @@ export class DungeonService implements OnStart {
             this.addBossRoomIndicator(clone, cf);
         }
 
+        // Register room encounter for monster spawning
+        this.spawnDirector.registerRoomEncounter(clone, node);
         this.extractMetadata(clone);
     }
 

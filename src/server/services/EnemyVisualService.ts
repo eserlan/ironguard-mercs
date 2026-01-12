@@ -28,45 +28,46 @@ export class EnemyVisualService implements OnStart {
         }
 
         Log.info(`Setting up visuals for ${rig.Name} using profile: ${archetype.visual.profileKey}`);
-        this.applyVisualProfile(humanoid, profile);
+        this.applyVisualProfile(rig, profile);
         this.attachWeapon(rig, archetype.visual.weaponKey);
     }
 
-    private applyVisualProfile(humanoid: Humanoid, profile: EnemyVisualProfile) {
-        const description = new Instance("HumanoidDescription");
+    private applyVisualProfile(rig: Model, profile: EnemyVisualProfile) {
+        // We directly manipulate the parts because HumanoidDescription (ApplyDescription)
+        // is asynchronous and rebuilds the rig, breaking our manual WeldConstraints.
 
-        // 1. Accessories
-        // The 'Accessories' property is a string of comma-separated asset IDs.
-        (description as unknown as { Accessories: string }).Accessories = profile.assetIds.join(",");
+        for (const child of rig.GetChildren()) {
+            if (child.IsA("BasePart")) {
+                // 1. Apply Body Colors
+                if (profile.bodyColors) {
+                    const colors = profile.bodyColors;
+                    if (child.Name === "Head" && colors.head) child.Color = colors.head;
+                    else if (child.Name === "UpperTorso" && colors.torso) child.Color = colors.torso;
+                    else if (child.Name === "LowerTorso" && colors.torso) child.Color = colors.torso;
+                    else if (child.Name.find("Arm")[0] !== undefined) {
+                        if (child.Name.find("Left")[0] !== undefined && colors.leftArm) child.Color = colors.leftArm;
+                        else if (child.Name.find("Right")[0] !== undefined && colors.rightArm) child.Color = colors.rightArm;
+                    } else if (child.Name.find("Leg")[0] !== undefined) {
+                        if (child.Name.find("Left")[0] !== undefined && colors.leftLeg) child.Color = colors.leftLeg;
+                        else if (child.Name.find("Right")[0] !== undefined && colors.rightLeg) child.Color = colors.rightLeg;
+                    }
+                }
 
+                // 2. Apply Scaling
+                if (profile.scale) {
+                    const s = profile.scale;
+                    const originalSize = child.Size;
+                    const scaleVec = new Vector3(s.width ?? 1, s.height ?? 1, s.depth ?? 1);
+                    child.Size = originalSize.mul(scaleVec);
 
-        // 2. Clothing
-        if (profile.shirtTemplateId) description.Shirt = profile.shirtTemplateId;
-        if (profile.pantsTemplateId) description.Pants = profile.pantsTemplateId;
-
-        // 3. Body Colors
-        if (profile.bodyColors) {
-            const colors = profile.bodyColors;
-            if (colors.head) description.HeadColor = colors.head;
-            if (colors.torso) description.TorsoColor = colors.torso;
-            if (colors.leftArm) description.LeftArmColor = colors.leftArm;
-            if (colors.rightArm) description.RightArmColor = colors.rightArm;
-            if (colors.leftLeg) description.LeftLegColor = colors.leftLeg;
-            if (colors.rightLeg) description.RightLegColor = colors.rightLeg;
+                    // Note: In a real rig we'd need to adjust joint offsets (Motor6Ds),
+                    // but since we are using WeldConstraints for these constructs,
+                    // we just need to ensure the scaling happens BEFORE welding.
+                }
+            }
         }
 
-        // 4. Scaling
-        if (profile.scale) {
-            const s = profile.scale;
-            if (s.height) description.HeightScale = s.height;
-            if (s.width) description.WidthScale = s.width;
-            if (s.depth) description.DepthScale = s.depth;
-            if (s.head) description.HeadScale = s.head;
-        }
-
-        // Apply synchronously on server for predictability
-        humanoid.ApplyDescription(description);
-        Log.debug(`Applied visual profile (assets: ${profile.assetIds.size()}, scale: ${profile.scale ? "yes" : "no"}) to ${humanoid.Parent?.Name}`);
+        Log.debug(`Applied construct visuals (scale: ${profile.scale ? "yes" : "no"}) to ${rig.Name}`);
     }
 
     private attachWeapon(rig: Model, weaponKey?: string) {

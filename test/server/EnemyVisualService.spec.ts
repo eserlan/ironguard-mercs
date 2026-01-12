@@ -23,6 +23,14 @@ describe("EnemyVisualService", () => {
 		const humanoid = new Instance("Humanoid");
 		humanoid.Parent = rig;
 
+		const head = new Instance("Part");
+		head.Name = "Head";
+		head.Parent = rig;
+
+		const torso = new Instance("Part");
+		torso.Name = "UpperTorso";
+		torso.Parent = rig;
+
 		const mockArchetype: EnemyArchetype = {
 			id: "test-enemy",
 			name: "Test Enemy",
@@ -36,9 +44,6 @@ describe("EnemyVisualService", () => {
 				profileKey: "Slasher",
 			},
 		} as unknown as EnemyArchetype;
-
-		// Mock ApplyDescription to avoid external dependencies in unit test
-		(humanoid as any).ApplyDescription = () => { };
 
 		expect(() => service.setupEnemyVisuals(rig, mockArchetype)).not.toThrow();
 	});

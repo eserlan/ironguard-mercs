@@ -33,10 +33,10 @@
     },
     "ServerStorage": {
       "EnemyRigs": {
-        "$className": "Folder"
+        "$path": "assets/enemy-rigs"
       },
       "Weapons": {
-        "$className": "Folder"
+        "$path": "assets/weapons"
       },
       "Tiles": {
         "$path": "assets/tiles"
