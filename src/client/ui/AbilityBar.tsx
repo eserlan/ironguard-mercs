@@ -308,7 +308,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						TextSize={20}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						ZIndex={202}
-						LayoutOrder={1}
+
 					/>
 
 					{/* Parent Ability Context */}
@@ -323,14 +323,12 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						TextSize={13}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						ZIndex={202}
-						LayoutOrder={2}
+
 					/>
 
 					{/* Description */}
 					<textlabel
 						key="Desc"
-						LayoutOrder={3}
-						Text={activeInfo.description}
 						LayoutOrder={3}
 						Text={activeInfo.description}
 						Size={new UDim2(1, 0, 0, 90)}
@@ -342,7 +340,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
 						ZIndex={202}
-						LayoutOrder={3}
+
 					/>
 
 					{/* Technical Info */}
@@ -359,7 +357,7 @@ export function AbilityBar({ loadout, controller }: AbilityBarProps) {
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextYAlignment={Enum.TextYAlignment.Top}
 						ZIndex={202}
-						LayoutOrder={4}
+
 					/>
 				</frame>
 			)}
