@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { AllPacks } from '../../../src/shared/config/MonsterPacks';
 
 // Mock SpawnDirector's pure functions without Roblox dependencies

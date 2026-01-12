@@ -1,8 +1,8 @@
 import { Service, OnStart, OnInit } from "@flamework/core";
 import { AllPacks } from "shared/config/MonsterPacks";
-import { MonsterPackDef, SpawnNodeMetadata } from "shared/types/SpawningTypes";
+import { MonsterPackDef } from "shared/types/SpawningTypes";
 import { EncounterZone } from "../components/EncounterZone";
-import { ModelPool } from "shared/utils/ModelPool";
+import { ModelPool } from "../utils/ModelPool";
 import { Workspace } from "@rbxts/services";
 import { EnemySpawnService } from "./EnemySpawnService";
 import { playAmbushCue } from "../utils/AmbushVFX";

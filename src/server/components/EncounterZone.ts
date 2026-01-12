@@ -1,6 +1,6 @@
 import { MonsterPackDef, SpawningEnemy } from "shared/types/SpawningTypes";
 import { PackContext } from "./PackContext";
-import { ModelPool } from "shared/utils/ModelPool";
+import { ModelPool } from "../utils/ModelPool";
 
 export interface PendingSpawn {
 	readonly enemyId: string;
