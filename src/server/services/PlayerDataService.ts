@@ -150,6 +150,8 @@ export class PlayerDataService implements OnStart, OnInit {
 			...profile.Classes[classId],
 			Loadout: loadout,
 		};
+		// Trigger update
+
 		this.broadcastUpdate(player, profile);
 	}
 
@@ -182,6 +184,8 @@ export class PlayerDataService implements OnStart, OnInit {
 			XP: newXP,
 			Level: newLevel,
 		};
+		// Trigger update
+
 		this.broadcastUpdate(player, profile);
 	}
 

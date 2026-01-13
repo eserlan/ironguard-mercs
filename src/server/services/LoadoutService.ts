@@ -26,7 +26,6 @@ export class LoadoutService implements OnStart {
 		// Auto-restore when profile is loaded
 		this.playerDataService.onProfileLoaded.Event.Connect((player, profile) => {
 			const classId = profile.Global.LastSelectedClassId;
-			
 			// Validate that the stored classId exists in ClassRegistry
 			const classConfig = ClassRegistry.get(classId);
 			if (!classConfig) {
@@ -51,6 +50,7 @@ export class LoadoutService implements OnStart {
 			this.setSessionLoadout(player.UserId, classId, equippedSlots);
 
 			// Notify client so they see the correct class/gear active on profile load
+
 			Events.LoadoutConfirmed.fire(player, classId, equippedSlots);
 		});
 	}
@@ -94,18 +94,19 @@ export class LoadoutService implements OnStart {
 			// Array mapping: index = slotIndex, sized by the maximum slotIndex to avoid holes/misalignment.
 			const maxSlotIndex = slots.reduce((max, s) => (s.slotIndex > max ? s.slotIndex : max), -1);
 			const loadoutStrings = new Array<string>();
-			
+
 			// Initialize array with empty strings up to maxSlotIndex
 			for (let i = 0; i <= maxSlotIndex; i++) {
 				loadoutStrings.push("");
 			}
-			
+
 			// Fill in the actual ability IDs
 			slots.forEach((s) => {
 				if (s.slotIndex >= 0 && s.slotIndex < loadoutStrings.size()) {
 					loadoutStrings[s.slotIndex] = s.abilityId;
 				}
 			});
+
 
 			this.playerDataService.setClassLoadout(player, classId, loadoutStrings);
 

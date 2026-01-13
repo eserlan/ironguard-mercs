@@ -6,6 +6,12 @@ const mockBindableEvent = {
     Fire: vi.fn(),
 };
 
+const mockSignal = {
+    connect: vi.fn(),
+    fire: vi.fn(),
+};
+
+
 // Mock Dependencies
 vi.mock("@flamework/core", () => ({
     Service: () => () => { },
@@ -79,6 +85,7 @@ describe("Persistence Integration", () => {
             }
             return {};
         }
+
         global.Instance = MockInstance as any;
 
         // Mock global game object
