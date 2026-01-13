@@ -802,3 +802,4 @@ export function getSetSize(s: unknown): number {
     // Fallback to property (Node/JS)
     return (s as SetWithSizeProp).size;
 }
+}
