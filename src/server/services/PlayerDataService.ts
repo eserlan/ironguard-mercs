@@ -1,6 +1,7 @@
 import { Service, OnStart, OnInit } from "@flamework/core";
 import { DataStoreService, Players, HttpService } from "@rbxts/services";
 import { PlayerProfile, DEFAULT_PROFILE } from "shared/data/profiles";
+import { Events } from "server/events";
 
 const AUTOSAVE_INTERVAL = 300; // 5 minutes
 
@@ -9,6 +10,8 @@ export class PlayerDataService implements OnStart, OnInit {
 	private readonly dataStore = DataStoreService.GetDataStore("PlayerProfiles_v1");
 	private readonly profiles = new Map<number, PlayerProfile>();
 	private readonly serverSessionId = HttpService.GenerateGUID(false);
+
+	public readonly onProfileLoaded: BindableEvent<(player: Player, profile: PlayerProfile) => void> = new Instance("BindableEvent");
 
 	onInit() {
 		game.BindToClose(() => {
@@ -62,8 +65,11 @@ export class PlayerDataService implements OnStart, OnInit {
 					ActiveSessionId: this.serverSessionId,
 					LastUpdateTimestamp: os.time(),
 				};
+
 				this.profiles.set(userId, loadedProfile);
 				print(`[PlayerDataService] Loaded profile for ${player.Name}`);
+				this.onProfileLoaded.Fire(player, loadedProfile);
+				this.broadcastUpdate(player, loadedProfile);
 			} else {
 				const newProfile: PlayerProfile = {
 					...DEFAULT_PROFILE,
@@ -74,6 +80,8 @@ export class PlayerDataService implements OnStart, OnInit {
 				};
 				this.profiles.set(userId, newProfile);
 				print(`[PlayerDataService] Created new profile for ${player.Name}`);
+				this.onProfileLoaded.Fire(player, newProfile);
+				this.broadcastUpdate(player, newProfile);
 			}
 		} catch (err) {
 			warn(`[PlayerDataService] Failed to load profile for ${player.Name}: ${err}`);
@@ -142,6 +150,8 @@ export class PlayerDataService implements OnStart, OnInit {
 			...profile.Classes[classId],
 			Loadout: loadout,
 		};
+		// Trigger update
+		this.broadcastUpdate(player, profile);
 	}
 
 	public addXP(player: Player, classId: string, amount: number) {
@@ -173,6 +183,8 @@ export class PlayerDataService implements OnStart, OnInit {
 			XP: newXP,
 			Level: newLevel,
 		};
+		// Trigger update
+		this.broadcastUpdate(player, profile);
 	}
 
 	public setSelectedClass(player: Player, classId: string) {
@@ -188,5 +200,10 @@ export class PlayerDataService implements OnStart, OnInit {
 			},
 		};
 		this.profiles.set(player.UserId, updatedProfile);
+		this.broadcastUpdate(player, updatedProfile);
+	}
+
+	private broadcastUpdate(player: Player, profile: PlayerProfile) {
+		Events.ProfileUpdated.fire(player, profile);
 	}
 }
