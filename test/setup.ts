@@ -107,6 +107,17 @@ if (!(String.prototype as any).find) {
     });
 }
 
+// Polyfill for Roblox typeIs
+(global as any).typeIs = (value: any, type: string) => {
+    if (type === "function") return typeof value === "function";
+    if (type === "number") return typeof value === "number";
+    if (type === "string") return typeof value === "string";
+    if (type === "boolean") return typeof value === "boolean";
+    if (type === "table") return typeof value === "object" && value !== null;
+    if (type === "nil") return value === undefined || value === null;
+    return false;
+};
+
 // Polyfill for Roblox Vector3
 class MockVector3 {
     constructor(public X: number, public Y: number, public Z: number) { }

@@ -6,7 +6,13 @@ import {
     findAllPaths,
     countRoutes,
     getShortestPathLength,
-    getMainPathNodes
+    generateDungeonGraph,
+    validateDungeon,
+    findAllPaths,
+    countRoutes,
+    getShortestPathLength,
+    getMainPathNodes,
+    getSetSize
 } from "./dungeon-gen";
 import { TileRegistry } from "../domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../domain/dungeon/manifest";
@@ -17,8 +23,7 @@ describe("Dungeon Generation Algorithm", () => {
     const tileset = TileRegistry.getAll();
 
     describe("Linear Path Generation", () => {
-        // TODO: Investigate flaky test - fails on main branch
-        it.skip("should generate a main path of at least minPathLength rooms", () => {
+        it("should generate a main path of at least minPathLength rooms", () => {
             const minPathLength = 8;
             const graph = generateDungeonGraph(12345, tileset, { minPathLength });
 
@@ -39,8 +44,7 @@ describe("Dungeon Generation Algorithm", () => {
             expect(mainPathIds).toContain("BossRoom");
         });
 
-        // TODO: Investigate flaky test - fails on main branch (duplicate distanceFromStart values)
-        it.skip("should have main path nodes with increasing distanceFromStart", () => {
+        it("should have main path nodes with increasing distanceFromStart", () => {
             const graph = generateDungeonGraph(999, tileset, { minPathLength: 6 });
 
             const mainPath = getMainPathNodes(graph);
@@ -55,8 +59,7 @@ describe("Dungeon Generation Algorithm", () => {
             console.log(`Path distances: ${sorted.map(n => `${n.id}(${n.distanceFromStart})`).join(" -> ")}`);
         });
 
-        // TODO: Investigate flaky test - fails on main branch (returns -1)
-        it.skip("should have shortest path equal to main path length", () => {
+        it("should have shortest path equal to main path length", () => {
             const minPathLength = 7;
             const graph = generateDungeonGraph(777, tileset, { minPathLength, maxBranches: 0 });
 
@@ -110,8 +113,7 @@ describe("Dungeon Generation Algorithm", () => {
             return tile.connectors.length === 2 ? "corridor" : "room";
         }
 
-        // TODO: Investigate flaky test - fails on main branch
-        it.skip("should always place BossRoom at the end of the main path (highest distance)", () => {
+        it("should always place BossRoom at the end of the main path (highest distance)", () => {
             const testSeeds = [1, 42, 100, 255, 500, 777, 999, 1234, 5678, 9999];
 
             for (const seed of testSeeds) {
@@ -178,8 +180,7 @@ describe("Dungeon Generation Algorithm", () => {
             }
         });
 
-        // TODO: Investigate flaky test - fails on main branch (roomCount < 2)
-        it.skip("should have a mix of corridors and rooms on long paths", () => {
+        it("should have a mix of corridors and rooms on long paths", () => {
             const graph = generateDungeonGraph(12345, tileset, { minPathLength: 12, maxBranches: 0 });
             const mainPath = getMainPathNodes(graph);
             const sorted = [...mainPath].sort((a, b) => a.distanceFromStart - b.distanceFromStart);
@@ -234,16 +235,15 @@ describe("Dungeon Generation Algorithm", () => {
 
             // Check that not all patterns are identical (randomness in pacing)
             const uniquePatterns = new Set(patterns);
-            console.log(`Unique patterns: ${uniquePatterns.size}/${patterns.length}`);
+            console.log(`Unique patterns: ${getSetSize(uniquePatterns)}/${patterns.length}`);
 
             // We should see some variety (at least 2 different patterns out of 10)
-            expect(uniquePatterns.size).toBeGreaterThanOrEqual(2);
+            expect(getSetSize(uniquePatterns)).toBeGreaterThanOrEqual(2);
         });
     });
 
     describe("Path Validation", () => {
-        // TODO: Investigate flaky test - fails on main branch (routes = 0)
-        it.skip("should always have exactly one route from Start to Boss when no branches", () => {
+        it("should always have exactly one route from Start to Boss when no branches", () => {
             const graph = generateDungeonGraph(111, tileset, { minPathLength: 6, maxBranches: 0 });
 
             const routes = countRoutes(graph);
@@ -288,8 +288,7 @@ describe("Dungeon Generation Algorithm", () => {
             expect(graph1.mainPathLength).toBe(graph2.mainPathLength);
         });
 
-        // TODO: Investigate flaky test - fails on main branch
-        it.skip("should produce different results for different seeds", () => {
+        it("should produce different results for different seeds", () => {
             const config = { minPathLength: 6 };
             const graph1 = generateDungeonGraph(111, tileset, config);
             const graph2 = generateDungeonGraph(222, tileset, config);
@@ -357,8 +356,7 @@ describe("Dungeon Generation Algorithm", () => {
     });
 
     describe("Path Connectivity and Door Openability", () => {
-        // TODO: Investigate flaky test - fails on main branch (missing edges)
-        it.skip("should have edges connecting all adjacent main path nodes", () => {
+        it("should have edges connecting all adjacent main path nodes", () => {
             const testSeeds = [1, 42, 100, 777, 1234];
 
             for (const seed of testSeeds) {
