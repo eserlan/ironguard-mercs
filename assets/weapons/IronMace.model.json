@@ -1,0 +1,22 @@
+{
+    "className": "Model",
+    "children": [
+        {
+            "name": "Handle",
+            "className": "Part",
+            "properties": {
+                "Size": [
+                    1,
+                    4,
+                    1
+                ],
+                "Color": [
+                    0.3,
+                    0.3,
+                    0.3
+                ],
+                "Material": "Metal"
+            }
+        }
+    ]
+}

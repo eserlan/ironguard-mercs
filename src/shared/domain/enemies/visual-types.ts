@@ -25,6 +25,9 @@ export interface EnemyVisualProfile {
 		depth?: number;
 		head?: number;
 	};
+
+	/** Optional Neon Eye Color (Glow effect) */
+	eyeColor?: Color3;
 }
 
 export interface EnemyVisualConfig {

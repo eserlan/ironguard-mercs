@@ -33,26 +33,26 @@ export class EncounterZone {
 		return this.pendingSpawns;
 	}
 
-	public Activate(pool: ModelPool) {
+	public Activate(_pool: ModelPool) {
 		if (this.status !== "Dormant") return;
 		this.status = "Active";
 		print(`Zone ${this.zoneId} Activated`);
 
-		this.StartWave(pool);
+		this.StartWave(_pool);
 	}
 
-	public Deactivate(pool: ModelPool) {
+	public Deactivate(_pool: ModelPool) {
 		if (this.status === "Cleared") return;
 		this.status = "Dormant";
 		print(`Zone ${this.zoneId} Deactivated`);
 
 		// Return all active models to pool
 		// In a real implementation, we would map GUID -> Model Instance
-		// pool.Return(model);
+		// _pool.Return(model);
 		this.activeEnemies.clear();
 	}
 
-	private StartWave(pool: ModelPool) {
+	private StartWave(_pool: ModelPool) {
 		const wave = this.packs[this.currentWaveIndex];
 		if (!wave) return;
 		this.LockDoors();

@@ -57,9 +57,9 @@ describe('SpawnDirector Algorithms', () => {
 
 	describe('SelectPack algorithm', () => {
 		it('selects a valid pack matching budget and biome', () => {
-			const pack = selectPack(100, 'Forest');
+			const pack = selectPack(100, 'Dungeon');
 			expect(pack).toBeDefined();
-			expect(pack?.id).toBe('forest_wolves_01');
+			expect(pack?.id).toBe('iron_vanguard_01');
 			expect(pack?.budgetCost).toBeLessThanOrEqual(100);
 			expect(pack?.biomeTags).toContain('Forest');
 		});
@@ -76,7 +76,7 @@ describe('SpawnDirector Algorithms', () => {
 
 		it('filters packs by both budget and biome', () => {
 			// Should find a pack that matches both constraints
-			const pack = selectPack(50, 'Forest');
+			const pack = selectPack(50, 'Dungeon');
 			if (pack) {
 				expect(pack.budgetCost).toBeLessThanOrEqual(50);
 				expect(pack.biomeTags).toContain('Forest');
