@@ -222,6 +222,13 @@ export function generateDungeonGraph(
         }
 
         if (tilesToTry.size() === 0) break;
+    // Only use frontier connectors for boss - these are at the TRUE end of the main path
+    // branchConnectors are side paths, not where the boss should go
+    if (endTile && frontierConnectors.size() > 0) {
+        // Sort frontier connectors by distance - place boss at farthest point on main path
+        const sortedConnectors = [...frontierConnectors].sort((a, b) => {
+            return b.distanceFromStart > a.distanceFromStart;
+        });
 
         // Try each candidate tile until one works
         let placed = false;
@@ -345,6 +352,11 @@ export function generateDungeonGraph(
 
     // === PHASE 2: Place the Boss Room at the end of main path ===
     let endNodeId: string | undefined;
+    // Fallback: if boss wasn't placed and we have branch connectors, try those
+    if (!endNodeId && endTile && branchConnectors.size() > 0) {
+        const sortedBranch = [...branchConnectors].sort((a, b) => {
+            return b.distanceFromStart > a.distanceFromStart;
+        });
 
     // Combine ALL connectors (frontier + branch) and sort by distance - place boss at farthest point
     // This ensures boss is always at max distance, regardless of whether connector was moved to branch due to failures

@@ -16,6 +16,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-06
 - ServerStorage (for Assets), ModuleScripts (for Data Profiles) (010-enemy-visuals)
 - Luau (Roblox) + Flamework (Service/Controller), @rbxts/services, @rbxts/react (for UI hooks if needed) (011-monster-spawning)
 - N/A (Runtime state only) (011-monster-spawning)
+- TypeScript (roblox-ts 2.3+) -> Luau + `@flamework/core`, `@rbxts/services`, `@rbxts/t` (012-save-player-progression)
+- Roblox DataStoreService (012-save-player-progression)
 
 - Luau (Roblox) + Roblox Engine API (`Workspace`, `ServerStorage`, `CFrame`), Vitest (for unit testing). (004-dungeon-generation)
 
@@ -35,9 +37,9 @@ tests/
 Luau (Roblox): Follow standard conventions
 
 ## Recent Changes
+- 012-save-player-progression: Added TypeScript (roblox-ts 2.3+) -> Luau + `@flamework/core`, `@rbxts/services`, `@rbxts/t`
+- 012-save-player-progression: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 011-monster-spawning: Added Luau (Roblox) + Flamework (Service/Controller), @rbxts/services, @rbxts/react (for UI hooks if needed)
-- 011-monster-spawning: Added Luau (Roblox) + Flamework (Service/Controller), @rbxts/services, @rbxts/react (for UI hooks if needed)
-- 011-monster-spawning: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
 
 <!-- MANUAL ADDITIONS START -->
