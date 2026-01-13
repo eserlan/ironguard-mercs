@@ -47,7 +47,7 @@ describe("Dungeon Generation Algorithm", () => {
             const sorted = [...mainPath].sort((a, b) => a.distanceFromStart - b.distanceFromStart);
 
             for (let i = 1; i < sorted.length; i++) {
-                expect(sorted[i].distanceFromStart).toBeGreaterThan(sorted[i - 1].distanceFromStart);
+                expect(sorted[i].distanceFromStart).toBeGreaterThan(sorted[i-1].distanceFromStart);
             }
 
             console.log(`Path distances: ${sorted.map(n => `${n.id}(${n.distanceFromStart})`).join(" -> ")}`);
@@ -64,34 +64,6 @@ describe("Dungeon Generation Algorithm", () => {
 
             // Shortest path should be exactly the main path
             expect(shortestPath).toBe(mainPathLength);
-        });
-
-        it("should have at least minPathRooms rooms on the main path (excluding Start and Boss)", () => {
-            const minPathRooms = 3;
-            const seeds = [123, 456, 789];
-            for (const seed of seeds) {
-                const graph = generateDungeonGraph(seed, tileset, { minPathRooms, minPathLength: 8 });
-
-                const mainPath = getMainPathNodes(graph);
-                const roomsOnPath = mainPath.filter(n => {
-                    const tile = tileset.find(t => t.id === n.tileId);
-                    const isRoom = tile && tile.connectors.length >= 3;
-                    return isRoom && n.id !== "Start" && n.id !== "BossRoom";
-                });
-
-                if (roomsOnPath.length < minPathRooms) {
-                    console.log(`Seed ${seed} failed room count requirement!`);
-                    console.log(`  Path: ${mainPath.map(n => `${n.id}(${n.tileId})`).join(" -> ")}`);
-                    console.log(`  Room count: ${roomsOnPath.length} / ${minPathRooms}`);
-
-                    const validation = validateDungeon(graph);
-                    console.log(`  Validation state: ${validation.valid ? "VALID" : "INVALID: " + validation.reason}`);
-                }
-
-                if (validateDungeon(graph).valid) {
-                    expect(roomsOnPath.length, `Seed ${seed} should have enough rooms`).toBeGreaterThanOrEqual(minPathRooms);
-                }
-            }
         });
     });
 
@@ -165,8 +137,7 @@ describe("Dungeon Generation Algorithm", () => {
                 console.log(`Seed ${seed}: BossRoom distance=${bossNode.distanceFromStart}, maxDistance=${maxDistance}`);
 
                 // BossRoom should be at or near the maximum distance
-                // It might be -2 if the absolute furthest slots were too tight for the boss room
-                expect(bossNode.distanceFromStart).toBeGreaterThanOrEqual(maxDistance - 2);
+                expect(bossNode.distanceFromStart).toBe(maxDistance);
             }
         });
 
@@ -254,7 +225,7 @@ describe("Dungeon Generation Algorithm", () => {
             }
 
             console.log("Pacing patterns across seeds:");
-            patterns.forEach((p, i) => console.log(`  Seed ${(i + 1) * 111}: ${p}`));
+            patterns.forEach((p, i) => console.log(`  Seed ${(i+1)*111}: ${p}`));
 
             // Check that not all patterns are identical (randomness in pacing)
             const uniquePatterns = new Set(patterns);

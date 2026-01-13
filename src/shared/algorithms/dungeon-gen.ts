@@ -12,8 +12,6 @@ export interface GraphNode {
     tags: string[];
     distanceFromStart: number; // How many steps from start on the main path
     usedConnectorDirections: ConnectorDirection[]; // Which directions have connections (after rotation)
-    encounterPackId?: string; // ID of the monster pack assigned to this room
-    monsterBudget?: number;   // Spawning budget for this room
 }
 
 export interface GraphEdge {
@@ -30,25 +28,20 @@ export interface DungeonGraph {
     startNodeId: string;
     endNodeId?: string;
     mainPathLength: number; // Number of rooms in the main path (Start -> Boss)
-    mainPathRoomCount: number; // Number of rooms (3+ connectors) on main path excluding Start and Boss
-    minPathLength: number;  // Required min total nodes
-    minPathRooms: number;   // Required min rooms
 }
 
 export interface GenerationConfig {
     targetSize: number;
     maxAttempts: number;
-    minPathLength: number; // Minimum total nodes from Start to Boss (main path)
-    minPathRooms: number;  // Minimum rooms (3+ connectors) on main path excluding Start and Boss
+    minPathLength: number; // Minimum rooms from Start to Boss (main path)
     maxBranches: number;   // Maximum side branches (0 for purely linear)
 }
 
 const DEFAULT_CONFIG: GenerationConfig = {
-    targetSize: 20,
-    maxAttempts: 800,
-    minPathLength: 14,  // At least 14 rooms to get to boss for longer exploration
-    minPathRooms: 3,    // At least 3 actual rooms (non-corridors) before boss
-    maxBranches: 4      // Allow up to 4 small side branches
+    targetSize: 12,
+    maxAttempts: 500,
+    minPathLength: 8,  // At least 8 rooms to get to boss
+    maxBranches: 3     // Allow up to 3 small side branches
 };
 
 type ConnectorWithNode = GlobalConnector & { nodeId: string; distanceFromStart: number };
@@ -69,15 +62,7 @@ export function generateDungeonGraph(
     const edges: GraphEdge[] = [];
 
     if (tileset.size() === 0) {
-        return {
-            nodes: [],
-            edges: [],
-            startNodeId: "",
-            mainPathLength: 0,
-            mainPathRoomCount: 0,
-            minPathLength: 0,
-            minPathRooms: 0
-        };
+        return { nodes: [], edges: [], startNodeId: "", mainPathLength: 0 };
     }
 
     // Get tile categories
@@ -128,14 +113,13 @@ export function generateDungeonGraph(
 
     // Build main path by always extending from the furthest point
     let pathLength = 1; // Start counts as 1
-    let mainPathRoomCount = 0; // Count of rooms with 3+ connectors (excluding Start and Boss)
     let nodeCounter = 1;
     let attempts = 0;
     const maxPathAttempts = cfg.maxAttempts;
 
     // Room pacing: track consecutive corridor placements
     let consecutiveCorridors = 0;
-    let currentPacingLimit = rng.range(1, 3); // 1-3 corridors between rooms for good variety
+    let currentPacingLimit = rng.range(1, 3); // Random 1-3 corridors before forcing a room
 
     // Store connectors that branch off main path for later
     const branchConnectors: ConnectorWithNode[] = [];
@@ -143,85 +127,118 @@ export function generateDungeonGraph(
     // Room tiles (3+ connectors) for pacing variety
     const roomTiles = pathTiles.filter((t) => t.connectors.size() >= 3);
 
-    // Corner/turning tiles for variety (tagged as Corner or has exactly 2 connectors not opposite)
-    const cornerTiles = pathTiles.filter((t) => t.tags.includes("Corner"));
-
-    // Straight corridors (2 connectors that are opposite: N-S or E-W)
-    const straightCorridors = linearTiles.filter((t) => {
-        if (t.connectors.size() !== 2) return false;
-        const dirs = t.connectors.map(c => c.direction);
-        const isNS = dirs.includes(ConnectorDirection.North) && dirs.includes(ConnectorDirection.South);
-        const isEW = dirs.includes(ConnectorDirection.East) && dirs.includes(ConnectorDirection.West);
-        return isNS || isEW;
-    });
-
-    // Track failed attempts per connector to detect dead-ends
-    const connectorFailures = new Map<string, number>();
-    const maxConnectorFailures = 5; // Remove connector after this many failures
-
-    while ((pathLength < cfg.minPathLength || mainPathRoomCount < cfg.minPathRooms) && attempts < maxPathAttempts && frontierConnectors.size() > 0) {
+    while (pathLength < cfg.minPathLength && attempts < maxPathAttempts && frontierConnectors.size() > 0) {
         attempts++;
 
         // Pick a random connector from the frontier
         const connIdx = rng.range(0, frontierConnectors.size() - 1);
         const sourceConn = frontierConnectors[connIdx];
-        const connKey = `${sourceConn.nodeId}_${sourceConn.direction}`;
 
-        // Build list of candidate tiles to try (priority order)
-        const tilesToTry: TileAsset[] = [];
-
-        // Room pacing: if we've hit the limit, prioritize rooms EXCLUSIVELY first
-        const atPacingLimit = consecutiveCorridors >= currentPacingLimit;
-
-        if (atPacingLimit && roomTiles.size() > 0) {
-            // At limit: rooms only (no corridors added below)
-            for (const tile of roomTiles) {
-                tilesToTry.push(tile);
-            }
+        // Room pacing: if we've had too many corridors, force a room
+        let availableTiles: TileAsset[];
+        if (consecutiveCorridors >= currentPacingLimit && roomTiles.size() > 0) {
+            // Force a big room
+            availableTiles = roomTiles;
         } else {
-            // Not at limit: mix of tiles
-
-            // Occasionally add a corner for variety (30% chance after 2+ corridors)
-            if (consecutiveCorridors >= 2 && cornerTiles.size() > 0 && rng.range(0, 100) < 30) {
-                for (const tile of cornerTiles) {
-                    tilesToTry.push(tile);
-                }
-            }
-
-            // Primary choice: straight corridors (most reliably avoid collisions)
-            if (straightCorridors.size() > 0) {
-                for (const tile of straightCorridors) {
-                    tilesToTry.push(tile);
-                }
-            }
-
-            // Fallback: any linear tile
-            if (linearTiles.size() > 0) {
-                for (const tile of linearTiles) {
-                    if (!tilesToTry.some(t => t.id === tile.id)) {
-                        tilesToTry.push(tile);
-                    }
-                }
-            }
-
-            // Also include rooms as optional (for variety)
-            if (roomTiles.size() > 0) {
-                for (const tile of roomTiles) {
-                    if (!tilesToTry.some(t => t.id === tile.id)) {
-                        tilesToTry.push(tile);
-                    }
-                }
-            }
+            // Prefer linear tiles but allow rooms too
+            availableTiles = linearTiles.size() > 0 ? linearTiles : pathTiles;
         }
 
-        // Last resort: any path tile (including corridors if rooms failed at pacing limit)
-        if (tilesToTry.size() === 0) {
-            for (const tile of pathTiles) {
-                tilesToTry.push(tile);
-            }
+        if (availableTiles.size() === 0) {
+            availableTiles = pathTiles; // Fallback to any path tile
+        }
+        if (availableTiles.size() === 0) break;
+
+        const candidateTile = availableTiles[rng.range(0, availableTiles.size() - 1)];
+        const placements = findValidPlacements(sourceConn, candidateTile);
+
+        if (placements.size() === 0) {
+            // Can't place here, try another connector
+            continue;
         }
 
-        if (tilesToTry.size() === 0) break;
+        const pick = placements[rng.range(0, placements.size() - 1)];
+        const newBounds = calculateBounds(pick.position, candidateTile.size, pick.rotation);
+
+        if (!checkCollision(newBounds, nodes)) {
+            // Track corridor pacing
+            if (candidateTile.connectors.size() === 2) {
+                consecutiveCorridors++;
+            } else {
+                consecutiveCorridors = 0; // Reset on room placement
+                currentPacingLimit = rng.range(1, 3); // Re-randomize for next sequence
+            }
+            const newNodeId = `Path_${nodeCounter++}`;
+            const newDistance = sourceConn.distanceFromStart + 1;
+
+            // Calculate the direction used on the new tile (rotated)
+            const usedConnector = candidateTile.connectors[pick.connectedVia];
+            const usedDirOnNewTile = rotateDirection(usedConnector.direction, pick.rotation);
+
+            const newNode: GraphNode = {
+                id: newNodeId,
+                tileId: pick.tileId,
+                position: pick.position,
+                rotation: pick.rotation,
+                bounds: newBounds,
+                tags: [...candidateTile.tags, "MainPath"],
+                distanceFromStart: newDistance,
+                usedConnectorDirections: [usedDirOnNewTile]
+            };
+            nodes.push(newNode);
+
+            // Mark the source node's connector as used
+            const sourceNode = nodes.find(n => n.id === sourceConn.nodeId);
+            if (sourceNode) {
+                sourceNode.usedConnectorDirections.push(sourceConn.direction);
+            }
+
+            edges.push({
+                from: sourceConn.nodeId,
+                to: newNodeId,
+                connectorType: sourceConn.type,
+                fromDirection: sourceConn.direction,
+                toDirection: usedDirOnNewTile
+            });
+
+            // Remove used connector from frontier
+            frontierConnectors.remove(connIdx);
+
+            // Move other connectors from this source to branch list (they're not main path)
+            const otherFromSameSource = frontierConnectors.filter(c => c.nodeId === sourceConn.nodeId);
+            for (const other of otherFromSameSource) {
+                branchConnectors.push(other);
+                const idx = frontierConnectors.indexOf(other);
+                if (idx >= 0) frontierConnectors.remove(idx);
+            }
+
+            // Add new node's connectors to frontier (except the one we used)
+            for (let i = 0; i < candidateTile.connectors.size(); i++) {
+                if (i === pick.connectedVia) continue;
+
+                const c = candidateTile.connectors[i];
+                const rDir = rotateDirection(c.direction, pick.rotation);
+                const rOffset = rotateVec3(c.localPosition, pick.rotation);
+                frontierConnectors.push({
+                    position: {
+                        x: pick.position.x + rOffset.x,
+                        y: pick.position.y + rOffset.y,
+                        z: pick.position.z + rOffset.z
+                    },
+                    direction: rDir,
+                    type: c.type,
+                    nodeId: newNodeId,
+                    distanceFromStart: newDistance
+                });
+            }
+
+            pathLength++;
+        }
+    }
+
+    // === PHASE 2: Place the Boss Room at the end of main path ===
+    let endNodeId: string | undefined;
+
     // Only use frontier connectors for boss - these are at the TRUE end of the main path
     // branchConnectors are side paths, not where the boss should go
     if (endTile && frontierConnectors.size() > 0) {
@@ -230,140 +247,7 @@ export function generateDungeonGraph(
             return b.distanceFromStart > a.distanceFromStart;
         });
 
-        // Try each candidate tile until one works
-        let placed = false;
-        for (const candidateTile of tilesToTry) {
-            const placements = findValidPlacements(sourceConn, candidateTile);
-            if (placements.size() === 0) continue;
-
-            // Try all valid placements for this tile
-            for (const pick of placements) {
-                const newBounds = calculateBounds(pick.position, candidateTile.size, pick.rotation);
-                if (checkCollision(newBounds, nodes)) continue;
-                // Track corridor pacing
-                if (candidateTile.connectors.size() === 2) {
-                    consecutiveCorridors++;
-                } else {
-                    consecutiveCorridors = 0; // Reset on room placement
-                    mainPathRoomCount++;
-                    currentPacingLimit = rng.range(1, 3); // Re-randomize for next sequence
-                }
-                const newNodeId = `Path_${nodeCounter++}`;
-                const newDistance = sourceConn.distanceFromStart + 1;
-
-                // Calculate the direction used on the new tile (rotated)
-                const usedConnector = candidateTile.connectors[pick.connectedVia];
-                const usedDirOnNewTile = rotateDirection(usedConnector.direction, pick.rotation);
-
-                const newNode: GraphNode = {
-                    id: newNodeId,
-                    tileId: pick.tileId,
-                    position: pick.position,
-                    rotation: pick.rotation,
-                    bounds: newBounds,
-                    tags: [...candidateTile.tags, "MainPath"],
-                    distanceFromStart: newDistance,
-                    usedConnectorDirections: [usedDirOnNewTile]
-                };
-                nodes.push(newNode);
-
-                // Mark the source node's connector as used
-                const sourceNode = nodes.find(n => n.id === sourceConn.nodeId);
-                if (sourceNode) {
-                    sourceNode.usedConnectorDirections.push(sourceConn.direction);
-                }
-
-                edges.push({
-                    from: sourceConn.nodeId,
-                    to: newNodeId,
-                    connectorType: sourceConn.type,
-                    fromDirection: sourceConn.direction,
-                    toDirection: usedDirOnNewTile
-                });
-
-                // Remove used connector from frontier
-                frontierConnectors.remove(connIdx);
-
-                // Move other connectors from this source to branch list (they're not main path)
-                const otherFromSameSource = frontierConnectors.filter(c => c.nodeId === sourceConn.nodeId);
-                for (const other of otherFromSameSource) {
-                    branchConnectors.push(other);
-                    const idx = frontierConnectors.indexOf(other);
-                    if (idx >= 0) frontierConnectors.remove(idx);
-                }
-
-                // Add new node's connectors to frontier (except the one we used)
-                // For linear paths, only keep ONE connector in frontier to maintain strict linearity
-                const unusedConnectorIndices: number[] = [];
-                for (let i = 0; i < candidateTile.connectors.size(); i++) {
-                    if (i !== pick.connectedVia) unusedConnectorIndices.push(i);
-                }
-
-                // Either add all to frontier (branching allowed) or just one (linear)
-                // WE NOW ALWAYS ENFORCE LINEAR MAIN PATH for distance reliability and pacing
-                // Side branches are handled in Phase 3
-                const indicesToFrontier = unusedConnectorIndices.size() > 0
-                    ? [unusedConnectorIndices[rng.range(0, unusedConnectorIndices.size() - 1)]]
-                    : [];
-
-                for (const i of unusedConnectorIndices) {
-                    const c = candidateTile.connectors[i];
-                    const rDir = rotateDirection(c.direction, pick.rotation);
-                    const rOffset = rotateVec3(c.localPosition, pick.rotation);
-                    const newConn: ConnectorWithNode = {
-                        position: {
-                            x: pick.position.x + rOffset.x,
-                            y: pick.position.y + rOffset.y,
-                            z: pick.position.z + rOffset.z
-                        },
-                        direction: rDir,
-                        type: c.type,
-                        nodeId: newNodeId,
-                        distanceFromStart: newDistance
-                    };
-
-                    if (indicesToFrontier.includes(i)) {
-                        frontierConnectors.push(newConn);
-                    } else {
-                        branchConnectors.push(newConn);
-                    }
-                }
-
-                pathLength++;
-                placed = true;
-                connectorFailures.delete(connKey); // Reset failures on success
-                break; // Break inner for loop
-            }
-            if (placed) break; // Break outer for loop
-        }
-
-        // If nothing placed from this connector, track failure
-        if (!placed) {
-            const failures = (connectorFailures.get(connKey) ?? 0) + 1;
-            connectorFailures.set(connKey, failures);
-
-            // Remove dead-end connectors to avoid wasting attempts
-            if (failures >= maxConnectorFailures) {
-                branchConnectors.push(sourceConn);
-                frontierConnectors.remove(connIdx);
-            }
-        }
-    }
-
-    // === PHASE 2: Place the Boss Room at the end of main path ===
-    let endNodeId: string | undefined;
-    // Fallback: if boss wasn't placed and we have branch connectors, try those
-    if (!endNodeId && endTile && branchConnectors.size() > 0) {
-        const sortedBranch = [...branchConnectors].sort((a, b) => {
-            return b.distanceFromStart > a.distanceFromStart;
-        });
-
-    // Combine ALL connectors (frontier + branch) and sort by distance - place boss at farthest point
-    // This ensures boss is always at max distance, regardless of whether connector was moved to branch due to failures
-    const allConnectorsForBoss = sortNodesDescending([...frontierConnectors, ...branchConnectors]);
-
-    if (endTile && allConnectorsForBoss.size() > 0) {
-        for (const sourceConn of allConnectorsForBoss) {
+        for (const sourceConn of sortedConnectors) {
             const placements = findValidPlacements(sourceConn, endTile);
 
             for (const pick of placements) {
@@ -401,10 +285,61 @@ export function generateDungeonGraph(
                         toDirection: usedDirOnBoss
                     });
 
-                    // Remove used connector from its list
-                    let idx = frontierConnectors.indexOf(sourceConn);
+                    // Remove used connector
+                    const idx = frontierConnectors.indexOf(sourceConn);
                     if (idx >= 0) frontierConnectors.remove(idx);
-                    idx = branchConnectors.indexOf(sourceConn);
+
+                    pathLength++;
+                    break;
+                }
+            }
+            if (endNodeId) break;
+        }
+    }
+
+    // Fallback: if boss wasn't placed and we have branch connectors, try those
+    if (!endNodeId && endTile && branchConnectors.size() > 0) {
+        const sortedBranch = [...branchConnectors].sort((a, b) => {
+            return b.distanceFromStart > a.distanceFromStart;
+        });
+
+        for (const sourceConn of sortedBranch) {
+            const placements = findValidPlacements(sourceConn, endTile);
+
+            for (const pick of placements) {
+                const newBounds = calculateBounds(pick.position, endTile.size, pick.rotation);
+                if (!checkCollision(newBounds, nodes)) {
+                    endNodeId = "BossRoom";
+
+                    const usedConnector = endTile.connectors[pick.connectedVia];
+                    const usedDirOnBoss = rotateDirection(usedConnector.direction, pick.rotation);
+
+                    const endNode: GraphNode = {
+                        id: endNodeId,
+                        tileId: pick.tileId,
+                        position: pick.position,
+                        rotation: pick.rotation,
+                        bounds: newBounds,
+                        tags: [...endTile.tags, "BossRoom", "MainPath"],
+                        distanceFromStart: sourceConn.distanceFromStart + 1,
+                        usedConnectorDirections: [usedDirOnBoss]
+                    };
+                    nodes.push(endNode);
+
+                    const sourceNode = nodes.find(n => n.id === sourceConn.nodeId);
+                    if (sourceNode) {
+                        sourceNode.usedConnectorDirections.push(sourceConn.direction);
+                    }
+
+                    edges.push({
+                        from: sourceConn.nodeId,
+                        to: endNodeId,
+                        connectorType: sourceConn.type,
+                        fromDirection: sourceConn.direction,
+                        toDirection: usedDirOnBoss
+                    });
+
+                    const idx = branchConnectors.indexOf(sourceConn);
                     if (idx >= 0) branchConnectors.remove(idx);
 
                     pathLength++;
@@ -415,7 +350,7 @@ export function generateDungeonGraph(
         }
     }
 
-    // Move remaining frontier connectors to branch list for Phase 3
+    // Move remaining frontier connectors to branch list
     for (const c of frontierConnectors) {
         branchConnectors.push(c);
     }
@@ -475,27 +410,6 @@ export function generateDungeonGraph(
             });
 
             branchConnectors.remove(connIdx);
-
-            // Add new branch connectors to the list for continued branching
-            for (let i = 0; i < candidateTile.connectors.size(); i++) {
-                if (i !== pick.connectedVia) {
-                    const c = candidateTile.connectors[i];
-                    const rDir = rotateDirection(c.direction, pick.rotation);
-                    const rOffset = rotateVec3(c.localPosition, pick.rotation);
-                    branchConnectors.push({
-                        position: {
-                            x: pick.position.x + rOffset.x,
-                            y: pick.position.y + rOffset.y,
-                            z: pick.position.z + rOffset.z
-                        },
-                        direction: rDir,
-                        type: c.type,
-                        nodeId: newNodeId,
-                        distanceFromStart: -1
-                    });
-                }
-            }
-
             branchRoomsAdded++;
             branchCount++;
         } else {
@@ -510,10 +424,7 @@ export function generateDungeonGraph(
         edges,
         startNodeId: "Start",
         endNodeId,
-        mainPathLength: mainPathNodes.size(),
-        mainPathRoomCount: mainPathRoomCount,
-        minPathLength: cfg.minPathLength,
-        minPathRooms: cfg.minPathRooms
+        mainPathLength: mainPathNodes.size()
     };
 }
 
@@ -579,18 +490,6 @@ export function validateDungeon(graph: DungeonGraph): { valid: boolean; reason?:
 
     if (!graph.endNodeId) {
         return { valid: false, reason: "No end room placed" };
-    }
-
-    const mainPath = getMainPathNodes(graph);
-
-    // Total nodes on main path (including Start and Boss)
-    if (mainPath.size() < graph.minPathLength) {
-        return { valid: false, reason: `Main path too short: ${mainPath.size()} < ${graph.minPathLength}` };
-    }
-
-    // Actual rooms (3+ connectors) on main path
-    if (graph.mainPathRoomCount < graph.minPathRooms) {
-        return { valid: false, reason: `Not enough rooms on main path: ${graph.mainPathRoomCount} < ${graph.minPathRooms}` };
     }
 
     const paths = findAllPaths(graph, 1);
@@ -699,22 +598,4 @@ function rotateVec3(v: Vec3, rotations: number): Vec3 {
         z = oldX;
     }
     return { x, y: v.y, z };
-}
-
-/**
- * Cross-environment compatible sort helper (Descending)
- * Works in both Node.js (Vitest) and Roblox (roblox-ts) by avoiding Array.sort logic differences
- */
-export function sortNodesDescending<T extends { distanceFromStart: number }>(nodes: T[]): T[] {
-    const sorted = [...nodes];
-    for (let i = 1; i < sorted.size(); i++) {
-        let j = i;
-        while (j > 0 && sorted[j - 1].distanceFromStart < sorted[j].distanceFromStart) {
-            const temp = sorted[j];
-            sorted[j] = sorted[j - 1];
-            sorted[j - 1] = temp;
-            j--;
-        }
-    }
-    return sorted;
 }

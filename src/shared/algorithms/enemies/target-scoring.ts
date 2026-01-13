@@ -15,8 +15,7 @@ export function calculateTargetScore(
 	let score = 0;
 
 	// 1. Proximity (Base)
-	// Larger falloff (1000 studs) so far-away enemies still have a clear target preference
-	score += (1000 - math.min(1000, candidate.distance)) * 0.1;
+	score += (100 - math.min(100, candidate.distance)) * 0.5;
 
 	// 2. Threat Bias (Multiplier influence)
 	score += candidate.threatBias * 1.5;
@@ -26,13 +25,9 @@ export function calculateTargetScore(
 		if (candidate.isIsolated) score += 50;
 		if (candidate.isLowHp) score += 30;
 	} else if (role === EnemyRole.Artillery) {
+		// Artillery prefers clumps (handled outside or via distance/avg pos)
+		// For single score, just avoid close targets
 		if (candidate.distance < 20) score -= 40;
-	} else if (role === EnemyRole.Tank) {
-		// Tanks prioritize keeping threat (Bias) over distance
-		score += candidate.threatBias * 2.0;
-	} else if (role === EnemyRole.Bruiser) {
-		// Bruisers are simple: stick to the closest target
-		score += (50 - math.min(50, candidate.distance)) * 1.0;
 	}
 
 	return score;
