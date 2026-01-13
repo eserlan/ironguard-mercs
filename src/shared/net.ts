@@ -3,6 +3,7 @@ import { MatchState } from "./domain/run";
 import { AbilityIntent } from "./domain/abilities/types";
 import { CombatIntent, CombatEvent } from "./domain/combat/types";
 import { PartyRoom } from "./domain/party/party-types";
+import { PlayerProfile } from "./data/profiles";
 
 interface ClientToServerEvents {
 	RequestStartRun(seed?: number): void;
@@ -24,6 +25,7 @@ interface ClientToServerEvents {
 }
 
 interface ServerToClientEvents {
+	ProfileUpdated(profile: PlayerProfile): void;
 	RunStateChanged(state: MatchState): void;
 	CombatOccurred(event: CombatEvent): void;
 	Results(data: unknown): void;
