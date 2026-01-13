@@ -9,6 +9,7 @@ import {
     getMainPathNodes,
     getSetSize
 } from "./dungeon-gen";
+
 import { TileRegistry } from "../domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../domain/dungeon/manifest";
 
