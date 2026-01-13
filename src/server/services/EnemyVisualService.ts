@@ -67,7 +67,51 @@ export class EnemyVisualService implements OnStart {
             }
         }
 
+        // 3. Apply Spooky Eyes (Neon Attachments)
+        if (profile.eyeColor) {
+            this.attachEyes(rig, profile.eyeColor);
+        }
+
         Log.debug(`Applied construct visuals (scale: ${profile.scale ? "yes" : "no"}) to ${rig.Name}`);
+    }
+
+    private attachEyes(rig: Model, color: Color3) {
+        const head = rig.FindFirstChild("Head") as BasePart;
+        if (!head) return;
+
+        // Create two eyes relative to the head
+        const eyePositions = [
+            new Vector3(0.2, 0.2, -0.6), // Right eye (relative to head center)
+            new Vector3(-0.2, 0.2, -0.6), // Left eye
+        ];
+
+        for (const pos of eyePositions) {
+            const eye = new Instance("Part");
+            eye.Name = "SpookyEye";
+            eye.Shape = Enum.PartType.Ball;
+            eye.Size = new Vector3(0.15, 0.15, 0.15);
+            eye.Color = color;
+            eye.Material = Enum.Material.Neon;
+            eye.CanCollide = false;
+            eye.Massless = true;
+            eye.Parent = rig;
+
+            const weld = new Instance("WeldConstraint");
+            weld.Part0 = head;
+            weld.Part1 = eye;
+            weld.Parent = eye;
+
+            // Positioning: eyes are in front of the head
+            // In Roblox R15, front is -Z
+            eye.CFrame = head.CFrame.mul(new CFrame(pos));
+
+            // Add a small light for extra spookiness
+            const light = new Instance("PointLight");
+            light.Color = color;
+            light.Range = 4;
+            light.Brightness = 2;
+            light.Parent = eye;
+        }
     }
 
     private attachWeapon(rig: Model, weaponKey?: string) {

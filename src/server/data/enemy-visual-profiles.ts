@@ -37,5 +37,6 @@ export const VisualProfiles: Record<string, EnemyVisualProfile> = {
 			width: 1.6,
 			depth: 1.6,
 		},
+		eyeColor: Color3.fromRGB(255, 0, 0),
 	},
 };

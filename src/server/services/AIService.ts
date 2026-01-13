@@ -4,6 +4,7 @@ import { TargetingBiasService } from "./TargetingBiasService";
 import { calculateTargetScore, TargetCandidate } from "../../shared/algorithms/enemies/target-scoring";
 import { isIsolated, isLowHp } from "../../shared/algorithms/enemies/targeting-helpers";
 import { EnemyRole } from "../../shared/domain/enemies/enemy-types";
+import { calculateSeparationForce } from "../../shared/algorithms/enemies/formation-logic";
 
 @Service({})
 export class AIService implements OnStart {
@@ -12,15 +13,13 @@ export class AIService implements OnStart {
 	constructor(private biasService: TargetingBiasService) { }
 
 	onStart() {
-		Log.info("AIService initialized");
-
 		// Delay tick loop start to allow Rojo to sync modules
 		task.spawn(() => {
 			// Wait a few seconds for ReplicatedStorage to fully sync
 			task.wait(3);
-			Log.info("AIService tick loop starting");
+			// Log.info("AIService tick loop starting"); // Silenced
 
-			while (task.wait(0.5)) {
+			while (task.wait(0.1)) { // High-frequency steering (10Hz)
 				this.tick();
 			}
 		});
@@ -92,7 +91,6 @@ export class AIService implements OnStart {
 					const distance = targetPos.sub(myPos).Magnitude;
 
 					// Stopping distance: don't stand on top of the player
-					// Add a bit of random "personal space" so they don't overlap (6-10 studs)
 					const personalSpace = (enemy.GetAttribute("StoppingDistance") as number) ?? (6 + math.random() * 4);
 					if (!enemy.GetAttribute("StoppingDistance")) {
 						enemy.SetAttribute("StoppingDistance", personalSpace);
@@ -101,17 +99,51 @@ export class AIService implements OnStart {
 					const instanceId = enemy.GetAttribute("InstanceId") ?? "???";
 					const nameWithId = `${enemy.Name} [${instanceId}]`;
 
-					if (distance > personalSpace) {
-						Log.debug(`[AIService] ${nameWithId} moving to ${bestTarget.Name} (Score: ${math.floor(bestScore)}, Dist: ${math.floor(distance)})`);
-						humanoid.MoveTo(targetPos);
+					// 1. Calculate Separation Force (Avoidance)
+					// Only use horizontal neighbors to avoid vertical interference
+					const neighborPositions: Vector3[] = [];
+					for (const other of this.enemies) {
+						if (other === enemy) continue;
+						const otherHumanoid = other.FindFirstChildOfClass("Humanoid");
+						if (otherHumanoid && otherHumanoid.Health > 0) {
+							neighborPositions.push(other.GetPivot().Position);
+						}
+					}
+
+					const pursuitDir = targetPos.sub(myPos).Unit;
+					const horizontalPursuit = new Vector3(pursuitDir.X, 0, pursuitDir.Z).Unit;
+
+					// 1. Calculate Separation Force (Avoidance)
+					// Now includes Tangential Biasing to prevent back-and-forth jitter
+					const separationVec = calculateSeparationForce(myPos, neighborPositions, horizontalPursuit);
+
+					// 2. Stable Docking Zone (Hysteresis)
+					// If we are within 1.5 studs of our goal, we stop pursuing.
+					// This prevents the constant "micro-adjustment" loop.
+					const deadzone = 1.5;
+					const distError = distance - personalSpace;
+
+					let pursuitStrength = 0;
+					if (math.abs(distError) > deadzone) {
+						// Ramp pursuit back up once outside the deadzone
+						pursuitStrength = math.clamp(distError / 5, -1.0, 1.0);
+					}
+
+					// 3. Combined Steering Direction
+					const combinedDir = horizontalPursuit.mul(pursuitStrength).add(separationVec).Unit;
+
+					// If we are in the deadzone and there's no major separation push, HOLD POSITION
+					if (math.abs(distError) <= deadzone && separationVec.Magnitude < 0.2) {
+						humanoid.MoveTo(myPos); // Hard stop
 					} else {
-						Log.debug(`[AIService] ${nameWithId} reached target ${bestTarget.Name}, stopping (Dist: ${math.floor(distance)})`);
-						humanoid.MoveTo(myPos); // Stop moving
+						// Reduced look-ahead to 5 studs for tighter responsiveness at 10Hz
+						const moveTarget = myPos.add(combinedDir.mul(5));
+						humanoid.MoveTo(moveTarget);
 					}
 				}
-			} else {
-				const instanceId = enemy.GetAttribute("InstanceId") ?? "???";
-				Log.debug(`[AIService] ${enemy.Name} [${instanceId}] found no valid targets`);
+			}
+			else {
+				// No targets found
 			}
 		}
 	}
