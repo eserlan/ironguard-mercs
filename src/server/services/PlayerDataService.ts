@@ -18,7 +18,7 @@ export class PlayerDataService implements OnStart, OnInit {
 			// Wait a bit to ensure requests fire (DataStore requests yield, so the loop + internal parallelism matters)
 			// In a real scenario, we might want to use Promise.all or similar, but synchronous loop triggering async saves is common in BindToClose.
 			// However, BindToClose has a 30s limit.
-			task.wait(3); 
+			task.wait(3);
 		});
 	}
 
@@ -92,14 +92,22 @@ export class PlayerDataService implements OnStart, OnInit {
 		if (!profile) return;
 
 		const key = tostring(userId);
-		
+
 		try {
 			this.dataStore.UpdateAsync(key, (oldData) => {
 				const oldProfile = oldData as PlayerProfile | undefined;
-				
-				// Session Locking Check
+
+				// Session Locking Check: reject if another session owns this data
 				if (oldProfile && oldProfile.ActiveSessionId !== undefined) {
-					// Logic as defined previously
+					if (oldProfile.ActiveSessionId !== this.serverSessionId) {
+						// Another server owns this session - check if stale (>10 min)
+						const lastUpdate = oldProfile.LastUpdateTimestamp ?? 0;
+						const staleThreshold = 600; // 10 minutes
+						if (os.time() - lastUpdate < staleThreshold) {
+							warn(`[PlayerDataService] Session conflict for ${player.Name}, skipping save`);
+							return $tuple(undefined); // Abort save
+						}
+					}
 				}
 
 				const updatedProfile: PlayerProfile = {
@@ -108,8 +116,8 @@ export class PlayerDataService implements OnStart, OnInit {
 					LastUpdateTimestamp: os.time(),
 					ActiveSessionId: this.serverSessionId,
 				};
-				
-				return updatedProfile;
+
+				return $tuple(updatedProfile);
 			});
 			print(`[PlayerDataService] Saved profile for ${player.Name}`);
 		} catch (err) {
@@ -152,7 +160,7 @@ export class PlayerDataService implements OnStart, OnInit {
 		// Level 1 -> 2 needs 100 XP
 		// Level 2 -> 3 needs 200 XP
 		let xpToNext = 100 * newLevel;
-		
+
 		while (newXP >= xpToNext) {
 			newXP -= xpToNext;
 			newLevel++;
@@ -171,9 +179,14 @@ export class PlayerDataService implements OnStart, OnInit {
 		const profile = this.profiles.get(player.UserId);
 		if (!profile) return;
 
-		profile.Global = {
-			...profile.Global,
-			LastSelectedClassId: classId,
+		// Replace entire profile to avoid mutating readonly Global
+		const updatedProfile: PlayerProfile = {
+			...profile,
+			Global: {
+				...profile.Global,
+				LastSelectedClassId: classId,
+			},
 		};
+		this.profiles.set(player.UserId, updatedProfile);
 	}
 }
