@@ -59,9 +59,21 @@ We will implement a custom `PlayerDataService` to manage persistent player data.
 
 ## Phase 6: Polish & Cross-Cutting
 
-- [x] T020 [P] Implement client-side listener in `PlayerDataController` to receive profile updates (e.g. for UI) in `src/client/controllers/PlayerDataController.ts`
+- [ ] T020 [P] Implement client-side listener in `PlayerDataController` to receive profile updates (e.g. for UI) in `src/client/controllers/PlayerDataController.ts`
 - [x] T021 Add specific error logging for DataStore limits/throttling in `src/server/services/PlayerDataService.ts`
 - [x] T022 Review serialization to ensure no complex objects (only IDs) are stored in `src/server/services/PlayerDataService.ts`
+
+## Phase 7: PlayerDataController Implementation
+
+**Goal**: Complete client-side sync so UI can display player progression data.
+**Test Criteria**: Client receives profile updates on join and on data changes; UI can read current level/XP/loadout.
+
+- [ ] T023 [P] Define `ProfileUpdated` network event in `src/shared/net.ts` for server→client profile sync
+- [ ] T024 [P] Add `PlayerDataService.sendProfileToClient(player)` method to fire profile data to client
+- [ ] T025 [P] Call `sendProfileToClient` after load and after any mutation (setClassLoadout, addXP, setSelectedClass)
+- [ ] T026 [P] Implement `PlayerDataController.onProfileUpdated(profile)` handler to store local copy
+- [ ] T027 [P] Expose `PlayerDataController.getProfile()` API for UI components to read current data
+- [ ] T028 [P] Add unit tests for `PlayerDataController` profile caching in `src/client/controllers/PlayerDataController.spec.ts`
 
 ## Parallel Execution Examples
 
