@@ -12,6 +12,8 @@ export interface GraphNode {
     tags: string[];
     distanceFromStart: number; // How many steps from start on the main path
     usedConnectorDirections: ConnectorDirection[]; // Which directions have connections (after rotation)
+    encounterPackId?: string; // ID of the monster pack assigned to this room
+    monsterBudget?: number;   // Total budget for monsters in this room
 }
 
 export interface GraphEdge {
@@ -598,4 +600,23 @@ function rotateVec3(v: Vec3, rotations: number): Vec3 {
         z = oldX;
     }
     return { x, y: v.y, z };
+}
+
+/**
+ * Cross-environment compatible sort helper (Descending by distanceFromStart)
+ * Works in both Node.js (Vitest) and Roblox (roblox-ts) by using insertion sort
+ */
+export function sortNodesDescending<T extends { distanceFromStart: number }>(nodes: T[]): T[] {
+    const sorted = [...nodes];
+    const len = sorted.size();
+    for (let i = 1; i < len; i++) {
+        let j = i;
+        while (j > 0 && sorted[j - 1].distanceFromStart < sorted[j].distanceFromStart) {
+            const temp = sorted[j];
+            sorted[j] = sorted[j - 1];
+            sorted[j - 1] = temp;
+            j--;
+        }
+    }
+    return sorted;
 }
