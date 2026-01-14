@@ -34,6 +34,19 @@ export function Lobby() {
 		};
 	}, []);
 
+	// NEW: Auto-select character if one is already active (restored from persistence)
+	useEffect(() => {
+		if (state.activeStation === "Roster Altar" && state.activeStation !== undefined) {
+			const member = state.room?.members.find((m) => m.playerId === tostring(Players.LocalPlayer.UserId));
+			const selectedId = member?.selectedMercenaryId ?? state.soloMercenaryId;
+
+			// If we have a selected class and currently haven't picked one in the temp UI
+			if (selectedId && !tempSelectedClass) {
+				setTempSelectedClass(selectedId);
+			}
+		}
+	}, [state.activeStation, state.room, state.soloMercenaryId, tempSelectedClass]);
+
 	const abilityController = useMemo(() => Dependency<AbilityController>(), []);
 
 	const localPlayerId = tostring(Players.LocalPlayer.UserId);
@@ -96,6 +109,7 @@ export function Lobby() {
 							) : (
 								<AbilitySelector
 									classId={tempSelectedClass}
+									initialLoadout={state.abilityLoadout}
 									onConfirm={(slots) => {
 										controller.selectMercenary(tempSelectedClass);
 										controller.setLoadout(slots);
@@ -108,6 +122,7 @@ export function Lobby() {
 							selectedMerc ? (
 								<AbilitySelector
 									classId={selectedMerc}
+									initialLoadout={state.abilityLoadout}
 									onConfirm={(slots) => {
 										controller.setLoadout(slots);
 										controller.setStation(LobbyState.Idle);
