@@ -6,12 +6,16 @@ import { Log } from "shared/utils/log";
 
 interface AbilitySelectorProps {
 	classId: string;
+	initialLoadout?: { slotIndex: number; abilityId: string }[];
 	onConfirm: (loadout: { slotIndex: number; abilityId: string }[]) => void;
 }
 
-export function AbilitySelector({ classId, onConfirm }: AbilitySelectorProps) {
+export function AbilitySelector({ classId, initialLoadout, onConfirm }: AbilitySelectorProps) {
 	const classConfig = ClassRegistry.get(classId);
-	const [selectedAbilities, setSelectedAbilities] = React.useState<string[]>([]);
+
+	// Pre-populate from initialLoadout if provided
+	const defaultAbilities = (initialLoadout ?? []).map((s) => s.abilityId);
+	const [selectedAbilities, setSelectedAbilities] = React.useState<string[]>(defaultAbilities);
 
 	const [hoveredAbilityId, setHoveredAbilityId] = React.useState<string | undefined>();
 	const hoveredAbility = hoveredAbilityId ? AbilityRegistry.get(hoveredAbilityId) : undefined;
