@@ -108,13 +108,49 @@ if (!(String.prototype as any).find) {
 }
 
 // Polyfill for Roblox typeIs
-(global as any).typeIs = (value: any, type: string) => {
+(global as any).typeIs = (value: unknown, type: string): boolean => {
+    // Primitive-like checks (Luau / Roblox-compatible where applicable)
     if (type === "function") return typeof value === "function";
     if (type === "number") return typeof value === "number";
     if (type === "string") return typeof value === "string";
     if (type === "boolean") return typeof value === "boolean";
+    // Luau's type() can return "table" for plain objects; keep this behavior for tests
     if (type === "table") return typeof value === "object" && value !== null;
     if (type === "nil") return value === undefined || value === null;
+
+    // Instance / class-like checks for Node test environment
+    if (typeof value === "object" && value !== null) {
+        const v = value as {
+            ClassName?: string;
+            IsA?: (t: string) => boolean;
+            constructor?: { name?: string };
+        };
+
+        // Generic Instance check: anything that looks like a Roblox Instance mock
+        if (type === "Instance") {
+            return typeof v.ClassName === "string" || typeof v.IsA === "function";
+        }
+
+        // Prefer IsA-style checks if available (allows inheritance semantics in mocks)
+        if (typeof v.IsA === "function") {
+            try {
+                return !!v.IsA(type);
+            } catch {
+                // Fall through to other heuristics if the mock throws
+            }
+        }
+
+        // Direct ClassName comparison for simple mocks
+        if (typeof v.ClassName === "string") {
+            return v.ClassName === type;
+        }
+
+        // Fallback: compare constructor name (works for many custom classes, e.g. MockVector3)
+        if (v.constructor && typeof v.constructor.name === "string") {
+            return v.constructor.name === type;
+        }
+    }
+
     return false;
 };
 

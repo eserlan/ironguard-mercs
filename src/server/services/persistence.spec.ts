@@ -6,11 +6,6 @@ const mockBindableEvent = {
     Fire: vi.fn(),
 };
 
-const mockSignal = {
-    connect: vi.fn(),
-    fire: vi.fn(),
-};
-
 // Mock Dependencies
 vi.mock("@flamework/core", () => ({
     Service: () => () => { },
@@ -77,12 +72,12 @@ describe("Persistence Integration", () => {
             }
         });
 
-        // Mock Instance as a class/constructor
-        class MockInstance {
-            constructor(className: string) {
-                if (className === "BindableEvent") return mockBindableEvent;
-                return {};
+        // Mock Instance as a function-based constructor replacement
+        function MockInstance(className: string) {
+            if (className === "BindableEvent") {
+                return mockBindableEvent;
             }
+            return {};
         }
         global.Instance = MockInstance as any;
 
