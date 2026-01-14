@@ -66,7 +66,7 @@ export function generateDungeonGraph(
         lastResult = result;
 
         // Success criteria: reached minimum length AND placed a boss room
-        if (result.mainPathLength >= cfg.minPathLength && result.endNodeId) {
+        if ((result.mainPathLength ?? 0) >= (cfg.minPathLength ?? 8) && result.endNodeId) {
             return result;
         }
     }
@@ -151,14 +151,13 @@ function _generateDungeonGraph(
     // Room tiles (3+ connectors) for pacing variety
     const roomTiles = pathTiles.filter((t) => t.connectors.size() >= 3);
 
-    while (pathLength < cfg.minPathLength && attempts < maxPathAttempts) {
+    while (pathLength < (cfg.minPathLength ?? 8) && attempts < maxPathAttempts) {
         if (frontierConnectors.size() === 0) {
             // BACKTRACK: If frontier is empty, take the furthest branch point and promote it
             if (branchConnectors.size() > 0) {
                 // Find furthest branch point (descending order - highest distance first)
+                branchConnectors.sort((a, b) => (a.distanceFromStart ?? 0) > (b.distanceFromStart ?? 0));
 
-
-                branchConnectors.sort((a, b) => a.distanceFromStart > b.distanceFromStart);
                 frontierConnectors.push(branchConnectors.remove(0)!);
             } else {
                 break; // Truly stuck
@@ -294,7 +293,7 @@ function _generateDungeonGraph(
     if (endTile && frontierConnectors.size() > 0) {
         // Sort frontier connectors by distance - place boss at farthest point on main path
         const sortedConnectors = [...frontierConnectors].sort((a, b) => {
-            return a.distanceFromStart > b.distanceFromStart;
+            return (a.distanceFromStart ?? 0) > (b.distanceFromStart ?? 0);
         });
 
         for (const sourceConn of sortedConnectors) {
@@ -349,7 +348,7 @@ function _generateDungeonGraph(
 
     // Fallback: if boss wasn't placed, try ALL other connectors including exhausted ones
     if (!endNodeId && endTile) {
-        const allFallback = [...branchConnectors, ...exhaustedConnectors].sort((a, b) => a.distanceFromStart > b.distanceFromStart);
+        const allFallback = [...branchConnectors, ...exhaustedConnectors].sort((a, b) => (a.distanceFromStart ?? 0) > (b.distanceFromStart ?? 0));
 
         for (const sourceConn of allFallback) {
             const placements = findValidPlacements(sourceConn, endTile);
@@ -400,13 +399,13 @@ function _generateDungeonGraph(
 
     // === PHASE 3: Optionally add side branches (limited) ===
     let branchCount = 0;
-    const maxBranchRooms = cfg.targetSize - nodes.size();
+    const maxBranchRooms = (cfg.targetSize ?? 12) - nodes.size();
     let branchRoomsAdded = 0;
 
     // Use both remaining frontier and previous branch exits
     const potentialBranches = [...frontierConnectors, ...branchConnectors];
 
-    while (branchCount < cfg.maxBranches && potentialBranches.size() > 0 && branchRoomsAdded < maxBranchRooms) {
+    while (branchCount < (cfg.maxBranches ?? 3) && potentialBranches.size() > 0 && branchRoomsAdded < maxBranchRooms) {
         const connIdx = rng.range(0, potentialBranches.size() - 1);
         const sourceConn = potentialBranches[connIdx];
 
@@ -511,7 +510,7 @@ function _generateDungeonGraph(
             if (branchIdx >= 0) node.tags.remove(branchIdx);
         } else {
             // If we want 0 branches, or it was meant to be main path but failed, consider removal
-            if (cfg.maxBranches === 0) {
+            if ((cfg.maxBranches ?? 3) === 0) {
                 nodesToRemove.add(node.id);
             } else {
                 // Remove MainPath tag if it was there
@@ -777,7 +776,7 @@ export function sortNodesDescending<T extends { distanceFromStart: number }>(nod
     const len = sorted.size();
     for (let i = 1; i < len; i++) {
         let j = i;
-        while (j > 0 && sorted[j - 1].distanceFromStart < sorted[j].distanceFromStart) {
+        while (j > 0 && (sorted[j - 1].distanceFromStart ?? 0) < (sorted[j].distanceFromStart ?? 0)) {
             const temp = sorted[j];
             sorted[j] = sorted[j - 1];
             sorted[j - 1] = temp;
@@ -801,8 +800,6 @@ export function getSetSize(s: unknown): number {
         return maybeMethod.size();
     }
 
-    // Fallback to property (Node/JS)
-    return (s as SetWithSizeProp).size;
-}
-
+    // Fallback to property (Node/JS), with nil guard
+    return (s as SetWithSizeProp).size ?? 0;
 }
