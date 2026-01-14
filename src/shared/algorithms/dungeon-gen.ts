@@ -155,7 +155,7 @@ function _generateDungeonGraph(
         if (frontierConnectors.size() === 0) {
             // BACKTRACK: If frontier is empty, take the furthest branch point and promote it
             if (branchConnectors.size() > 0) {
-                // Find furthest branch point
+                // Find furthest branch point (descending order - highest distance first)
                 branchConnectors.sort((a, b) => a.distanceFromStart > b.distanceFromStart);
                 frontierConnectors.push(branchConnectors.remove(0)!);
             } else {

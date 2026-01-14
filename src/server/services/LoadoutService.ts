@@ -26,6 +26,14 @@ export class LoadoutService implements OnStart {
 		// Auto-restore when profile is loaded
 		this.playerDataService.onProfileLoaded.Event.Connect((player, profile) => {
 			const classId = profile.Global.LastSelectedClassId;
+			
+			// Validate that the stored classId exists in ClassRegistry
+			const classConfig = ClassRegistry.get(classId);
+			if (!classConfig) {
+				Log.warn(`[LoadoutService] Stored classId "${classId}" not found in ClassRegistry, skipping auto-restore`);
+				return;
+			}
+
 			const classRecord = profile.Classes[classId];
 			const equippedSlots: { slotIndex: number; abilityId: string }[] = [];
 
@@ -42,9 +50,7 @@ export class LoadoutService implements OnStart {
 			// Set runtime state
 			this.setSessionLoadout(player.UserId, classId, equippedSlots);
 
-			// Notify client (so they see the correct class/gear active)
-			// Wait a frame to ensure client is ready if they just joined? 
-			// Actually Client requests data usually, but pushing 'LoadoutConfirmed' works as a "Set State"
+			// Notify client so they see the correct class/gear active on profile load
 			Events.LoadoutConfirmed.fire(player, classId, equippedSlots);
 		});
 	}
@@ -85,10 +91,21 @@ export class LoadoutService implements OnStart {
 			this.playerLoadouts.set(player.UserId, loadout);
 
 			// Persist the new loadout string array
-			const loadoutStrings = new Array<string>(slots.size());
-			// We need to store based on slot index logic. 
-			// Simple array mapping: index = slotIndex.
-			slots.forEach(s => loadoutStrings[s.slotIndex] = s.abilityId);
+			// Array mapping: index = slotIndex, sized by the maximum slotIndex to avoid holes/misalignment.
+			const maxSlotIndex = slots.reduce((max, s) => (s.slotIndex > max ? s.slotIndex : max), -1);
+			const loadoutStrings = new Array<string>();
+			
+			// Initialize array with empty strings up to maxSlotIndex
+			for (let i = 0; i <= maxSlotIndex; i++) {
+				loadoutStrings.push("");
+			}
+			
+			// Fill in the actual ability IDs
+			slots.forEach((s) => {
+				if (s.slotIndex >= 0 && s.slotIndex < loadoutStrings.size()) {
+					loadoutStrings[s.slotIndex] = s.abilityId;
+				}
+			});
 
 			this.playerDataService.setClassLoadout(player, classId, loadoutStrings);
 

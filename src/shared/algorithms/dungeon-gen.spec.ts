@@ -6,11 +6,6 @@ import {
     findAllPaths,
     countRoutes,
     getShortestPathLength,
-    generateDungeonGraph,
-    validateDungeon,
-    findAllPaths,
-    countRoutes,
-    getShortestPathLength,
     getMainPathNodes,
     getSetSize
 } from "./dungeon-gen";

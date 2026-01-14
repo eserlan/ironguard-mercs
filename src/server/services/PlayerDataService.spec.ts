@@ -8,7 +8,7 @@ describe("PlayerDataService", () => {
         expect(profile.Global.LastSelectedClassId).to.equal("shield-saint");
         // In roblox-ts, size() is a method on Map/Array, but in pure TS/JS test context, we might be dealing with an object or array.
         // DEFAULT_PROFILE.Classes is an object map: { [key: string]: ClassRecord }
-        expect((Object as any).keys(profile.Classes).length).to.equal(0);
+        expect(Object.keys(profile.Classes).length).to.equal(0);
     });
 
     it("should validate session ID before saving", () => {
