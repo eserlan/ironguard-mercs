@@ -61,6 +61,57 @@
         "Size": [1, 80, 200],
         "Position": [-100, 40, 0]
       }
+    },
+    "Damage": {
+      "$className": "Model",
+      "CeilingCrack1": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "CanCollide": false,
+          "Material": "Slate",
+          "BrickColor": "Really black",
+          "Size": [80, 0.2, 3],
+          "Position": [15, 79.8, 15],
+          "Orientation": [0, 45, 0]
+        }
+      },
+      "CeilingCrack2": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "CanCollide": false,
+          "Material": "Slate",
+          "BrickColor": "Really black",
+          "Size": [50, 0.2, 2],
+          "Position": [-30, 79.8, -20],
+          "Orientation": [0, -25, 0]
+        }
+      },
+      "WallTopCrack1": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "CanCollide": false,
+          "Material": "Slate",
+          "BrickColor": "Really black",
+          "Size": [5, 15, 1.2],
+          "Position": [20, 75, 100],
+          "Orientation": [0, 0, 15]
+        }
+      },
+      "WallTopCrack2": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "CanCollide": false,
+          "Material": "Slate",
+          "BrickColor": "Really black",
+          "Size": [4, 12, 1.2],
+          "Position": [-50, 78, -100],
+          "Orientation": [0, 0, -10]
+        }
+      }
     }
   },
   "MercenaryLocker": {
