@@ -97,7 +97,8 @@
 		"ironguard-mercs:out/shared/domain/gear/config@GearRegistry": "shared/domain/gear/config@GearRegistry",
 		"ironguard-mercs:out/shared/domain/progression/config@PerkRegistry": "shared/domain/progression/config@PerkRegistry",
 		"ironguard-mercs:out/shared/net@GlobalEvents": "shared/net@GlobalEvents",
-		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions"
+		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions",
+		"ironguard-mercs:out/client/controllers/AmbianceController@AmbianceController": "client/controllers/AmbianceController@AmbianceController"
 	},
 	"metadata": {}
 }
