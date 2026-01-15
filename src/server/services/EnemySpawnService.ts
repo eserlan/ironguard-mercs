@@ -3,11 +3,20 @@ import { createWavePlan } from "../../shared/algorithms/wave-plan";
 import { Log } from "../../shared/utils/log";
 import { EnemyVisualService } from "./EnemyVisualService";
 import { EnemyRegistry } from "shared/domain/enemies/config";
-import { ServerStorage, Workspace } from "@rbxts/services";
+import { ServerStorage, Workspace, CollectionService, PhysicsService, HttpService } from "@rbxts/services";
+import { AIService } from "./AIService";
+import { CollectionTag } from "shared/constants/CollectionTags";
 
 @Service({})
 export class EnemySpawnService implements OnStart {
-    constructor(private visualService: EnemyVisualService) { }
+    constructor(
+        private visualService: EnemyVisualService,
+        private aiService: AIService,
+    ) {
+        // Initialize collision groups
+        PhysicsService.RegisterCollisionGroup("Enemies");
+        PhysicsService.CollisionGroupSetCollidable("Enemies", "Enemies", false);
+    }
 
     onStart() { }
 
@@ -37,20 +46,63 @@ export class EnemySpawnService implements OnStart {
 
         const rig = baseRig.Clone();
         rig.Name = archetype.name;
-        
-        // Ensure PrimaryPart exists for CFrame usage
-        if (rig.PrimaryPart) {
-            rig.SetPrimaryPartCFrame(cframe);
-        } else {
-            rig.PivotTo(cframe);
-        }
-        
-        rig.Parent = Workspace;
 
-        // Apply Visuals
+        const root = rig.FindFirstChild("HumanoidRootPart") as BasePart;
+        const humanoid = rig.FindFirstChildOfClass("Humanoid") as Humanoid;
+
+        if (root) {
+            rig.PrimaryPart = root;
+        }
+
+        // Apply visual properties (colors, scales) BEFORE welding
         this.visualService.setupEnemyVisuals(rig, archetype);
 
-        Log.info(`Spawned enemy ${enemyId} at ${cframe}`);
+        // Apply CFrame with height offset AFTER scaling
+        const modelSize = rig.GetExtentsSize();
+        const offset = new Vector3(0, modelSize.Y / 2, 0);
+        rig.PivotTo(cframe.mul(new CFrame(offset)));
+
+        if (root) {
+            // Physical assembly (Welding and CollisionGroups)
+            for (const descendant of rig.GetDescendants()) {
+                if (descendant.IsA("BasePart")) {
+                    descendant.CollisionGroup = "Enemies";
+
+                    if (descendant !== root) {
+                        descendant.CanCollide = false;
+                        descendant.Massless = true;
+
+                        const weld = new Instance("WeldConstraint");
+                        weld.Part0 = root;
+                        weld.Part1 = descendant;
+                        weld.Parent = descendant;
+                    }
+                }
+            }
+        }
+
+        if (humanoid) {
+            humanoid.HipHeight = 2.0; // Standard for our 2x2x1 RootPart rig
+        }
+
+        rig.Parent = Workspace;
+
+        // Set Network Ownership after parenting to Workspace
+        if (root) {
+            root.SetNetworkOwner(undefined); // Server-authoritative movement
+        }
+
+        // Set Role for AI
+        rig.SetAttribute("Role", archetype.role);
+        rig.SetAttribute("InstanceId", HttpService.GenerateGUID(false).sub(1, 4));
+
+        // Register with AI
+        this.aiService.registerEnemy(rig);
+
+        // Tag for Animations
+        CollectionService.AddTag(rig, CollectionTag.GothicConstruct);
+
+        print(`[EnemySpawnService] Successfully spawned enemy ${enemyId} (${archetype.name}) at ${cframe}`);
         return rig;
     }
 }

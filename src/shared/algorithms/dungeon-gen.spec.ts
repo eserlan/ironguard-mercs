@@ -6,8 +6,11 @@ import {
     findAllPaths,
     countRoutes,
     getShortestPathLength,
-    getMainPathNodes
+    getMainPathNodes,
+    getSetSize,
+    sortNodesDescending
 } from "./dungeon-gen";
+
 import { TileRegistry } from "../domain/dungeon/TileRegistry";
 import { initializeTileRegistry } from "../domain/dungeon/manifest";
 
@@ -47,7 +50,7 @@ describe("Dungeon Generation Algorithm", () => {
             const sorted = [...mainPath].sort((a, b) => a.distanceFromStart - b.distanceFromStart);
 
             for (let i = 1; i < sorted.length; i++) {
-                expect(sorted[i].distanceFromStart).toBeGreaterThan(sorted[i-1].distanceFromStart);
+                expect(sorted[i].distanceFromStart).toBeGreaterThan(sorted[i - 1].distanceFromStart);
             }
 
             console.log(`Path distances: ${sorted.map(n => `${n.id}(${n.distanceFromStart})`).join(" -> ")}`);
@@ -225,14 +228,14 @@ describe("Dungeon Generation Algorithm", () => {
             }
 
             console.log("Pacing patterns across seeds:");
-            patterns.forEach((p, i) => console.log(`  Seed ${(i+1)*111}: ${p}`));
+            patterns.forEach((p, i) => console.log(`  Seed ${(i + 1) * 111}: ${p}`));
 
             // Check that not all patterns are identical (randomness in pacing)
             const uniquePatterns = new Set(patterns);
-            console.log(`Unique patterns: ${uniquePatterns.size}/${patterns.length}`);
+            console.log(`Unique patterns: ${getSetSize(uniquePatterns)}/${patterns.length}`);
 
             // We should see some variety (at least 2 different patterns out of 10)
-            expect(uniquePatterns.size).toBeGreaterThanOrEqual(2);
+            expect(getSetSize(uniquePatterns)).toBeGreaterThanOrEqual(2);
         });
     });
 
@@ -561,3 +564,65 @@ describe("Dungeon Generation Algorithm", () => {
     });
 });
 
+describe("Helper Functions", () => {
+    describe("sortNodesDescending", () => {
+        it("should sort nodes by distanceFromStart in descending order", () => {
+            const nodes = [
+                { id: "a", distanceFromStart: 1 },
+                { id: "b", distanceFromStart: 3 },
+                { id: "c", distanceFromStart: 2 }
+            ];
+
+            const sorted = sortNodesDescending(nodes);
+
+            expect(sorted[0].id).toBe("b"); // distance 3
+            expect(sorted[1].id).toBe("c"); // distance 2
+            expect(sorted[2].id).toBe("a"); // distance 1
+        });
+
+        it("should handle nodes with undefined distanceFromStart", () => {
+            const nodes = [
+                { id: "a", distanceFromStart: 1 },
+                { id: "b", distanceFromStart: undefined as unknown as number },
+                { id: "c", distanceFromStart: 2 }
+            ];
+
+            const sorted = sortNodesDescending(nodes);
+
+            // undefined treated as 0, so should be last
+            expect(sorted[0].id).toBe("c"); // distance 2
+            expect(sorted[1].id).toBe("a"); // distance 1
+            expect(sorted[2].id).toBe("b"); // distance 0 (undefined)
+        });
+
+        it("should handle empty array", () => {
+            const nodes: { distanceFromStart: number }[] = [];
+            const sorted = sortNodesDescending(nodes);
+            expect(sorted).toHaveLength(0);
+        });
+
+        it("should handle single element", () => {
+            const nodes = [{ id: "a", distanceFromStart: 5 }];
+            const sorted = sortNodesDescending(nodes);
+            expect(sorted).toHaveLength(1);
+            expect(sorted[0].id).toBe("a");
+        });
+    });
+
+    describe("getSetSize", () => {
+        it("should return size for Set", () => {
+            const set = new Set(["a", "b", "c"]);
+            expect(getSetSize(set)).toBe(3);
+        });
+
+        it("should return 0 for empty Set", () => {
+            const set = new Set();
+            expect(getSetSize(set)).toBe(0);
+        });
+
+        it("should return 0 for object with undefined size", () => {
+            const obj = { size: undefined };
+            expect(getSetSize(obj)).toBe(0);
+        });
+    });
+});

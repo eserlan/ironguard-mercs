@@ -1,0 +1,309 @@
+{
+    "className": "Model",
+    "children": [
+        {
+            "name": "Humanoid",
+            "className": "Humanoid",
+            "properties": {
+                "DisplayDistanceType": "None"
+            }
+        },
+        {
+            "name": "HumanoidRootPart",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "CanCollide": false,
+                "Size": [
+                    2,
+                    2,
+                    1
+                ],
+                "Position": [
+                    0,
+                    3,
+                    0
+                ],
+                "Transparency": 1
+            }
+        },
+        {
+            "name": "LowerTorso",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    1.5,
+                    0.8,
+                    0.8
+                ],
+                "Position": [
+                    0,
+                    2.4,
+                    0
+                ],
+                "Color": [
+                    0.2,
+                    0.2,
+                    0.2
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "UpperTorso",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    2,
+                    1.2,
+                    1
+                ],
+                "Position": [
+                    0,
+                    3.4,
+                    0
+                ],
+                "Color": [
+                    0.3,
+                    0.3,
+                    0.3
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "Head",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    1.2,
+                    1.2,
+                    1.2
+                ],
+                "Position": [
+                    0,
+                    4.6,
+                    0
+                ],
+                "Color": [
+                    0.4,
+                    0.4,
+                    0.4
+                ],
+                "Material": "Metal"
+            },
+            "children": [
+                {
+                    "name": "LeftEye",
+                    "className": "Part",
+                    "properties": {
+                        "Anchored": false,
+                        "Size": [
+                            0.2,
+                            0.2,
+                            0.2
+                        ],
+                        "Position": [
+                            -0.3,
+                            4.8,
+                            -0.6
+                        ],
+                        "Color": [
+                            1,
+                            0,
+                            0
+                        ],
+                        "Material": "Neon"
+                    }
+                },
+                {
+                    "name": "RightEye",
+                    "className": "Part",
+                    "properties": {
+                        "Anchored": false,
+                        "Size": [
+                            0.2,
+                            0.2,
+                            0.2
+                        ],
+                        "Position": [
+                            0.3,
+                            4.8,
+                            -0.6
+                        ],
+                        "Color": [
+                            1,
+                            0,
+                            0
+                        ],
+                        "Material": "Neon"
+                    }
+                },
+                {
+                    "name": "Core",
+                    "className": "Part",
+                    "properties": {
+                        "Anchored": false,
+                        "Size": [
+                            0.4,
+                            0.4,
+                            0.4
+                        ],
+                        "Position": [
+                            0,
+                            3.4,
+                            -0.4
+                        ],
+                        "Color": [
+                            1,
+                            0,
+                            0
+                        ],
+                        "Material": "Neon"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "RightUpperArm",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    0.6,
+                    1.2,
+                    0.6
+                ],
+                "Position": [
+                    1.3,
+                    3.4,
+                    0
+                ],
+                "Color": [
+                    0.3,
+                    0.3,
+                    0.3
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "RightHand",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "Position": [
+                    1.3,
+                    2.4,
+                    0
+                ],
+                "Color": [
+                    0.4,
+                    0.4,
+                    0.4
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "LeftUpperArm",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    0.6,
+                    1.2,
+                    0.6
+                ],
+                "Position": [
+                    -1.3,
+                    3.4,
+                    0
+                ],
+                "Color": [
+                    0.3,
+                    0.3,
+                    0.3
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "LeftHand",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "Position": [
+                    -1.3,
+                    2.4,
+                    0
+                ],
+                "Color": [
+                    0.4,
+                    0.4,
+                    0.4
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "RightLeg",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    0.8,
+                    1.8,
+                    0.8
+                ],
+                "Position": [
+                    0.6,
+                    1.0,
+                    0
+                ],
+                "Color": [
+                    0.2,
+                    0.2,
+                    0.2
+                ],
+                "Material": "Metal"
+            }
+        },
+        {
+            "name": "LeftLeg",
+            "className": "Part",
+            "properties": {
+                "Anchored": false,
+                "Size": [
+                    0.8,
+                    1.8,
+                    0.8
+                ],
+                "Position": [
+                    -0.6,
+                    1.0,
+                    0
+                ],
+                "Color": [
+                    0.2,
+                    0.2,
+                    0.2
+                ],
+                "Material": "Metal"
+            }
+        }
+    ]
+}

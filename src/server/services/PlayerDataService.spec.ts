@@ -23,7 +23,7 @@ describe("PlayerDataService", () => {
 
     it("should isolate data between classes", () => {
         const profile: PlayerProfile = { ...DEFAULT_PROFILE, Classes: {} };
-        
+
         // Simulate adding/modifying class data
         profile.Classes["mage"] = { Level: 10, XP: 500, Loadout: ["fireball"] };
         profile.Classes["warrior"] = { Level: 5, XP: 200, Loadout: ["slash"] };

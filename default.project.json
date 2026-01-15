@@ -33,19 +33,58 @@
     },
     "ServerStorage": {
       "EnemyRigs": {
-        "$className": "Folder"
+        "$path": "assets/enemy-rigs"
       },
       "Weapons": {
-        "$className": "Folder"
+        "$path": "assets/weapons"
       },
       "Tiles": {
-        "$className": "Folder"
+        "$path": "assets/tiles"
       }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "TS": {
           "$path": "out/client"
+        }
+      }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Technology": "Future",
+        "GlobalShadows": true,
+        "OutdoorAmbient": [
+          0.2,
+          0.2,
+          0.3
+        ],
+        "Ambient": [
+          0,
+          0,
+          0
+        ],
+        "Brightness": 1.5,
+        "EnvironmentDiffuseScale": 0.4,
+        "EnvironmentSpecularScale": 0.4
+      },
+      "Atmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.45,
+          "Offset": 0,
+          "Color": [
+            0.15,
+            0.2,
+            0.25
+          ],
+          "Decay": [
+            0.2,
+            0.15,
+            0.1
+          ],
+          "Glare": 0,
+          "Haze": 2
         }
       }
     }

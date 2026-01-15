@@ -110,6 +110,92 @@ if (!(String.prototype as any).sub) {
     }
 };
 
+// Polyfill for Luau string.find(pattern)
+if (!(String.prototype as any).find) {
+    Object.defineProperty(String.prototype, "find", {
+        value: function (pattern: string) {
+            const index = this.indexOf(pattern);
+            if (index === -1) return [undefined];
+            return [index + 1, index + pattern.length];
+        },
+        writable: true,
+        configurable: true,
+    });
+}
+
+// Polyfill for Roblox typeIs
+(global as any).typeIs = (value: unknown, type: string): boolean => {
+    // Primitive-like checks (Luau / Roblox-compatible where applicable)
+    if (type === "function") return typeof value === "function";
+    if (type === "number") return typeof value === "number";
+    if (type === "string") return typeof value === "string";
+    if (type === "boolean") return typeof value === "boolean";
+    // Luau's type() can return "table" for plain objects; keep this behavior for tests
+    if (type === "table") return typeof value === "object" && value !== null;
+    if (type === "nil") return value === undefined || value === null;
+
+    // Instance / class-like checks for Node test environment
+    if (typeof value === "object" && value !== null) {
+        const v = value as {
+            ClassName?: string;
+            IsA?: (t: string) => boolean;
+            constructor?: { name?: string };
+        };
+
+        // Generic Instance check: anything that looks like a Roblox Instance mock
+        if (type === "Instance") {
+            return typeof v.ClassName === "string" || typeof v.IsA === "function";
+        }
+
+        // Prefer IsA-style checks if available (allows inheritance semantics in mocks)
+        if (typeof v.IsA === "function") {
+            try {
+                return !!v.IsA(type);
+            } catch {
+                // Fall through to other heuristics if the mock throws
+            }
+        }
+
+        // Direct ClassName comparison for simple mocks
+        if (typeof v.ClassName === "string") {
+            return v.ClassName === type;
+        }
+
+        // Fallback: compare constructor name (works for many custom classes, e.g. MockVector3)
+        if (v.constructor && typeof v.constructor.name === "string") {
+            return v.constructor.name === type;
+        }
+    }
+
+    return false;
+};
+
+// Polyfill for Roblox Vector3
+class MockVector3 {
+    constructor(public X: number, public Y: number, public Z: number) { }
+
+    get Magnitude(): number {
+        return Math.sqrt(this.X ** 2 + this.Y ** 2 + this.Z ** 2);
+    }
+
+    get Unit(): MockVector3 {
+        const m = this.Magnitude;
+        if (m === 0) return new MockVector3(0, 0, 0);
+        return new MockVector3(this.X / m, this.Y / m, this.Z / m);
+    }
+
+    // Add as methods as well for environments that expect them (transpilation safety)
+    public GetMagnitude() { return this.Magnitude; }
+    public GetUnit() { return this.Unit; }
+
+    public add(v: MockVector3) { return new MockVector3(this.X + v.X, this.Y + v.Y, this.Z + v.Z); }
+    public sub(v: MockVector3) { return new MockVector3(this.X - v.X, this.Y - v.Y, this.Z - v.Z); }
+    public mul(s: number) { return new MockVector3(this.X * s, this.Y * s, this.Z * s); }
+    public div(s: number) { return new MockVector3(this.X / s, this.Y / s, this.Z / s); }
+    public Dot(v: MockVector3) { return this.X * v.X + this.Y * v.Y + this.Z * v.Z; }
+}
+(global as any).Vector3 = MockVector3;
+
 // Polyfill for Roblox Color3
 (global as any).Color3 = {
     new: (r: number, g: number, b: number) => ({ R: r, G: g, B: b }),
@@ -152,6 +238,10 @@ class MockInstance {
 
     public IsA(className: string) {
         return this.className === className;
+    }
+
+    public GetChildren() {
+        return this.children;
     }
 
     public ApplyDescription() { } // Dummy for Humanoid

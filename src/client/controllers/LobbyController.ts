@@ -60,7 +60,22 @@ export class LobbyController implements OnStart {
 		});
 
 		Events.LoadoutConfirmed.connect((classId, slots) => {
-			this.updateState({ abilityLoadout: slots });
+			this.updateState({
+				abilityLoadout: slots,
+				soloMercenaryId: classId,
+			});
+
+			// If in a party, update our local member state optimistically
+			if (this.state.room) {
+				const newMembers = this.state.room.members.map((m) =>
+					m.playerId === this.getLocalPlayerId()
+						? { ...m, selectedMercenaryId: classId, abilityLoadout: slots }
+						: m,
+				);
+				this.updateState({
+					room: { ...this.state.room, members: newMembers },
+				});
+			}
 		});
 
 		Events.LoadoutRejected.connect((reason) => {

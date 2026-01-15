@@ -6,6 +6,7 @@ import { ModelPool } from "../utils/ModelPool";
 import { Workspace } from "@rbxts/services";
 import { EnemySpawnService } from "./EnemySpawnService";
 import { playAmbushCue } from "../utils/AmbushVFX";
+import { DungeonGraph, GraphNode } from "shared/algorithms/dungeon-gen";
 
 @Service({})
 export class SpawnDirector implements OnStart, OnInit {
@@ -25,43 +26,74 @@ export class SpawnDirector implements OnStart, OnInit {
 		this.pool = new ModelPool(template, 50, Workspace);
 	}
 
-	public ScanMap(dungeonRoot: Instance, seed: number) {
+	public populateDungeon(graph: DungeonGraph, seed: number) {
 		this.mapSeed = seed;
-		for (const room of dungeonRoot.GetChildren()) {
-			if (room.IsA("Model")) {
-				this.processRoom(room);
-			}
+		for (const node of graph.nodes) {
+			this.processNode(node);
 		}
 	}
 
-	private processRoom(room: Model) {
-		const spots: BasePart[] = [];
-		const descendants = room.GetDescendants();
-		for (const child of descendants) {
-			if (child.IsA("BasePart") && child.Name === "EnemySpot") {
-				spots.push(child);
-			}
-		}
+	private processNode(node: GraphNode) {
+		if (node.tags.includes("StartRoom")) return;
 
-		if (spots.size() === 0) return;
+		// 1. Calculate Budget (Difficulty based on distance)
+		const budget = this.calculateRoomBudget(node);
+		const biome = "Dungeon"; // Hardcode biome for now, can be extracted from tags later
 
-		const zone = new EncounterZone(room.Name);
-		this.zones.set(room.Name, zone);
-
-		// Read budget/biome from room attributes, with sensible defaults
-		const budget = (room.GetAttribute("RoomBudget") as number) ?? 20;
-		const biome = (room.GetAttribute("Biome") as string) ?? "Forest";
-
-		const rng = this.getDeterministicRandom(room.Name);
+		// 2. Select Pack Deterministically
+		const rng = this.getDeterministicRandom(node.id);
 		const pack = this.SelectPack(budget, biome, rng);
 
 		if (pack) {
-			zone.AddPack(pack);
-			this.AssignSpots(zone, pack, spots, rng);
+			node.encounterPackId = pack.id;
+			node.monsterBudget = budget;
+		}
+	}
+
+	public registerRoomEncounter(room: Model, node: GraphNode) {
+		const spots = this.findEnemySpots(room);
+
+		if (spots.size() === 0) {
+			print(`[SpawnDirector] No spawn spots found in room ${node.id} (${node.tileId}), skipping encounter registration`);
+			return;
+		}
+
+		print(`[SpawnDirector] Registering encounter for room ${node.id} with ${spots.size()} spots`);
+		const zone = new EncounterZone(node.id);
+		this.zones.set(node.id, zone);
+
+		if (node.encounterPackId) {
+			const pack = AllPacks.find(p => p.id === node.encounterPackId);
+			if (pack) {
+				print(`[SpawnDirector] Assigning pack ${pack.id} to room ${node.id}`);
+				const rng = this.getDeterministicRandom(node.id + "_spots");
+				zone.AddPack(pack);
+				this.AssignSpots(zone, pack, spots, rng);
+			} else {
+				print(`[SpawnDirector] Warning: Pack ${node.encounterPackId} not found for room ${node.id}`);
+			}
 		}
 
 		// Create zone trigger volume
 		this.createZoneTrigger(room, zone);
+	}
+
+	private findEnemySpots(room: Model): BasePart[] {
+		const spots: BasePart[] = [];
+		for (const child of room.GetDescendants()) {
+			if ((child.Name === "EnemySpot" || child.Name === "BossSpawn") && child.IsA("BasePart")) {
+				spots.push(child);
+			}
+		}
+		return spots;
+	}
+
+	private calculateRoomBudget(node: GraphNode): number {
+		// Linear scaling based on distance from start
+		// Min 10, Max 50, +5 per distance step
+		const baseBudget = 10;
+		const distanceScale = 5;
+		return math.min(50, baseBudget + (node.distanceFromStart * distanceScale));
 	}
 
 	private createZoneTrigger(room: Model, zone: EncounterZone) {
@@ -134,7 +166,7 @@ export class SpawnDirector implements OnStart, OnInit {
 		if (!zone || zone.status !== "Dormant") return;
 
 		zone.status = "Active";
-		print(`Zone ${zoneId} Activated`);
+		print(`[SpawnDirector] Zone ${zoneId} Activated! Spawning ${zone.getPendingSpawns().size()} enemies.`);
 
 		// Spawn all pending enemies
 		for (const spawn of zone.getPendingSpawns()) {
