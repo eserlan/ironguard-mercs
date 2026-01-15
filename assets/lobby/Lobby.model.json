@@ -1,5 +1,68 @@
 {
   "$className": "Folder",
+  "BastionStructure": {
+    "$className": "Model",
+    "Floor": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [200, 1, 200],
+        "Position": [0, -0.5, 0]
+      }
+    },
+    "Ceiling": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [200, 1, 200],
+        "Position": [0, 80, 0]
+      }
+    },
+    "Wall1": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [200, 80, 1],
+        "Position": [0, 40, 100]
+      }
+    },
+    "Wall2": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [200, 80, 1],
+        "Position": [0, 40, -100]
+      }
+    },
+    "Wall3": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [1, 80, 200],
+        "Position": [100, 40, 0]
+      }
+    },
+    "Wall4": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [1, 80, 200],
+        "Position": [-100, 40, 0]
+      }
+    }
+  },
   "MercenaryLocker": {
     "$className": "Model",
     "Base": {
@@ -410,4 +473,3 @@
     }
   }
 }
-
