@@ -4,6 +4,7 @@ import { PlayerProfile, DEFAULT_PROFILE } from "shared/data/profiles";
 import { Events } from "server/events";
 
 const AUTOSAVE_INTERVAL = 300; // 5 minutes
+const DEFAULT_CLASS_DATA = { Level: 1, XP: 0, Loadout: [] };
 
 @Service()
 export class PlayerDataService implements OnStart, OnInit {
@@ -149,7 +150,7 @@ export class PlayerDataService implements OnStart, OnInit {
 		if (!profile) return;
 
 		// Ensure class record exists
-		const existingClass = profile.Classes[classId] ?? { Level: 1, XP: 0, Loadout: [] };
+		const existingClass = profile.Classes[classId] ?? DEFAULT_CLASS_DATA;
 
 		const updatedProfile: PlayerProfile = {
 			...profile,
@@ -170,7 +171,7 @@ export class PlayerDataService implements OnStart, OnInit {
 		const profile = this.profiles.get(player.UserId);
 		if (!profile) return;
 
-		const currentClass = profile.Classes[classId] ?? { Level: 1, XP: 0, Loadout: [] };
+		const currentClass = profile.Classes[classId] ?? DEFAULT_CLASS_DATA;
 
 		let newXP = currentClass.XP + amount;
 		let newLevel = currentClass.Level;
