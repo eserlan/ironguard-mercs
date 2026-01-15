@@ -94,6 +94,22 @@ if (!(String.prototype as any).sub) {
     });
 }
 
+// Polyfill for Luau table
+(global as any).table = {
+    clone: (t: any) => {
+        if (Array.isArray(t)) {
+            return [...t];
+        }
+        return { ...t };
+    },
+    insert: (t: any[], val: any) => t.push(val),
+    remove: (t: any[], index: number) => t.splice(index - 1, 1)[0], // Lua 1-based index
+    find: (t: any[], val: any) => {
+        const idx = t.indexOf(val);
+        return idx === -1 ? undefined : idx + 1; // Lua 1-based index
+    }
+};
+
 // Polyfill for Roblox Color3
 (global as any).Color3 = {
     new: (r: number, g: number, b: number) => ({ R: r, G: g, B: b }),

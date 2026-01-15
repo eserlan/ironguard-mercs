@@ -1,13 +1,13 @@
 # Tasks: Inventory System (MVP)
 
 ## Phase 1: Data & Domain
-- [ ] **Define Types**: `InventoryItem`, `ItemDefinition`, `EquipmentSlot`. <!-- id: 0 -->
-- [ ] **Item Database**: Create `shared/data/ItemDB.ts` with initial items (Weapon, Potion, Mat). <!-- id: 1 -->
-- [ ] **Stacking Logic**: Implement `shared/algorithms/inventory/stacking.ts` (add, merge, split). <!-- id: 2 -->
-    - [ ] Test: Add to empty.
-    - [ ] Test: Stack to max.
-    - [ ] Test: Overflow to new stack.
-- [ ] **Validation Logic**: Implement `shared/algorithms/inventory/validation.ts` (canEquip). <!-- id: 3 -->
+- [x] **Define Types**: `InventoryItem`, `ItemDefinition`, `EquipmentSlot`. <!-- id: 0 -->
+- [x] **Item Database**: Create `shared/data/ItemDB.ts` with initial items (Weapon, Potion, Mat). <!-- id: 1 -->
+- [x] **Stacking Logic**: Implement `shared/algorithms/inventory/stacking.ts` (add, merge, split). <!-- id: 2 -->
+    - [x] Test: Add to empty.
+    - [x] Test: Stack to max.
+    - [x] Test: Overflow to new stack.
+- [x] **Validation Logic**: Implement `shared/algorithms/inventory/validation.ts` (canEquip). <!-- id: 3 -->
 
 ## Phase 2: Persistence & Service
 - [ ] **Profile Extension**: Update `PlayerProfile` interface to include `inventory` and `loadout`. <!-- id: 4 -->
