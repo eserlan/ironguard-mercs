@@ -3,6 +3,7 @@ import { Components } from "@flamework/components";
 import { Events } from "../events";
 import { CombatRNG } from "../../shared/algorithms/combat/rng";
 import { resolveDamage } from "../../shared/algorithms/combat/damage";
+import { isPointInMeleeArc } from "../../shared/algorithms/combat/geometry";
 import { Weapons, MeleeProfile, WeaponConfig } from "../../shared/domain/combat/config";
 import { HealthComponent } from "../cmpts/HealthComponent";
 import { Log } from "../../shared/utils/log";
@@ -114,7 +115,6 @@ export class CombatService implements OnStart {
 		const origin = character.GetPivot().Position;
 		const lookDir = direction.Unit;
 		const range = profile.range;
-		const angleThreshold = math.cos(math.rad(profile.arcDegrees / 2));
 
 		const parts = this.hitDetection.overlapSphere(origin, range, [character]);
 		const seenModels = new Set<Model>();
@@ -123,13 +123,15 @@ export class CombatService implements OnStart {
 			const model = part.FindFirstAncestorOfClass("Model");
 			if (model && !seenModels.has(model)) {
 				const targetPos = model.GetPivot().Position;
-				const toTarget = targetPos.sub(origin).Unit;
-				const dot = lookDir.Dot(toTarget);
-				const dist = origin.sub(targetPos).Magnitude;
 
-				Log.info(`MeleeArc: Checking ${model.Name} | Dist: ${math.floor(dist)} | Dot: ${math.floor(dot * 100) / 100} | Threshold: ${angleThreshold}`);
-
-				if (dot >= angleThreshold || profile.arcDegrees >= 360) {
+				// Use shared geometry logic (X,Y,Z structure matches Vector3)
+				if (isPointInMeleeArc(
+					{ X: origin.X, Y: origin.Y, Z: origin.Z }, // Explicit cast just to be safe/clear
+					{ X: lookDir.X, Y: lookDir.Y, Z: lookDir.Z },
+					{ X: targetPos.X, Y: targetPos.Y, Z: targetPos.Z },
+					range,
+					profile.arcDegrees
+				)) {
 					seenModels.add(model);
 					const weaponStub: WeaponConfig = { ...Weapons.BasicHit, damage: Weapons.BasicHit.damage * profile.damage };
 					this.resolveHit(player, weaponStub, model);
@@ -168,8 +170,10 @@ export class CombatService implements OnStart {
 
 		if (result.amount > 0) {
 			health.takeDamage(result.amount);
-			this.broadcastCombatEvent(player.UserId, result.targetId ?? "unknown", weapon.id, result.amount, result.isCrit, result.isFatal);
 		}
+
+		const targetPos = model?.GetPivot().Position;
+		this.broadcastCombatEvent(player.UserId, result.targetId ?? "unknown", weapon.id, result.amount, result.isCrit, result.isFatal, targetPos);
 	}
 
 	public applyDamage(target: Instance, amount: number, isCrit: boolean, isFatal: boolean, attackerId: string, weaponId: string) {
@@ -179,10 +183,13 @@ export class CombatService implements OnStart {
 		if (!health) return;
 
 		health.takeDamage(amount);
-		this.broadcastCombatEvent(tonumber(attackerId) ?? 0, target.Name, weaponId, amount, isCrit, isFatal);
+
+		const targetPos = (target.IsA("Model") ? target.GetPivot().Position : (target.IsA("BasePart") ? target.Position : undefined));
+		this.broadcastCombatEvent(tonumber(attackerId) ?? 0, target.Name, weaponId, amount, isCrit, isFatal, targetPos);
 	}
 
-	private broadcastCombatEvent(attackerId: number, targetId: string, weaponId: string, damage: number, isCrit: boolean, isFatal: boolean) {
+	private broadcastCombatEvent(attackerId: number, targetId: string, weaponId: string, damage: number, isCrit: boolean, isFatal: boolean, position?: Vector3) {
+		Log.info(`[Combat] Broadcasting: ${damage} damage to ${targetId} @ ${position}`);
 		Events.CombatOccurred.broadcast({
 			attackerId: tostring(attackerId),
 			targetId: targetId,
@@ -191,6 +198,7 @@ export class CombatService implements OnStart {
 			isCrit: isCrit,
 			isFatal: isFatal,
 			timestamp: getTime(),
+			position: position ? { x: position.X, y: position.Y, z: position.Z } : undefined,
 		});
 	}
 }

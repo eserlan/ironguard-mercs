@@ -25,6 +25,8 @@ export class EnemySpawnService implements OnStart {
         Log.info("Starting waves...", plan);
     }
 
+    private static readonly DUMMY_ASSET_ID = 623773712;
+
     public spawnEnemy(enemyId: string, cframe: CFrame) {
         const archetype = EnemyRegistry.get(enemyId);
         if (!archetype) {
@@ -32,15 +34,17 @@ export class EnemySpawnService implements OnStart {
             return;
         }
 
-        const enemyRigs = ServerStorage.FindFirstChild("EnemyRigs");
-        if (!enemyRigs) {
-            Log.error("ServerStorage/EnemyRigs folder missing");
+        // Load the R15 dummy from ReplicatedStorage
+        const ReplicatedStorage = game.GetService("ReplicatedStorage");
+        const assetsFolder = ReplicatedStorage.FindFirstChild("assets");
+        if (!assetsFolder) {
+            Log.error("ReplicatedStorage/assets folder not found");
             return;
         }
 
-        const baseRig = enemyRigs.FindFirstChild("EnemyBaseR15") as Model;
+        const baseRig = assetsFolder.FindFirstChild("R15 Dummy") as Model;
         if (!baseRig) {
-            Log.error("ServerStorage/EnemyRigs/EnemyBaseR15 model missing");
+            Log.error("ReplicatedStorage/assets/R15 Dummy model not found");
             return;
         }
 
@@ -48,51 +52,31 @@ export class EnemySpawnService implements OnStart {
         rig.Name = archetype.name;
 
         const root = rig.FindFirstChild("HumanoidRootPart") as BasePart;
-        const humanoid = rig.FindFirstChildOfClass("Humanoid") as Humanoid;
+        const humanoid = rig.FindFirstChildOfClass("Humanoid");
 
         if (root) {
             rig.PrimaryPart = root;
         }
 
-        // Apply visual properties (colors, scales) BEFORE welding
+        // Apply visual properties (colors, eyes, weapons) - scaling disabled
         this.visualService.setupEnemyVisuals(rig, archetype);
 
-        // Apply CFrame with height offset AFTER scaling
-        const modelSize = rig.GetExtentsSize();
-        const offset = new Vector3(0, modelSize.Y / 2, 0);
-        rig.PivotTo(cframe.mul(new CFrame(offset)));
+        // Position at spawn point (EnemySpot marker is at floor level)
+        // Add small offset to ensure feet are above floor, not in it
+        const spawnOffset = new Vector3(0, 3, 0);
+        rig.PivotTo(cframe.add(spawnOffset));
 
-        const isEphemeral = archetype.ephemeral ?? false;
-
-        if (root) {
-            // Physical assembly (Welding and CollisionGroups)
-            for (const descendant of rig.GetDescendants()) {
-                if (descendant.IsA("BasePart")) {
-                    descendant.CollisionGroup = "Enemies";
-
-                    if (descendant !== root) {
-                        descendant.CanCollide = false;
-                        descendant.Massless = true;
-
-                        const weld = new Instance("WeldConstraint");
-                        weld.Part0 = root;
-                        weld.Part1 = descendant;
-                        weld.Parent = descendant;
-                    } else {
-                        // RootPart collision logic
-                        // If ephemeral (ghost), only HipHeight via Humanoid keeps it up (Collision disabled)
-                        // If not ephemeral (default), it collides with walls/environment
-                        descendant.CanCollide = !isEphemeral;
-                    }
-                }
+        // Just set collision group for enemy-enemy non-collision
+        for (const descendant of rig.GetDescendants()) {
+            if (descendant.IsA("BasePart")) {
+                descendant.CollisionGroup = "Enemies";
             }
         }
 
-        if (humanoid) {
-            humanoid.HipHeight = 2.0; // Standard for our 2x2x1 RootPart rig
-        }
-
+        // Parent to Workspace - let Roblox handle physics like player
         rig.Parent = Workspace;
+
+        Log.info(`Spawned ${archetype.name} at ${cframe.add(spawnOffset).Position}`);
 
         // Set Network Ownership after parenting to Workspace
         if (root) {

@@ -232,6 +232,9 @@ export class DungeonService implements OnStart {
         // Add roof to enclose the space
         this.addRoof(clone, asset, cf);
 
+        // Add ambient light for visibility
+        this.addRoomLight(clone, asset, cf);
+
         // Add visual indicators based on node tags
         if (node.tags.includes("StartRoom")) {
             this.addStartRoomIndicator(clone, cf);
@@ -572,6 +575,24 @@ export class DungeonService implements OnStart {
         const wallHeight = DungeonService.WALL_HEIGHT;
         ceiling.CFrame = cf.mul(new CFrame(0, wallHeight + 0.5, 0));
         ceiling.Parent = model;
+    }
+
+    private addRoomLight(model: Model, asset: TileAsset, cf: CFrame) {
+        // Ambient gloomy dungeon lighting - not bright, but visible
+        const lightPart = new Instance("Part");
+        lightPart.Name = "RoomLight";
+        lightPart.Size = new Vector3(1, 1, 1);
+        lightPart.Anchored = true;
+        lightPart.CanCollide = false;
+        lightPart.Transparency = 1;
+        lightPart.CFrame = cf.add(new Vector3(0, 10, 0)); // Midway up
+        lightPart.Parent = model;
+
+        const light = new Instance("PointLight");
+        light.Color = Color3.fromRGB(255, 180, 120); // Warm torch color
+        light.Brightness = 0.6; // Gloomy but visible
+        light.Range = math.max(asset.size.x, asset.size.z) * 0.6; // Tighter range
+        light.Parent = lightPart;
     }
 
     private extractMetadata(model: Model) {

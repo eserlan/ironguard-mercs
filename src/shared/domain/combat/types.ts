@@ -30,4 +30,5 @@ export interface CombatEvent {
     isCrit: boolean;
     isFatal: boolean;
     timestamp: number;
+    position?: Vec3;
 }

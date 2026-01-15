@@ -14,22 +14,24 @@ export class EnemyVisualService implements OnStart {
     /**
      * Sets up the visuals for a spawned enemy rig based on its archetype config.
      */
-    public setupEnemyVisuals(rig: Model, archetype: EnemyArchetype) {
+    public setupEnemyVisuals(rig: Model, archetype: EnemyArchetype): number {
         const humanoid = rig.FindFirstChildOfClass("Humanoid");
         if (!humanoid) {
             Log.warn(`Rig ${rig.Name} has no Humanoid, skipping visual setup`);
-            return;
+            return 1;
         }
 
         const profile = VisualProfiles[archetype.visual.profileKey];
         if (!profile) {
             Log.warn(`No visual profile found for key: ${archetype.visual.profileKey}`);
-            return;
+            return 1;
         }
 
         Log.info(`Setting up visuals for ${rig.Name} using profile: ${archetype.visual.profileKey}`);
         this.applyVisualProfile(rig, profile);
         this.attachWeapon(rig, archetype.visual.weaponKey);
+
+        return profile.scale?.height ?? 1;
     }
 
     private applyVisualProfile(rig: Model, profile: EnemyVisualProfile) {
@@ -53,17 +55,13 @@ export class EnemyVisualService implements OnStart {
                     }
                 }
 
-                // 2. Apply Scaling
-                if (profile.scale) {
-                    const s = profile.scale;
-                    const originalSize = child.Size;
-                    const scaleVec = new Vector3(s.width ?? 1, s.height ?? 1, s.depth ?? 1);
-                    child.Size = originalSize.mul(scaleVec);
-
-                    // Note: In a real rig we'd need to adjust joint offsets (Motor6Ds),
-                    // but since we are using WeldConstraints for these constructs,
-                    // we just need to ensure the scaling happens BEFORE welding.
-                }
+                // 2. Scaling DISABLED - breaks standard Roblox rig physics
+                // if (profile.scale) {
+                //     const s = profile.scale;
+                //     const originalSize = child.Size;
+                //     const scaleVec = new Vector3(s.width ?? 1, s.height ?? 1, s.depth ?? 1);
+                //     child.Size = originalSize.mul(scaleVec);
+                // }
             }
         }
 
@@ -129,9 +127,16 @@ export class EnemyVisualService implements OnStart {
             return;
         }
 
-        const rightHand = rig.FindFirstChild("RightHand") as BasePart;
-        if (!rightHand) {
-            Log.warn(`Rig ${rig.Name} has no RightHand to attach weapon to`);
+        // Try R15 first, then R6 fallback
+        let attachPart = rig.FindFirstChild("RightHand") as BasePart;
+        if (!attachPart) {
+            attachPart = rig.FindFirstChild("RightUpperArm") as BasePart; // R15 alt
+        }
+        if (!attachPart) {
+            attachPart = rig.FindFirstChild("Right Arm") as BasePart; // R6 fallback
+        }
+        if (!attachPart) {
+            Log.warn(`Rig ${rig.Name} has no arm/hand to attach weapon to`);
             return;
         }
 
@@ -141,12 +146,12 @@ export class EnemyVisualService implements OnStart {
         const handle = clonedWeapon.FindFirstChild("Handle") as BasePart;
         if (handle) {
             const weld = new Instance("WeldConstraint");
-            weld.Part0 = rightHand;
+            weld.Part0 = attachPart;
             weld.Part1 = handle;
             weld.Parent = handle;
 
             // Basic alignment if handle exists
-            handle.CFrame = rightHand.CFrame;
+            handle.CFrame = attachPart.CFrame;
         } else {
             // If no handle, just parent it and hope for the best, or log error
             Log.warn(`Weapon model ${weaponKey} has no Handle part`);

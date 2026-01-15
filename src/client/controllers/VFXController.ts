@@ -34,9 +34,30 @@ export class VFXController implements OnStart {
 		});
 
 		Events.CombatOccurred.connect((event) => {
-			const pos = new Vector3(0, 5, 0); // Need a better way to get target pos
-			// Ideally the event should carry the position or we look up the target model
-			this.spawnDamageNumber(new Vector3(0, 0, 0), event.damage, event.isCrit);
+			// Debug Log
+			Log.info(`[VFX] Damage Event: ${event.damage} (Crit: ${event.isCrit}) @ ${event.position}`);
+
+			let pos: Vector3;
+
+			if (event.position) {
+				pos = new Vector3(event.position.x, event.position.y, event.position.z);
+			} else {
+				// Fallback: spawn in front of local player locally if no position from server
+				// This ensures we at least SEE the number, even if it's not perfectly on the target
+				const char = Players.LocalPlayer?.Character;
+				const root = char?.FindFirstChild("HumanoidRootPart") as BasePart;
+				if (root) {
+					pos = root.Position.add(root.CFrame.LookVector.mul(3)).add(new Vector3(0, 2, 0));
+				} else {
+					pos = new Vector3(0, 5, 0);
+				}
+			}
+
+			if (event.damage <= 0) {
+				this.spawnDamageNumber(pos, "BLOCKED", false);
+			} else {
+				this.spawnDamageNumber(pos, event.damage, event.isCrit);
+			}
 		});
 	}
 
@@ -82,32 +103,48 @@ export class VFXController implements OnStart {
 		}
 	}
 
-	public spawnDamageNumber(position: Vector3, amount: number, isCrit: boolean) {
+	public spawnDamageNumber(position: Vector3, amount: number | string, isCrit: boolean) {
 		const maid = new Maid();
+
+		// Spawn slightly above the pivot/hit point to avoid clipping into body/floor
+		const startPos = position.add(new Vector3(0, 3, 0));
 
 		const part = new Instance("Part");
 		part.Transparency = 1;
 		part.CanCollide = false;
 		part.Anchored = true;
-		part.Position = position;
+		part.Position = startPos;
 		part.Parent = Workspace;
 		maid.GiveTask(part);
 
 		const gui = this.template.Clone();
-		const label = gui.FindFirstChildOfClass("TextLabel")!;
-		label.Text = tostring(math.floor(amount));
+		// Ensure it renders on top of 3D geometry
+		gui.AlwaysOnTop = true;
 
-		if (isCrit) {
-			label.TextColor3 = new Color3(1, 0, 0); // Red for crit
-			label.TextSize = 32;
+		const label = gui.FindFirstChildOfClass("TextLabel")!;
+
+		if (typeIs(amount, "number")) {
+			label.Text = tostring(math.floor(amount));
+			if (isCrit) {
+				label.TextColor3 = new Color3(1, 0, 0); // Red for crit
+				label.TextSize = 32;
+				// Pop effect for crit
+				label.TextStrokeTransparency = 0.5;
+			} else {
+				label.TextColor3 = new Color3(1, 1, 1); // White for regular
+			}
+		} else {
+			label.Text = amount;
+			label.TextColor3 = new Color3(0.7, 0.7, 0.7); // Grey for status text
+			label.TextSize = 24;
 		}
 
 		gui.Adornee = part;
-		gui.Parent = part; // Or PlayerGui if we want 2D, but Billboard is 3D attached
+		gui.Parent = part;
 
-		// Animation
-		const duration = 1.0;
-		const targetPos = position.add(new Vector3(0, 5, 0));
+		// Animation: Float UP
+		const duration = 0.8;
+		const targetPos = startPos.add(new Vector3(0, 3 + math.random() * 2, 0));
 
 		const tweenInfo = new TweenInfo(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
 		const tween = TweenService.Create(part, tweenInfo, { Position: targetPos });
