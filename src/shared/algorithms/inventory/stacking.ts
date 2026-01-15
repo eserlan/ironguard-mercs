@@ -9,7 +9,14 @@ export interface AddItemResult {
 /**
  * Pure function to add items to a backpack, respecting stack limits and capacity.
  * Returns a new backpack array (does not mutate the original if possible/needed, strictly speaking we treat it as immutable input).
- * @param generateInstanceId - Optional callback to generate unique IDs for items with maxStack === 1
+ * @param currentBackpack - Current inventory items
+ * @param capacity - Maximum number of inventory slots
+ * @param itemDef - Item definition to add
+ * @param quantityToAdd - Number of items to add
+ * @param instanceId - Optional pre-generated instance ID for unique items
+ * @param generateInstanceId - Optional callback to generate unique IDs for items with maxStack === 1.
+ *                             If not provided and item is unique (maxStack === 1), instanceId will be undefined.
+ *                             Callers in the service layer should provide this to generate IDs using HttpService.
  */
 export function addItem(
 	currentBackpack: ReadonlyArray<InventoryItem>,
@@ -58,8 +65,10 @@ export function addItem(
 		};
 		
 		// Assign instance ID if provided (usually for unique items)
-		// Or generate one if it's a unique item type (maxStack == 1) and none provided
+		// Or generate one if it's a unique item type (maxStack == 1) and generator is provided
 		// If maxStack == 1, usually implies unique gear.
+		// Note: If no instanceId or generator provided for unique items, instanceId will be undefined.
+		// This is intentional - the calling code may assign it later or the item may not require one.
 		if (itemDef.maxStack === 1) {
 			newItem.instanceId = instanceId ?? (generateInstanceId ? generateInstanceId() : undefined);
 		}
