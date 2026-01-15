@@ -52,7 +52,7 @@ export class PlayerDataService implements OnStart, OnInit {
 		const key = tostring(userId);
 
 		try {
-			const [data, info] = this.dataStore.GetAsync(key);
+			const [data] = this.dataStore.GetAsync(key);
 
 			if (data) {
 				// Optimistic Locking: We are taking over.
@@ -133,8 +133,15 @@ export class PlayerDataService implements OnStart, OnInit {
 		}
 	}
 
+	private cloneProfile(profile: PlayerProfile): PlayerProfile {
+		return HttpService.JSONDecode(HttpService.JSONEncode(profile)) as PlayerProfile;
+	}
+
 	public getProfile(player: Player): PlayerProfile | undefined {
-		return this.profiles.get(player.UserId);
+		const profile = this.profiles.get(player.UserId);
+		if (!profile) return undefined;
+
+		return this.cloneProfile(profile);
 	}
 
 	public setClassLoadout(player: Player, classId: string, loadout: string[]) {
@@ -142,28 +149,29 @@ export class PlayerDataService implements OnStart, OnInit {
 		if (!profile) return;
 
 		// Ensure class record exists
-		if (!profile.Classes[classId]) {
-			profile.Classes[classId] = { Level: 1, XP: 0, Loadout: [] };
-		}
+		const existingClass = profile.Classes[classId] ?? { Level: 1, XP: 0, Loadout: [] };
 
-		profile.Classes[classId] = {
-			...profile.Classes[classId],
-			Loadout: loadout,
+		const updatedProfile: PlayerProfile = {
+			...profile,
+			Classes: {
+				...profile.Classes,
+				[classId]: {
+					...existingClass,
+					Loadout: loadout,
+				},
+			},
 		};
-		// Trigger update
-
-		this.broadcastUpdate(player, profile);
+		
+		this.profiles.set(player.UserId, updatedProfile);
+		this.broadcastUpdate(player, updatedProfile);
 	}
 
 	public addXP(player: Player, classId: string, amount: number) {
 		const profile = this.profiles.get(player.UserId);
 		if (!profile) return;
 
-		if (!profile.Classes[classId]) {
-			profile.Classes[classId] = { Level: 1, XP: 0, Loadout: [] };
-		}
+		const currentClass = profile.Classes[classId] ?? { Level: 1, XP: 0, Loadout: [] };
 
-		const currentClass = profile.Classes[classId];
 		let newXP = currentClass.XP + amount;
 		let newLevel = currentClass.Level;
 
@@ -179,14 +187,20 @@ export class PlayerDataService implements OnStart, OnInit {
 			print(`[PlayerDataService] ${player.Name} leveled up to ${newLevel} on ${classId}!`);
 		}
 
-		profile.Classes[classId] = {
-			...currentClass,
-			XP: newXP,
-			Level: newLevel,
+		const updatedProfile: PlayerProfile = {
+			...profile,
+			Classes: {
+				...profile.Classes,
+				[classId]: {
+					...currentClass,
+					XP: newXP,
+					Level: newLevel,
+				},
+			},
 		};
-		// Trigger update
 
-		this.broadcastUpdate(player, profile);
+		this.profiles.set(player.UserId, updatedProfile);
+		this.broadcastUpdate(player, updatedProfile);
 	}
 
 	public setSelectedClass(player: Player, classId: string) {
