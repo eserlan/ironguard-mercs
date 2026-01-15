@@ -32,6 +32,8 @@ vi.mock("@rbxts/services", () => ({
     },
     HttpService: {
         GenerateGUID: () => "test-guid",
+        JSONEncode: (val: any) => JSON.stringify(val),
+        JSONDecode: (val: string) => JSON.parse(val),
     },
 }));
 
