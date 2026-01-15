@@ -8,28 +8,80 @@
         "Anchored": true,
         "Material": "Slate",
         "BrickColor": "Dark stone grey",
-        "Size": [200, 1, 200],
+        "Size": [150, 1, 300],
         "Position": [0, -0.5, 0]
       }
     },
-    "Ceiling": {
+    "CeilingFragment1": {
       "$className": "Part",
       "$properties": {
         "Anchored": true,
         "Material": "Slate",
         "BrickColor": "Dark stone grey",
-        "Size": [200, 1, 200],
-        "Position": [0, 80, 0]
+        "Size": [70, 1, 145],
+        "Position": [-37.5, 80, -75]
       }
     },
-    "Wall1": {
+    "CeilingFragment2": {
       "$className": "Part",
       "$properties": {
         "Anchored": true,
         "Material": "Slate",
         "BrickColor": "Dark stone grey",
-        "Size": [200, 80, 1],
-        "Position": [0, 40, 100]
+        "Size": [70, 1, 145],
+        "Position": [37.5, 80, -75]
+      }
+    },
+    "CeilingFragment3": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [70, 1, 145],
+        "Position": [-37.5, 80, 75],
+        "Orientation": [0, 2, 0]
+      }
+    },
+    "CeilingFragment4": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [70, 1, 145],
+        "Position": [37.5, 80, 75],
+        "Orientation": [0, -2, 0]
+      }
+    },
+    "Wall1Base": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [150, 60, 1],
+        "Position": [0, 30, 150]
+      }
+    },
+    "Wall1TopLeft": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [60, 20, 1],
+        "Position": [-45, 70, 150]
+      }
+    },
+    "Wall1TopRight": {
+      "$className": "Part",
+      "$properties": {
+        "Anchored": true,
+        "Material": "Slate",
+        "BrickColor": "Dark stone grey",
+        "Size": [60, 20, 1],
+        "Position": [45, 70, 150]
       }
     },
     "Wall2": {
@@ -38,8 +90,8 @@
         "Anchored": true,
         "Material": "Slate",
         "BrickColor": "Dark stone grey",
-        "Size": [200, 80, 1],
-        "Position": [0, 40, -100]
+        "Size": [150, 80, 1],
+        "Position": [0, 40, -150]
       }
     },
     "Wall3": {
@@ -48,8 +100,8 @@
         "Anchored": true,
         "Material": "Slate",
         "BrickColor": "Dark stone grey",
-        "Size": [1, 80, 200],
-        "Position": [100, 40, 0]
+        "Size": [1, 80, 300],
+        "Position": [75, 40, 0]
       }
     },
     "Wall4": {
@@ -58,59 +110,8 @@
         "Anchored": true,
         "Material": "Slate",
         "BrickColor": "Dark stone grey",
-        "Size": [1, 80, 200],
-        "Position": [-100, 40, 0]
-      }
-    },
-    "Damage": {
-      "$className": "Model",
-      "CeilingCrack1": {
-        "$className": "Part",
-        "$properties": {
-          "Anchored": true,
-          "CanCollide": false,
-          "Material": "Slate",
-          "BrickColor": "Really black",
-          "Size": [80, 0.2, 3],
-          "Position": [15, 79.8, 15],
-          "Orientation": [0, 45, 0]
-        }
-      },
-      "CeilingCrack2": {
-        "$className": "Part",
-        "$properties": {
-          "Anchored": true,
-          "CanCollide": false,
-          "Material": "Slate",
-          "BrickColor": "Really black",
-          "Size": [50, 0.2, 2],
-          "Position": [-30, 79.8, -20],
-          "Orientation": [0, -25, 0]
-        }
-      },
-      "WallTopCrack1": {
-        "$className": "Part",
-        "$properties": {
-          "Anchored": true,
-          "CanCollide": false,
-          "Material": "Slate",
-          "BrickColor": "Really black",
-          "Size": [5, 15, 1.2],
-          "Position": [20, 75, 100],
-          "Orientation": [0, 0, 15]
-        }
-      },
-      "WallTopCrack2": {
-        "$className": "Part",
-        "$properties": {
-          "Anchored": true,
-          "CanCollide": false,
-          "Material": "Slate",
-          "BrickColor": "Really black",
-          "Size": [4, 12, 1.2],
-          "Position": [-50, 78, -100],
-          "Orientation": [0, 0, -10]
-        }
+        "Size": [1, 80, 300],
+        "Position": [-75, 40, 0]
       }
     }
   },
