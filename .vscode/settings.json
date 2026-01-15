@@ -5,6 +5,11 @@
             "type": "stdio",
             "command": "npx",
             "args": ["-y", "robloxstudio-mcp"]
+        },
+        "github": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-github"]
         }
     }
 }

@@ -100,6 +100,7 @@ export class PlayerDataService implements OnStart, OnInit {
 		if (!profile) return;
 
 		const key = tostring(userId);
+		let saveAborted = false;
 
 		try {
 			this.dataStore.UpdateAsync(key, (oldData) => {
@@ -113,6 +114,7 @@ export class PlayerDataService implements OnStart, OnInit {
 						const staleThreshold = 600; // 10 minutes
 						if (os.time() - lastUpdate < staleThreshold) {
 							warn(`[PlayerDataService] Session conflict for ${player.Name}, skipping save`);
+							saveAborted = true;
 							return $tuple(undefined); // Abort save
 						}
 					}
@@ -122,16 +124,20 @@ export class PlayerDataService implements OnStart, OnInit {
 					...profile,
 					LastPlayed: os.time(),
 					LastUpdateTimestamp: os.time(),
-					ActiveSessionId: this.serverSessionId,
+					ActiveSessionId: undefined, // Clear on save to prevent conflicts on rejoin
 				};
 
 				return $tuple(updatedProfile);
 			});
-			print(`[PlayerDataService] Saved profile for ${player.Name}`);
+
+			if (!saveAborted) {
+				print(`[PlayerDataService] Saved profile for ${player.Name}`);
+			}
 		} catch (err) {
 			warn(`[PlayerDataService] Failed to save profile for ${player.Name}: ${err}`);
 		}
 	}
+
 
 	public getProfile(player: Player): PlayerProfile | undefined {
 		return this.profiles.get(player.UserId);

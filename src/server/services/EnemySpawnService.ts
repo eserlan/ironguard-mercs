@@ -62,6 +62,8 @@ export class EnemySpawnService implements OnStart {
         const offset = new Vector3(0, modelSize.Y / 2, 0);
         rig.PivotTo(cframe.mul(new CFrame(offset)));
 
+        const isEphemeral = archetype.ephemeral ?? false;
+
         if (root) {
             // Physical assembly (Welding and CollisionGroups)
             for (const descendant of rig.GetDescendants()) {
@@ -76,6 +78,11 @@ export class EnemySpawnService implements OnStart {
                         weld.Part0 = root;
                         weld.Part1 = descendant;
                         weld.Parent = descendant;
+                    } else {
+                        // RootPart collision logic
+                        // If ephemeral (ghost), only HipHeight via Humanoid keeps it up (Collision disabled)
+                        // If not ephemeral (default), it collides with walls/environment
+                        descendant.CanCollide = !isEphemeral;
                     }
                 }
             }
@@ -101,6 +108,12 @@ export class EnemySpawnService implements OnStart {
 
         // Tag for Animations
         CollectionService.AddTag(rig, CollectionTag.GothicConstruct);
+
+        // Tag for Health & Set Stats
+        const health = archetype.stats.hp;
+        rig.SetAttribute("MaxHealth", health);
+        rig.SetAttribute("Health", health);
+        CollectionService.AddTag(rig, "Health");
 
         print(`[EnemySpawnService] Successfully spawned enemy ${enemyId} (${archetype.name}) at ${cframe}`);
         return rig;

@@ -10,6 +10,7 @@ export interface EnemyArchetype {
 	moves: MoveConfig[];
 	breakThreshold: number;
 	visual: EnemyVisualConfig;
+	ephemeral?: boolean; // If true, collision is disabled (ghost)
 }
 
 export class EnemyRegistry {

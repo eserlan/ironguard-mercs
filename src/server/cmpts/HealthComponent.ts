@@ -3,7 +3,7 @@ import { HealthLogic } from "../../shared/algorithms/health";
 import { RunService } from "../services/RunService";
 
 @Component({ tag: "Health" })
-export class HealthComponent extends BaseComponent<object, BasePart> {
+export class HealthComponent extends BaseComponent<object, Model> {
     private logic = new HealthLogic(100, 100);
 
     constructor(private runService: RunService) {
@@ -11,8 +11,23 @@ export class HealthComponent extends BaseComponent<object, BasePart> {
     }
 
     onStart() {
-        this.instance.SetAttribute("Health", this.logic.current);
-        this.instance.SetAttribute("MaxHealth", this.logic.max);
+        // Initialize from attributes if they exist (allows external setup)
+        const maxHealth = this.instance.GetAttribute("MaxHealth") as number | undefined;
+        const currentHealth = this.instance.GetAttribute("Health") as number | undefined;
+
+        if (maxHealth !== undefined) {
+            this.logic.max = maxHealth;
+        } else {
+            this.instance.SetAttribute("MaxHealth", this.logic.max);
+        }
+
+        if (currentHealth !== undefined) {
+            this.logic.current = currentHealth;
+        } else {
+            this.logic.current = this.logic.max;
+            this.instance.SetAttribute("Health", this.logic.current);
+        }
+
         this.instance.SetAttribute("Shield", 0);
     }
 

@@ -8,6 +8,7 @@ import { PartyPanel } from "client/ui/components/PartyPanel";
 import { LobbyBillboard } from "client/ui/components/LobbyBillboard";
 import { LoadoutEditor } from "client/ui/components/LoadoutEditor";
 import { AbilityBar } from "client/ui/AbilityBar";
+import { WeaponStatus } from "client/ui/WeaponStatus";
 import { Dependency } from "@flamework/core";
 import { AbilityController } from "client/controllers/AbilityController";
 
@@ -201,7 +202,27 @@ export function Lobby() {
 			)}
 
 			{/* Ability HUD (Always visible in Lobby for testing) */}
-			<AbilityBar loadout={state.abilityLoadout} controller={abilityController} />
+			{/* Bottom HOTBAR Container */}
+			<frame
+				Size={new UDim2(1, 0, 0, 150)}
+				Position={new UDim2(0.5, 0, 1, -10)}
+				AnchorPoint={new Vector2(0.5, 1)}
+				BackgroundTransparency={1}
+			>
+				<uilistlayout
+					FillDirection={Enum.FillDirection.Horizontal}
+					HorizontalAlignment={Enum.HorizontalAlignment.Center}
+					VerticalAlignment={Enum.VerticalAlignment.Bottom}
+					Padding={new UDim(0, 10)}
+				/>
+
+				<WeaponStatus />
+				<AbilityBar
+					loadout={state.abilityLoadout}
+					controller={abilityController}
+					onActiveInfoChange={() => { }} // No info panel in lobby customization for now
+				/>
+			</frame>
 		</frame>
 	);
 }

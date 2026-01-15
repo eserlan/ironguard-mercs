@@ -15,10 +15,13 @@
 		"ironguard-mercs:out/client/components/Lobby/TomeOfWhispersComponent@TomeOfWhispersComponent": "client/components/Lobby/TomeOfWhispersComponent@TomeOfWhispersComponent",
 		"ironguard-mercs:out/client/controllers/AbilityBarController@AbilityBarController": "client/controllers/AbilityBarController@AbilityBarController",
 		"ironguard-mercs:out/client/controllers/AbilityController@AbilityController": "client/controllers/AbilityController@AbilityController",
+		"ironguard-mercs:out/client/controllers/AmbianceController@AmbianceController": "client/controllers/AmbianceController@AmbianceController",
 		"ironguard-mercs:out/client/controllers/AmbushVisualizer@AmbushVisualizer": "client/controllers/AmbushVisualizer@AmbushVisualizer",
 		"ironguard-mercs:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController",
 		"ironguard-mercs:out/shared/domain/abilities/config@AbilityRegistry": "shared/domain/abilities/config@AbilityRegistry",
 		"ironguard-mercs:out/client/controllers/ClassController@ClassController": "client/controllers/ClassController@ClassController",
+		"ironguard-mercs:out/shared/utils/Maid@Maid": "shared/utils/Maid@Maid",
+		"ironguard-mercs:out/client/controllers/VFXController@VFXController": "client/controllers/VFXController@VFXController",
 		"ironguard-mercs:out/client/controllers/CombatController@CombatController": "client/controllers/CombatController@CombatController",
 		"ironguard-mercs:out/client/controllers/ConstructAnimator@ConstructAnimator": "client/controllers/ConstructAnimator@ConstructAnimator",
 		"ironguard-mercs:out/client/controllers/DebugController@DebugController": "client/controllers/DebugController@DebugController",
@@ -31,9 +34,8 @@
 		"ironguard-mercs:out/client/controllers/MovementController@MovementController": "client/controllers/MovementController@MovementController",
 		"ironguard-mercs:out/client/controllers/PlayerDataController@PlayerDataController": "client/controllers/PlayerDataController@PlayerDataController",
 		"ironguard-mercs:out/client/controllers/ProgressionController@ProgressionController": "client/controllers/ProgressionController@ProgressionController",
+		"ironguard-mercs:out/client/controllers/TargetingController@TargetingController": "client/controllers/TargetingController@TargetingController",
 		"ironguard-mercs:out/client/controllers/TelegraphController@TelegraphController": "client/controllers/TelegraphController@TelegraphController",
-		"ironguard-mercs:out/client/controllers/VFXController@Maid": "client/controllers/VFXController@Maid",
-		"ironguard-mercs:out/client/controllers/VFXController@VFXController": "client/controllers/VFXController@VFXController",
 		"ironguard-mercs:out/server/cmpts/Admin@AdminComponent": "server/cmpts/Admin@AdminComponent",
 		"ironguard-mercs:out/shared/algorithms/health@HealthLogic": "shared/algorithms/health@HealthLogic",
 		"ironguard-mercs:out/shared/algorithms/run-state@RunStateMachine": "shared/algorithms/run-state@RunStateMachine",
@@ -76,6 +78,7 @@
 		"ironguard-mercs:out/server/services/EnemyService@EnemyService": "server/services/EnemyService@EnemyService",
 		"ironguard-mercs:out/server/services/GearEffectService@GearEffectService": "server/services/GearEffectService@GearEffectService",
 		"ironguard-mercs:out/server/services/GearService@GearService": "server/services/GearService@GearService",
+		"ironguard-mercs:out/server/services/PlayerVisualService@PlayerVisualService": "server/services/PlayerVisualService@PlayerVisualService",
 		"ironguard-mercs:out/server/services/InitializerService@InitializerService": "server/services/InitializerService@InitializerService",
 		"ironguard-mercs:out/server/services/LOSService@LOSService": "server/services/LOSService@LOSService",
 		"ironguard-mercs:out/server/services/LobbyService@LobbyService": "server/services/LobbyService@LobbyService",
@@ -97,8 +100,7 @@
 		"ironguard-mercs:out/shared/domain/gear/config@GearRegistry": "shared/domain/gear/config@GearRegistry",
 		"ironguard-mercs:out/shared/domain/progression/config@PerkRegistry": "shared/domain/progression/config@PerkRegistry",
 		"ironguard-mercs:out/shared/net@GlobalEvents": "shared/net@GlobalEvents",
-		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions",
-		"ironguard-mercs:out/client/controllers/AmbianceController@AmbianceController": "client/controllers/AmbianceController@AmbianceController"
+		"ironguard-mercs:out/shared/net@GlobalFunctions": "shared/net@GlobalFunctions"
 	},
 	"metadata": {}
 }

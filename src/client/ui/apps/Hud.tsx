@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from "@rbxts/react";
 import { AppState } from "client/ui/state/app-state";
 import { AbilityBar } from "../AbilityBar";
+import { WeaponStatus } from "../WeaponStatus";
+import { InfoPanel } from "../InfoPanel";
 import { useLobby } from "../hooks/useLobby";
 
 import { Dependency } from "@flamework/core";
@@ -10,6 +12,14 @@ export function Hud() {
 	const [health, setHealth] = useState(AppState.health);
 	const { state } = useLobby();
 	const abilityController = useMemo(() => Dependency<AbilityController>(), []);
+
+	// InfoPanel state lifted up to HUD
+	const [activeInfo, setActiveInfo] = useState<{
+		name: string;
+		description: string;
+		technical: string;
+		parentName: string;
+	} | undefined>(undefined);
 
 	useEffect(() => {
 		// Subscribe to AppState changes for proper React updates
@@ -41,7 +51,35 @@ export function Hud() {
 				/>
 			</frame>
 
-			<AbilityBar loadout={state.abilityLoadout} controller={abilityController} />
+			{/* Info Panel - Absolute Positioning (restored to bottom left) */}
+			{activeInfo && (
+				<InfoPanel
+					data={activeInfo}
+					onClose={() => setActiveInfo(undefined)}
+				/>
+			)}
+
+			{/* Bottom HOTBAR Container */}
+			<frame
+				Size={new UDim2(1, 0, 0, 150)}
+				Position={new UDim2(0.5, 0, 1, -10)}
+				AnchorPoint={new Vector2(0.5, 1)}
+				BackgroundTransparency={1}
+			>
+				<uilistlayout
+					FillDirection={Enum.FillDirection.Horizontal}
+					HorizontalAlignment={Enum.HorizontalAlignment.Center}
+					VerticalAlignment={Enum.VerticalAlignment.Bottom}
+					Padding={new UDim(0, 10)}
+				/>
+
+				<WeaponStatus />
+				<AbilityBar
+					loadout={state.abilityLoadout}
+					controller={abilityController}
+					onActiveInfoChange={setActiveInfo}
+				/>
+			</frame>
 		</frame>
 	);
 }

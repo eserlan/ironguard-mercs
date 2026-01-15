@@ -5,6 +5,7 @@ export interface CombatIntent {
     origin: Vec3;
     direction: Vec3;
     timestamp: number;
+    action?: "Begin" | "End";
 }
 
 export interface CombatStats {

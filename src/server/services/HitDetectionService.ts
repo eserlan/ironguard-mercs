@@ -24,4 +24,15 @@ export class HitDetectionService {
 
 		return Workspace.GetPartBoundsInBox(cframe, size, params);
 	}
+
+	/**
+	 * Performs a sphere overlap check.
+	 */
+	public overlapSphere(position: Vector3, radius: number, ignore: Instance[]): Instance[] {
+		const params = new OverlapParams();
+		params.FilterDescendantsInstances = ignore;
+		params.FilterType = Enum.RaycastFilterType.Exclude;
+
+		return Workspace.GetPartBoundsInRadius(position, radius, params);
+	}
 }

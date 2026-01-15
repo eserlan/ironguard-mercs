@@ -21,7 +21,7 @@ export class GearService implements OnStart {
 			Log.warn(`Player ${player.Name} tried to equip gear outside Safe Room`);
 			return;
 		}
-		Log.info(`Player ${player.Name} equipping ${gearId} to ${slot}`);
+		Log.info(`Player ${player.Name} equipping ${gearId} to ${slot} `);
 	}
 
 	public getEquipment(userId: number) {

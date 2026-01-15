@@ -61,8 +61,39 @@ We will use Roblox's `ContextActionService` for input. Abilities will be managed
 - **Q1: Targeting System**: Resolved (Hybrid/Soft-Lock).
 - **Q2: Resource System**: Resolved (Cooldown Only).
 
+## Target Locking & visuals
+
+To assist with focus in chaotic melee combat, a **Target Locking** system is implemented alongside the physics-based hit detection.
+
+### Functional Behavior
+- **Input**: Press `Tab` to cycle targets.
+- **Selection Logic**: 
+    - Prioritizes enemies tagged with `CollectionTag.GothicConstruct`.
+    - Sorts candidates by distance to the camera.
+    - Selects the nearest valid target if none is selected.
+    - Cycles to the "next" target (by distance rank) on subsequent presses.
+- **Auto-Clear**: Target lock is removed if the target dies or leaves the workspace.
+
+### Visual Feedback
+- **Highlight**: A strictly client-side `Highlight` instance is adorned to the locked target.
+- **Style**:
+    - **Color**: Red-Orange (Color3 `1, 0.2, 0`).
+    - **Fill Transparency**: `0.8` (Subtle tint).
+    - **Outline Transparency**: `0.1` (Sharp outline).
+    - **Depth Mode**: `Occluded` (Visible behind walls).
+
+### Integration
+- This system currently provides **Visual Feedback** to the player.
+- *Future Work*: Combat abilities may optionally "snap" or guide towards the locked target if within a valid angle.
+
 ## Success Criteria
 - **SC-001**: Ability fires immediately on input (client visual).
 - **SC-002**: Cooldown prevents re-firing within X seconds.
 - **SC-003**: Movement is smooth and responsive during combat.
 - **SC-004**: Hits are correctly registered on targets within the forward cone/box.
+
+## Related Specifications
+
+- **[013-melee-animations](../013-melee-animations/spec.md)**: Defines the melee animation system, including `MeleeProfile` configuration, marker-based timing, and procedural fallbacks.
+- **[003-abilities-framework](../003-abilities-framework/spec.md)**: Defines the ability system that works alongside combat.
+- **[005-player-classes](../005-player-classes/spec.md)**: Defines class-specific combat abilities and loadouts.

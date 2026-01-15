@@ -11,6 +11,9 @@ export class HudController implements OnStart {
 		const player = Players.LocalPlayer;
 		const playerGui = player.WaitForChild("PlayerGui") as PlayerGui;
 
+		// Disable default Backpack UI to prevent overlap
+		game.GetService("StarterGui").SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+
 		const appUi = new Instance("ScreenGui");
 		appUi.Name = "AppUI";
 		appUi.ResetOnSpawn = false;

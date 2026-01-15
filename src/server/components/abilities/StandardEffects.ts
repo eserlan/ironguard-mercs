@@ -44,6 +44,7 @@ export const StandardEffects = {
 			0,
 			rng,
 			(target.GetAttribute("Health") as number) ?? 100,
+			target.GetAttribute("IsBlocking") === true,
 		);
 
 		if (result.amount > 0) {
@@ -143,6 +144,7 @@ export const StandardEffects = {
 				0,
 				rng,
 				(character.GetAttribute("Health") as number) ?? 100,
+				character.GetAttribute("IsBlocking") === true,
 			);
 
 			if (result.amount > 0) {
