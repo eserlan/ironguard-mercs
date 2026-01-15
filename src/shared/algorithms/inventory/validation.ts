@@ -1,7 +1,7 @@
 import { EquipmentSlot, ItemDefinition } from "shared/domain/inventory/types";
 
 export function canEquip(itemDef: ItemDefinition, slot: EquipmentSlot): boolean {
-	if (!itemDef.validSlots || itemDef.validSlots.size() === 0) {
+	if (itemDef.validSlots.size() === 0) {
 		return false;
 	}
 	
