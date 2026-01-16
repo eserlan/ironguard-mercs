@@ -64,16 +64,10 @@ export class CombatController implements OnStart {
 
 			if (holdDuration >= this.chargeThreshold) {
 				Log.info(`Heavy Hit triggered (held ${math.round(holdDuration * 100) / 100}s)`);
-				if (now - this.lastHit >= this.hitCooldown) { // Check cooldown (shared or separate?)
-					this.lastHit = now;
-					this.fireCombatIntent("HeavyHit");
-				}
+				this.fireCombatIntent("HeavyHit");
 			} else {
 				Log.info("Basic Hit triggered (tap)");
-				if (now - this.lastHit >= this.hitCooldown) {
-					this.lastHit = now;
-					this.fireCombatIntent("BasicHit");
-				}
+				this.fireCombatIntent("BasicHit");
 			}
 		}
 	}

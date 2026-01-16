@@ -306,6 +306,9 @@ export class VFXController implements OnStart {
 
 			// Use a fast windup speed for responsiveness
 			TweenService.Create(rightShoulder, new TweenInfo(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { C0: chargeC0 }).Play();
+			Log.info("Charge windup pose applied");
+		} else {
+			Log.warn(`Charge windup failed: RightShoulder=${rightShoulder !== undefined}, basePose=${basePose !== undefined}`);
 		}
 	}
 

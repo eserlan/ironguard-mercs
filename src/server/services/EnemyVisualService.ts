@@ -54,15 +54,12 @@ export class EnemyVisualService implements OnStart {
                         else if (child.Name.find("Right")[0] !== undefined && colors.rightLeg) child.Color = colors.rightLeg;
                     }
                 }
-
-                // 2. Scaling DISABLED - breaks standard Roblox rig physics
-                // if (profile.scale) {
-                //     const s = profile.scale;
-                //     const originalSize = child.Size;
-                //     const scaleVec = new Vector3(s.width ?? 1, s.height ?? 1, s.depth ?? 1);
-                //     child.Size = originalSize.mul(scaleVec);
-                // }
             }
+        }
+
+        // 2. Apply Scaling with Model:ScaleTo() (safe for standard rigs)
+        if (profile.scale && profile.scale.height !== undefined && profile.scale.height !== 1.0) {
+            rig.ScaleTo(profile.scale.height);
         }
 
         // 3. Apply Spooky Eyes (Neon Attachments)
@@ -70,7 +67,12 @@ export class EnemyVisualService implements OnStart {
             this.attachEyes(rig, profile.eyeColor);
         }
 
-        Log.debug(`Applied construct visuals (scale: ${profile.scale ? "yes" : "no"}) to ${rig.Name}`);
+        // 4. Apply Chest Glow for elites
+        if (profile.eyeColor && (profile.scale?.height ?? 1) > 1.5) {
+            this.attachChestGlow(rig, profile.eyeColor);
+        }
+
+        Log.debug(`Applied construct visuals (scale: ${profile.scale?.height ?? "no"}) to ${rig.Name}`);
     }
 
     private attachEyes(rig: Model, color: Color3) {
@@ -110,6 +112,38 @@ export class EnemyVisualService implements OnStart {
             light.Brightness = 2;
             light.Parent = eye;
         }
+    }
+
+    private attachChestGlow(rig: Model, color: Color3) {
+        const torso = rig.FindFirstChild("UpperTorso") as BasePart ?? rig.FindFirstChild("Torso") as BasePart;
+        if (!torso) return;
+
+        // Glowing core in the chest
+        const glow = new Instance("Part");
+        glow.Name = "ChestGlow";
+        glow.Shape = Enum.PartType.Ball;
+        glow.Size = new Vector3(0.8, 0.8, 0.8);
+        glow.Color = color;
+        glow.Material = Enum.Material.Neon;
+        glow.CanCollide = false;
+        glow.Massless = true;
+        glow.Transparency = 0.3;
+        glow.Parent = rig;
+
+        const weld = new Instance("WeldConstraint");
+        weld.Part0 = torso;
+        weld.Part1 = glow;
+        weld.Parent = glow;
+
+        // Position in front of chest
+        glow.CFrame = torso.CFrame.mul(new CFrame(0, 0, -0.6));
+
+        // Core light
+        const light = new Instance("PointLight");
+        light.Color = color;
+        light.Range = 8;
+        light.Brightness = 3;
+        light.Parent = glow;
     }
 
     private attachWeapon(rig: Model, weaponKey?: string) {

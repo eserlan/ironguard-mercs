@@ -2,7 +2,7 @@
 
 ## Overview
 
-This specification defines the **Melee Animation System** for IronGuard Mercenaries. It covers the structure, timing, and configuration of melee attacks, with a focus on:
+This specification defines the **Melee Animation System** for IronGuard Mercs. It covers the structure, timing, and configuration of melee attacks, with a focus on:
 
 1. **Marker-Based Animations**: Precise hit windows driven by animation events.
 2. **Procedural Fallback**: TweenService-based arm movements when assets are unavailable.

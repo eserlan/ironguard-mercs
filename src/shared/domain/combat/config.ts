@@ -72,18 +72,18 @@ export const Weapons: Record<string, WeaponConfig> = {
         type: WeaponType.Melee,
         damage: 15,
         cooldown: 0.4,
-        range: 10,
+        range: 6.5,
         assetId: 47433,
-        meleeProfile: LightSwordSwing
+        meleeProfile: { ...LightSwordSwing, range: 6.5 }
     },
     "HeavyHit": {
         id: "HeavyHit",
         type: WeaponType.Melee,
-        damage: 30, // Base 30 * 2.0 profile = 60 dmg effectively? No, damage field in weapon is base. Profile mult applied later.
+        damage: 30,
         cooldown: 1.5,
-        range: 12,
-        assetId: 47433, // Re-use icon for now
-        meleeProfile: HeavySwordSwing
+        range: 8.5,
+        assetId: 47433,
+        meleeProfile: { ...HeavySwordSwing, range: 8.5 }
     },
     "BasicBlock": { id: "BasicBlock", type: WeaponType.Shield, damage: 0, cooldown: 0.2, range: 0 },
 };

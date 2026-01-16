@@ -112,7 +112,11 @@ export class CombatService implements OnStart {
 	}
 
 	private resolveMeleeArc(player: Player, character: Model, profile: MeleeProfile, direction: Vector3) {
-		const origin = character.GetPivot().Position;
+		const weaponModel = character.FindFirstChild("WeaponModel", true);
+		const origin = weaponModel?.IsA("Model") || weaponModel?.IsA("BasePart")
+			? (weaponModel as Model).GetPivot().Position
+			: character.GetPivot().Position;
+
 		const lookDir = direction.Unit;
 		const range = profile.range;
 

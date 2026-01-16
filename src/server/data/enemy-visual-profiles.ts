@@ -14,6 +14,7 @@ export const VisualProfiles: Record<string, EnemyVisualProfile> = {
 			width: 0.9,
 			depth: 0.9,
 		},
+		eyeColor: Color3.fromRGB(200, 50, 50), // Red eyes for grunts
 	},
 	Guard: {
 		assetIds: [],
