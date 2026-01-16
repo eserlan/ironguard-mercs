@@ -180,6 +180,17 @@ class MockVector3 {
 }
 (global as any).Vector3 = MockVector3;
 
+// Polyfill for Roblox CFrame
+class MockCFrame {
+    constructor(public Position = new MockVector3(0, 0, 0)) { }
+    public mul(other: MockCFrame | MockVector3) {
+        if (other instanceof MockVector3) return other; // Dummy
+        return new MockCFrame();
+    }
+    public static Angles(x: number, y: number, z: number) { return new MockCFrame(); }
+}
+(global as any).CFrame = MockCFrame;
+
 // Polyfill for Roblox Color3
 (global as any).Color3 = {
     new: (r: number, g: number, b: number) => ({ R: r, G: g, B: b }),
@@ -190,6 +201,7 @@ class MockVector3 {
 // Polyfill for Roblox Instance
 class MockInstance {
     public Name: string;
+    public CFrame: MockCFrame = new MockCFrame();
     private _parent: any = undefined;
     public children: any[] = [];
 
@@ -229,10 +241,29 @@ class MockInstance {
     }
 
     public ApplyDescription() { } // Dummy for Humanoid
+    public ScaleTo(scale: number) { } // Dummy for Model scaling
 }
 
 (global as any).Instance = MockInstance;
 
 (global as any).Enum = {
-    // Add any required enums here
+    PartType: {
+        Ball: "Ball",
+        Block: "Block",
+        Cylinder: "Cylinder",
+    },
+    Material: {
+        Neon: "Neon",
+        Plastic: "Plastic",
+        SmoothPlastic: "SmoothPlastic",
+    },
+    EasingStyle: {
+        Quad: "Quad",
+        Linear: "Linear",
+    },
+    EasingDirection: {
+        Out: "Out",
+        In: "In",
+        InOut: "InOut",
+    },
 };

@@ -15,10 +15,12 @@ describe("InitializerService", () => {
     let mockRunService: any;
     let mockClassService: any;
     let mockGearService: any;
+    let mockPlayerVisualService: any;
 
     beforeEach(() => {
         mockRunService = {
-            getSessionMember: vi.fn()
+            getSessionMember: vi.fn(),
+            isSafeRoom: vi.fn().mockReturnValue(true)
         };
         mockClassService = {
             applyClassToPlayer: vi.fn()
@@ -26,7 +28,15 @@ describe("InitializerService", () => {
         mockGearService = {
             applyLoadoutToPlayer: vi.fn()
         };
-        initializerService = new InitializerService(mockRunService, mockClassService, mockGearService);
+        mockPlayerVisualService = {
+            applyWeaponModel: vi.fn()
+        };
+        initializerService = new InitializerService(
+            mockRunService,
+            mockClassService,
+            mockGearService,
+            mockPlayerVisualService
+        );
     });
 
     it("should initialize character if session data exists", () => {
